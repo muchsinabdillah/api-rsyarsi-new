@@ -97,7 +97,7 @@ class bMedicalRecordRepositoryImpl implements bMedicalRecordRepositoryInterface
         ->select( 'PatientName',  'Date_of_birth','Gander','Marital_status',
         'Address' ,DB::raw('[E-mail Address]  AS Email') , 'ID_Card_number',DB::raw('[Home Phone]  AS tlp'),
         DB::raw('[Mobile Phone]  AS Hp'),
-        'NoMR')
+        'NoMR','kelurahan')
         ->where('ID_Card_number', $nik)
         ->where('Aktif', '1')
         ->orderBy('ID', 'desc')

@@ -191,11 +191,11 @@ class aOrderMutasiService extends Controller
 
             // cek ada gak datanya
             // cek ada gak datanya
-            if ($this->aOrderMutasiRepository->getOrderMutasibyID($request->TransasctionCode)->count() < 1) {
+            if ($this->aOrderMutasiRepository->getOrderMutasibyID($request->TransactionCode)->count() < 1) {
                 return $this->sendError('Order Mutasi Not Found !', []);
             }
             // cek sudah di approved belum 
-            if ($this->aOrderMutasiRepository->getOrderMutasiApprovedbyID($request->TransasctionCode)->count() > 0) {
+            if ($this->aOrderMutasiRepository->getOrderMutasiApprovedbyID($request->TransactionCode)->count() > 0) {
                 return $this->sendError('Order Mutasi Has Been Approved !', []);
             }
             $this->aOrderMutasiRepository->voidOrderMutasiDetailAll($request);

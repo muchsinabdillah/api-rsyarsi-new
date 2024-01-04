@@ -397,9 +397,15 @@ Route::group(["middleware"=>["auth:api"]], function(){
 
         Route::group(['prefix' => 'v2/'], function () { 
             Route::post("viewOrderResepbyDatePeriode", [ResepV2Controller::class, "viewOrderResepbyDatePeriode"]); 
-            Route::post("viewOrderResepbyTrs", [ResepV2Controller::class, "viewOrderResepbyTrs"]); 
+            Route::post("viewOrderResepby", [ResepV2Controller::class, "viewOrderResepby"]); 
             Route::post("viewOrderResepbyID", [ResepV2Controller::class, "viewOrderResepbyID"]); 
             Route::post("viewOrderResepDetailbyID", [ResepV2Controller::class, "viewOrderResepDetailbyID"]); 
+            Route::post("viewOrderResepbyOrderIDV2", [ResepV2Controller::class, "viewOrderResepbyOrderIDV2"]); 
+            Route::post("viewOrderResepDetailbyOrderIDV2", [ResepV2Controller::class, "viewOrderResepDetailbyOrderIDV2"]); 
+            Route::post("editSignaTerjemahanbyID", [ResepV2Controller::class, "editSignaTerjemahanbyID"]); 
+            Route::post("viewprintLabelbyID", [ResepV2Controller::class, "viewprintLabelbyID"]);
+            Route::post("getPrinterLabel", [ResepV2Controller::class, "getPrinterLabel"]);
+            Route::post("editReviewbyIDResep", [ResepV2Controller::class, "editReviewbyIDResep"]);
             
         });
     });
@@ -523,6 +529,20 @@ Route::group(["middleware"=>["auth:api"]], function(){
 
             Route::post("byId", [EDocumentController::class, "getResumeMedisbyId"]);
             Route::post("registrasi", [EDocumentController::class, "getResumeMedisdocregistrasi"]);
+        });
+
+        //Tambahan 25-12-2023
+        Route::group(['prefix' => 'PersetujuanTindakan/'], function () {
+            Route::post("byId", [EDocumentController::class, "getPersetujuanTindakanbyId"]);
+            Route::post("registrasi", [EDocumentController::class, "getPersetujuanTindakandocregistrasi"]);
+        });
+        Route::group(['prefix' => 'SuketSakit/'], function () {
+            Route::post("byId", [EDocumentController::class, "getSuketSakitbyId"]);
+            Route::post("registrasi", [EDocumentController::class, "getSuketSakitdocregistrasi"]);
+        });
+        Route::group(['prefix' => 'SuketSehat/'], function () {
+            Route::post("byId", [EDocumentController::class, "getSuketSehatbyId"]);
+            Route::post("registrasi", [EDocumentController::class, "getSuketSehatdocregistrasi"]);
         });
 
         Route::group(['prefix' => 'OTP/'], function () {

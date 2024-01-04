@@ -21,5 +21,75 @@ class ResepV2Controller extends Controller
         $user =  $userService->viewOrderReseV2pbyDatePeriode($request);
         return $user; 
     }
+
+    public function viewOrderResepbyTrs(Request $request){
+        $visitRepository = new bVisitRepositoryImpl(); 
+        $trsResep = new aTrsResepRepositoryImpl(); 
+        $doctorRepository = new aDoctorRepositoryImpl(); 
+        $hnaRepository = new aHnaRepositoryImpl();
+        $userService = new bTrsResepService($visitRepository,$trsResep,$doctorRepository,$hnaRepository);
+        $user =  $userService->viewOrderResepbyTrsV2($request);
+        return $user; 
+    }
+
+    public function viewOrderResepbyOrderIDV2(Request $request){
+        $visitRepository = new bVisitRepositoryImpl(); 
+        $trsResep = new aTrsResepRepositoryImpl(); 
+        $doctorRepository = new aDoctorRepositoryImpl(); 
+        $hnaRepository = new aHnaRepositoryImpl();
+        $userService = new bTrsResepService($visitRepository,$trsResep,$doctorRepository,$hnaRepository);
+        $user =  $userService->viewOrderResepbyOrderIDV2($request);
+        return $user; 
+    }
+
+    public function viewOrderResepDetailbyOrderIDV2(Request $request){
+        $visitRepository = new bVisitRepositoryImpl(); 
+        $trsResep = new aTrsResepRepositoryImpl(); 
+        $doctorRepository = new aDoctorRepositoryImpl(); 
+        $hnaRepository = new aHnaRepositoryImpl();
+        $userService = new bTrsResepService($visitRepository,$trsResep,$doctorRepository,$hnaRepository);
+        $user =  $userService->viewOrderResepDetailbyOrderIDV2($request);
+        return $user; 
+    }
+
+    public function editSignaTerjemahanbyID(Request $request){
+        $visitRepository = new bVisitRepositoryImpl(); 
+        $trsResep = new aTrsResepRepositoryImpl(); 
+        $doctorRepository = new aDoctorRepositoryImpl(); 
+        $hnaRepository = new aHnaRepositoryImpl();
+        $userService = new bTrsResepService($visitRepository,$trsResep,$doctorRepository,$hnaRepository);
+        $user =  $userService->editSignaTerjemahanbyID($request);
+        return $user; 
+    }
+
+    public function viewprintLabelbyID(Request $request){
+        $visitRepository = new bVisitRepositoryImpl(); 
+        $trsResep = new aTrsResepRepositoryImpl(); 
+        $doctorRepository = new aDoctorRepositoryImpl(); 
+        $hnaRepository = new aHnaRepositoryImpl();
+        $userService = new bTrsResepService($visitRepository,$trsResep,$doctorRepository,$hnaRepository);
+        $user =  $userService->viewprintLabelbyID($request);
+        return $user; 
+    }
+
+    public function getPrinterLabel(Request $request){
+        $visitRepository = new bVisitRepositoryImpl(); 
+        $trsResep = new aTrsResepRepositoryImpl(); 
+        $doctorRepository = new aDoctorRepositoryImpl(); 
+        $hnaRepository = new aHnaRepositoryImpl();
+        $userService = new bTrsResepService($visitRepository,$trsResep,$doctorRepository,$hnaRepository);
+        $user =  $userService->getPrinterLabel($request);
+        return $user; 
+    }
+
+    public function editReviewbyIDResep(Request $request){
+        $visitRepository = new bVisitRepositoryImpl(); 
+        $trsResep = new aTrsResepRepositoryImpl(); 
+        $doctorRepository = new aDoctorRepositoryImpl(); 
+        $hnaRepository = new aHnaRepositoryImpl();
+        $userService = new bTrsResepService($visitRepository,$trsResep,$doctorRepository,$hnaRepository);
+        $user =  $userService->editReviewbyIDResep($request);
+        return $user; 
+    }
    
 }

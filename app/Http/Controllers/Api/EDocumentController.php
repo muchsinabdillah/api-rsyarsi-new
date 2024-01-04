@@ -88,4 +88,41 @@ class EDocumentController extends Controller
         $user =  $userService->verifyOTP($request);
         return $user; 
     }
+    //Tambahan 25-12-2023
+    public function getPersetujuanTindakandocregistrasi(Request $request){
+        $eDocuemnt = new bEdocumentRepositoryImpl();   
+        $userService = new bEdocumentService($eDocuemnt);
+        $user =  $userService->getPersetujuanTindakandocregistrasi($request);
+        return $user; 
+    }
+    public function getPersetujuanTindakanbyId(Request $request){
+        $eDocuemnt = new bEdocumentRepositoryImpl();   
+        $userService = new bEdocumentService($eDocuemnt);
+        $user =  $userService->getPersetujuanTindakanbyId($request);
+        return $user; 
+    }
+    public function getSuketSakitdocregistrasi(Request $request){
+        $eDocuemnt = new bEdocumentRepositoryImpl();   
+        $userService = new bEdocumentService($eDocuemnt);
+        $user =  $userService->getSuketSakitdocregistrasi($request);
+        return $user; 
+    }
+    public function getSuketSakitbyId(Request $request){
+        $eDocuemnt = new bEdocumentRepositoryImpl();   
+        $userService = new bEdocumentService($eDocuemnt);
+        $user =  $userService->getSuketSakitbyId($request);
+        return $user; 
+    }
+    public function getSuketSehatdocregistrasi(Request $request){
+        $eDocuemnt = new bEdocumentRepositoryImpl();   
+        $userService = new bEdocumentService($eDocuemnt);
+        $user =  $userService->getSuketSehatdocregistrasi($request);
+        return $user; 
+    }
+    public function getSuketSehatbyId(Request $request){
+        $eDocuemnt = new bEdocumentRepositoryImpl();   
+        $userService = new bEdocumentService($eDocuemnt);
+        $user =  $userService->getSuketSehatbyId($request);
+        return $user; 
+    }
 }

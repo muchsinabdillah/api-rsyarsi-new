@@ -77,8 +77,8 @@ class aConsumableRepositoryImpl implements aConsumableRepositoryInterface
             'ProductName' => $key['ProductName'],
             'Qty' => $key['Qty'],  
             'Konversi_QtyTotal' => $key['Konversi_QtyTotal'],  
-            'Hpp' => '0',
-            'Total' => '0',
+            'Hpp' => '0',//ini emang nol atau gimana
+            'Total' => '0',//ini emang nol atau gimana
             'Satuan ' =>  $key['ProductSatuan'],
             'UserVoid' => '',
             'DateAdd' => Carbon::now(),

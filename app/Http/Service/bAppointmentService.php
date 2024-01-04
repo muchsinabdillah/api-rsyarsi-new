@@ -795,6 +795,18 @@ class bAppointmentService extends Controller {
                     return  $this->sendErrorTrsNew($response,$metadata);
                 }
 
+                // validasi checkin, tapi DATA PROVINSI KOSONG
+                $dataMedrecProvinsi = $this->medrecRepository->getMedrecbyNoMR($NoMrfix);
+                $xdataMedrecProvinsi = $dataMedrecProvinsi->first();
+               
+                if ($xdataMedrecProvinsi->kelurahan == null ) {
+                    $metadata = array(
+                        'message' => 'Data Medical Record anda belum lengkap, Silahkan ke Counter Pendaftaran untuk melengkapi Data Medical Record Anda.',  // Set array status dengan success    
+                        'code' => 201, // Set array nama dengan isi kolom nama pada tabel siswa 
+                    );
+                    return  $this->sendErrorNew($metadata,null);
+                }
+                
             //get max visit
             $maxVisit = $this->visitRepository->getMaxnumberVisit();
             $maxVisit->ID++;

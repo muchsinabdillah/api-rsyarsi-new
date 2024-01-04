@@ -68,7 +68,7 @@ class aSalesService extends Controller
             "UnitTujuan" => "required", 
             "NoRegistrasi" => "required", 
             "Group_Transaksi" => "required", 
-            "Notes" => "required" 
+            "Notes" => "required" ,
         ]);
 
         
@@ -82,9 +82,12 @@ class aSalesService extends Controller
             if ($this->aMasterUnitRepository->getUnitById($request->UnitTujuan)->count() < 1) {
                 return $this->sendError('Unit Order Sales Not Found !', []);
             }
+
+
+            // //Cek Di table OrderResep
             // if($request->Group_Transaksi == "RESEP"){
-            //     if ($this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi)->count() < 1) {
-            //         return $this->sendError('No. Registrasi Not Found !', []);
+            //     if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($request->NoResep)->count() < 1) {
+            //         return $this->sendError('No Resep Not Found !', []);
             //     }
             // }
 
@@ -176,8 +179,8 @@ class aSalesService extends Controller
             foreach ($request->Items as $key) {
                 $getdatadetilmutasi = $this->aSalesRepository->getSalesDetailbyIDBarang($request,$key);
                     // get Hpp Average 
-                    $getHppBarang = $this->aHnaRepository->getHppAverage($key)->first()->first();
-                    $xhpp = $getHppBarang->NominalHpp;
+                    $getHppBarang = $this->aHnaRepository->getHppAverage($key)->first();
+                    $xhpp = $getHppBarang[0]->NominalHpp;
                     // get Hpp Average
                 if($getdatadetilmutasi->count() < 1){
                     if ($key['Qty'] > 0) {
@@ -247,6 +250,15 @@ class aSalesService extends Controller
                             goto first;
                         }
                         // QUERY PENGURANGAN STOK METODE FIFO
+
+                        //UPDATE SIGNA TERJEMAHAN
+                        if ($key['Racik'] <> 0 ){
+                            if ($key['RacikHeader'] == 1){
+                                $this->trsResepRepository->editSignaTerjemahanbyID($key['IDResepDetail'],$key['AturanPakai']);
+                            }
+                        }else{
+                            $this->trsResepRepository->editSignaTerjemahanbyID($key['IDResepDetail'],$key['AturanPakai']);
+                        }
                 
                     // insert billing detail
                     $this->billingRepository->insertDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
@@ -255,13 +267,17 @@ class aSalesService extends Controller
                                             'Farmasi',$request->KodeKelas,$key['Qty'],$key['Harga'],$key['SubtotalHarga'],
                                             $key['DiscountProsen'],$key['Discount'],$key['Subtotal'],$key['Grandtotal'],'','','','FARMASI');
             }
-                // update tabel header
-                $this->aSalesRepository->editSales($request);
+                // // update tabel header
+                // $this->aSalesRepository->editSales($request);
 
                 $dataBilling1 = $this->billingRepository->getBillingFo1($request);
                 foreach ($dataBilling1 as $dataBilling1) {
                     $this->billingRepository->insertDetailPdp($dataBilling1);
                 } 
+
+                 //UPDATE REVIEW ORDER RESEP DETAILS
+                 $this->trsResepRepository->editReviewbyIDResep($request->IdOrderResep);
+
                 DB::commit();
                 return $this->sendResponse([], 'Items Add Successfully !');
         }catch (Exception $e) {
@@ -412,14 +428,36 @@ class aSalesService extends Controller
          // validate 
          $request->validate([
             "TransactionCode" => "required",  
-            "UnitTujuan" => "required" 
+            "UnitTujuan" => "required" ,
+            "UnitOrder" => "required" ,
+            "Notes" => "required" ,
+            "TotalQtyOrder" => "required" ,
+            "TotalRow" => "required" ,
+            "Discount" => "required" ,
+            "Subtotal" => "required" ,
+            "Tax" => "required" ,
+            "Grandtotal" => "required" ,
+            "UserCreateLast" => "required" 
         ]);
+
+        // // cek ada gak datanya
+        if ($this->aSalesRepository->getSalesbyID($request->TransactionCode)->count() < 1) {
+            return $this->sendError('Sales Number Not Found !', []);
+        }
+
+        // if ($request->TotalRow < 1) {
+        //     return $this->sendError('There is No Items, Edited Cancelled !', []);
+        // }
+        // if ($request->TotalQtyOrder < 1) {
+        //     return $this->sendError('There is No Qty Items, Edited Cancelled !', []);
+        // }
  
         try {
             // Db Transaction
             DB::beginTransaction(); 
 
             $this->aSalesRepository->editSales($request);
+
 
             DB::commit();
             return $this->sendResponse([], 'Transaction Sales Finish !');
@@ -517,4 +555,52 @@ class aSalesService extends Controller
             return $this->sendError('Sales Transaction Data Not Found !', $e->getMessage());
         }
     }
+
+    // public function addSalesDetailTanpaResep(Request $request){
+    //     // validate 
+    //     $request->validate([
+    //         "TransasctionCode" => "required",
+    //         "ProductCode" => "required",
+    //         "ProductName" => "required",
+    //         "QtyStok" => "required",
+    //         "QtyPR" => "required",
+    //         "Satuan" => "required",
+    //         "Satuan_Konversi" => "required",
+    //         "KonversiQty" => "required",
+    //         "Konversi_QtyTotal" => "required",
+    //         "UserAdd" => "required"
+    //     ]);
+    //     try {
+    //         // Db Transaction
+    //         DB::beginTransaction(); 
+
+    //         // cek ada gak datanya
+    //         if ($this->aSalesRepository->getSalesbyID($request->TransactionCode)->count() < 1) {
+    //             return $this->sendError('Sales Transaction Number Not Found !', []);
+    //         }
+    //         // cek kode barangnya ada ga
+    //         if($this->aBarangRepository->getBarangbyId($request->ProductCode)->count() < 1){
+    //             return $this->sendError('Product Not Found !', []);
+    //         }
+    //         // cek Konversi nya udah belom
+    //         $konversi = $this->aBarangRepository->getBarangbyId($request->ProductCode)->first();
+    //         if ($konversi->Konversi_satuan  < 1) {
+    //             return $this->sendError('Konversi Satuan Invalid, Silahkan Masukan Konversi Satuan !', []);
+    //         }
+    //         //cek barang dobel gak 
+    //         if($this->aPurchaseRequisitionRepository->getItemsDouble($request)->count() > 0 ){
+    //             return $this->sendError('Product Code Double !', []);
+    //         }
+           
+    //         $this->aPurchaseRequisitionRepository->addPurchaseRequisitionDetil($request);
+            
+    //         DB::commit();
+    //         return $this->sendResponse([], 'Items Purchase Requisition Add Successfully !');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::info($e->getMessage());
+    //         return $this->sendError('Data Transaction Gagal ditambahkan !', $e->getMessage());
+    //     }
+
+    // }
 }

@@ -233,4 +233,111 @@ class bEdocumentRepositoryImpl implements bEdocumentRepositoryInterface
             ]);
         return $updatesatuan;
     }
+    //Tambahan 25-12-2023
+    public function getPersetujuanTindakandocregistrasi($NoRegistrasi)
+    {
+        return  DB::connection('sqlsrv11')
+        ->table("TDocumentMedicalSummaries")
+        ->select(
+            'ID',
+            'DocTransactionID', 
+            'NoTrs_Reff', 
+            'NoRegistrasi', 
+            'AwsUrlDocuments', 
+            'TglCreate', 
+            'UserCreate', 
+            'ActiveDocument'
+        ) 
+        ->where('NoRegistrasi', $NoRegistrasi)
+        ->get();
+    }
+    public function getPersetujuanTindakanbyId($idTrs)
+    {
+        return  DB::connection('sqlsrv5')
+        ->table("MR_persetujuan_tindakan") 
+        ->where('ID', $idTrs)
+        ->where('statusResume','<>','VERIFIED')
+        ->get();
+    }
+    public function getSuketSakitdocregistrasi($NoRegistrasi)
+    {
+        return  DB::connection('sqlsrv11')
+        ->table("TDocumentMedicalSummaries")
+        ->select(
+            'ID',
+            'DocTransactionID', 
+            'NoTrs_Reff', 
+            'NoRegistrasi', 
+            'AwsUrlDocuments', 
+            'TglCreate', 
+            'UserCreate', 
+            'ActiveDocument'
+        ) 
+        ->where('NoRegistrasi', $NoRegistrasi)
+        ->get();
+    }
+    public function getSuketSakitbyId($idTrs)
+    {
+        return  DB::connection('sqlsrv5')
+        ->table("MR_SuratSakit") 
+        ->where('ID', $idTrs)
+        ->where('statusResume','<>','VERIFIED')
+        ->get();
+    }
+    public function getSuketSehatdocregistrasi($NoRegistrasi)
+    {
+        return  DB::connection('sqlsrv11')
+        ->table("TDocumentMedicalSummaries")
+        ->select(
+            'ID',
+            'DocTransactionID', 
+            'NoTrs_Reff', 
+            'NoRegistrasi', 
+            'AwsUrlDocuments', 
+            'TglCreate', 
+            'UserCreate', 
+            'ActiveDocument'
+        ) 
+        ->where('NoRegistrasi', $NoRegistrasi)
+        ->get();
+    }
+    public function getSuketSehatbyId($idTrs)
+    {
+        return  DB::connection('sqlsrv5')
+        ->table("MR_SuratKetSehat") 
+        ->where('ID', $idTrs)
+        ->where('statusResume','<>','VERIFIED')
+        ->get();
+    }
+    public function updateOTPVerifiedPersetujuanTindakan($request)
+    {
+        $updatesatuan =  DB::connection('sqlsrv5')->table('MR_persetujuan_tindakan')
+        ->where('ID', $request->ID) 
+            ->update([
+                'statusResume' => 'VERIFIED', 
+                'DateVerified' => Carbon::now() 
+            ]);
+        return $updatesatuan;
+    }
+    public function updateOTPVerifiedSuketSakit($request)
+    {
+        $updatesatuan =  DB::connection('sqlsrv5')->table('MR_SuratSakit')
+        ->where('ID', $request->ID) 
+            ->update([
+                'statusResume' => 'VERIFIED', 
+                'DateVerified' => Carbon::now() 
+            ]);
+        return $updatesatuan;
+        
+    }
+    public function updateOTPVerifiedSuketSehat($request)
+    {
+        $updatesatuan =  DB::connection('sqlsrv5')->table('MR_SuratKetSehat')
+        ->where('ID', $request->ID) 
+            ->update([
+                'statusResume' => 'VERIFIED', 
+                'DateVerified' => Carbon::now() 
+            ]);
+        return $updatesatuan;
+    }
 }

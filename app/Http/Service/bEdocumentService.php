@@ -261,4 +261,107 @@ class bEdocumentService extends Controller
             return $this->sendError('Data Gagal !', $e->getMessage());
         }
     }
+    //Tambahan 25-12-2023
+    public function getPersetujuanTindakandocregistrasi($request)
+    {
+        try {   
+            // validator 
+            $data = $this->bEducationRepository->getPersetujuanTindakandocregistrasi($request->NoRegistrasi);
+            $count = $data->count(); 
+            if ($count > 0) {
+                $dataFix = $data->first();
+                return $this->sendResponse($dataFix, "Data Document ditemukan.");
+            } else {
+                return $this->sendError("Data Document tidak ditemukan.", []);
+            }
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+    }
+    public function getPersetujuanTindakanbyId($request)
+    {
+        try {   
+            // validator 
+            $data = $this->bEducationRepository->getPersetujuanTindakanbyId($request->IdTrs);
+            $count = $data->count(); 
+            if ($count > 0) {
+                $dataFix = $data->first();
+                return $this->sendResponse($dataFix, "Data Document ditemukan.");
+            } else {
+                return $this->sendError("Data Document tidak ditemukan.", []);
+            }
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+    }
+    public function getSuketSakitdocregistrasi($request)
+    {
+        try {   
+            // validator 
+            $data = $this->bEducationRepository->getSuketSakitdocregistrasi($request->NoRegistrasi);
+            $count = $data->count(); 
+            if ($count > 0) {
+                $dataFix = $data->first();
+                return $this->sendResponse($dataFix, "Data Document ditemukan.");
+            } else {
+                return $this->sendError("Data Document tidak ditemukan.", []);
+            }
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+    }
+    public function getSuketSakitbyId($request)
+    {
+        try {   
+            // validator 
+            $data = $this->bEducationRepository->getSuketSakitbyId($request->IdTrs);
+            $count = $data->count(); 
+            if ($count > 0) {
+                $dataFix = $data->first();
+                return $this->sendResponse($dataFix, "Data Document ditemukan.");
+            } else {
+                return $this->sendError("Data Document tidak ditemukan.", []);
+            }
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+    }
+    public function getSuketSehatdocregistrasi($request)
+    {
+        try {   
+            // validator 
+            $data = $this->bEducationRepository->getSuketSehatdocregistrasi($request->NoRegistrasi);
+            $count = $data->count(); 
+            if ($count > 0) {
+                $dataFix = $data->first();
+                return $this->sendResponse($dataFix, "Data Document ditemukan.");
+            } else {
+                return $this->sendError("Data Document tidak ditemukan.", []);
+            }
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+    }
+    public function getSuketSehatbyId($request)
+    {
+        try {   
+            // validator 
+            $data = $this->bEducationRepository->getSuketSehatbyId($request->IdTrs);
+            $count = $data->count(); 
+            if ($count > 0) {
+                $dataFix = $data->first();
+                return $this->sendResponse($dataFix, "Data Document ditemukan.");
+            } else {
+                return $this->sendError("Data Document tidak ditemukan.", []);
+            }
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+    }
 }

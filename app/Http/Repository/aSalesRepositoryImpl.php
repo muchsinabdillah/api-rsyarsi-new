@@ -89,7 +89,9 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
             'Hpp' =>  $xhpp,   
             'UserVoid' => '',
             'DateAdd' => Carbon::now(),
-            'UserAdd' =>  $request->UserCreate
+            'UserAdd' =>  $request->UserCreate,
+            'Konversi_QtyTotal' => $key['Konversi_QtyTotal'],//tambahan
+            'AturanPakai' => $key['AturanPakai']  //tambahan
         ]);
     }
     public function editSalesDetailbyIdBarang($request, $key,$xhpp)
@@ -113,7 +115,7 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
     public function editSales($request)
     {
         $updatesatuan =  DB::connection('sqlsrv')->table('Sales')
-        ->where('TransactionCode', $request->TransasctionCode)
+        ->where('TransactionCode', $request->TransactionCode)
             ->update([ 
                 'UnitOrder' => $request->UnitOrder, 
                 'UnitSales' => $request->UnitTujuan, 
@@ -125,7 +127,7 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
                 'Subtotal' => $request->Subtotal, 
                 'Tax' => $request->Tax, 
                 'Grandtotal' => $request->Grandtotal, 
-                'UserCreateLast' => $request->UserCreate,
+                'UserCreateLast' => $request->UserCreateLast,
                 'TransactionDateLast' => Carbon::now() 
             ]);
         return $updatesatuan;
@@ -178,6 +180,12 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
     {
         return  DB::connection('sqlsrv')->table("v_transaksi_sales_hdr")
             ->whereBetween('TglPeriode', [$request->StartPeriode, $request->EndPeriode])
+            ->get();
+    }
+    public function getSalesbyNoResep($request)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_sales_hdr")
+            ->where('NoResep', $request->NoResep)
             ->get();
     }
 }

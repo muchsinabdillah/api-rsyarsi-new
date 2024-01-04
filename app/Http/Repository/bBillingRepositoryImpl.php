@@ -21,7 +21,7 @@ class bBillingRepositoryImpl implements bBillingRepositoryInterface
             'TOTAL_TARIF' =>$request->TotalSales,
             'TOTAL_QTY' => $request->TotalQtyOrder, 
             'SUBTOTAL' => $request->SubtotalQtyPrice, 
-            'TOTAL_DISCOUNT' => $request->Discount, 
+            'TOTAL_DISCOUNT' => $request->Discount_Prosen, 
             'TOTAL_DISCOUNT_RP' => $request->Discount, 
             'SUBTOTAL_2' => $request->Subtotal, 
             'GRANDTOTAL' => $request->Grandtotal, 
@@ -142,6 +142,28 @@ class bBillingRepositoryImpl implements bBillingRepositoryInterface
                 'Batal' => $request->Void,
                 'JAM_BATAL' => Carbon::now(),
                 'PETUGAS_BATAL' => $request->UserVoid,
+            ]);
+        return $updatesatuan;
+    }
+
+    public function updateBillingPasienbyNoTRS($request)
+    {
+        $updatesatuan =  DB::connection('sqlsrv11')->table('FO_T_BILLING')
+            ->where('NO_TRS_BILLING', $request->TransactionCode)
+            ->where('Batal', "0")
+            ->update([
+                'NO_TRS_BILLING' => $request->TransactionCode,
+                'UNIT' =>  $request->UnitTujuan,
+                'GROUP_JAMINAN' => $request->GroupJaminan,
+                'TOTAL_TARIF' =>$request->TotalSales,
+                'TOTAL_QTY' => $request->TotalQtyOrder, 
+                'SUBTOTAL' => $request->SubtotalQtyPrice, 
+                'TOTAL_DISCOUNT' => $request->Discount, 
+                'TOTAL_DISCOUNT_RP' => $request->Discount, 
+                'SUBTOTAL_2' => $request->Subtotal, 
+                'GRANDTOTAL' => $request->Grandtotal, 
+                'FB_CLOSE_KEUANGAN' => '0', 
+                'FB_VERIF_JURNAL' => '1'
             ]);
         return $updatesatuan;
     }

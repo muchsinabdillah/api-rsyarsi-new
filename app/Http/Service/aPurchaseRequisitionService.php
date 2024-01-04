@@ -203,6 +203,11 @@ class aPurchaseRequisitionService extends Controller
             if ($this->aPurchaseRequisitionRepository->getPurchaseRequisitionbyID($request->TransasctionCode)->count() < 1) {
                 return $this->sendError('Transaction Number Not Found !', []);
             }
+
+            // cek sudah di approved belum 
+            if ($this->aPurchaseRequisitionRepository->getPurchaseRequisitionApprovedbyID($request->TransasctionCode)->count() > 0) {
+                return $this->sendError('Transaction Number Has Been Approved !', []);
+            }
             
             $this->aPurchaseRequisitionRepository->voidPurchaseRequisitionDetailbyItem($request);
 

@@ -91,5 +91,142 @@ class bTrsResepService extends Controller {
             return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
         }
      }
+
+     public function viewOrderResepbyOrderIDV2(Request $request) {
+         // validate 
+         $request->validate([
+            "OrderID" => "required"
+        ]);
+
+         // cek ada gak datanya
+         if ($this->trsResep->viewOrderResepbyOrderIDV2($request->OrderID)->count() < 1) {
+            return $this->sendError('Order ID Number Not Found !', []);
+        }
+
+        try { 
+           
+            // Db Transaction
+            DB::beginTransaction();
+            $viewResepDetail = $this->trsResep->viewOrderResepbyOrderIDV2($request->OrderID); 
+
+           
+            
+            return $this->sendResponse($viewResepDetail, "Data Resep Ditemukan.");
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+     }
+
+     public function viewOrderResepDetailbyOrderIDV2(Request $request) {
+        try { 
+            $viewResepDetail = $this->trsResep->viewOrderResepDetailbyOrderIDV2($request->OrderID);
+
+            $rows = array();
+            foreach ($viewResepDetail as $key2) {
+                $hna = $this->aHnaRepository->getHnaHighPeriodik($key2->KodeBarang,date('Y-m-d'));
+         
+                if($hna->count() < 1 ){
+                    $harga = 0;
+                }else{
+                    $datahna = $hna->first()->first();
+                    $hargadasar = $datahna->NominalHna;
+                    $hargaprofit = $hargadasar*1.4; 
+                    $hargauangr = $hargaprofit*1.1;
+                    $harga = $hargauangr+400;
+                }
+                $pasing['Harga'] = round($harga);
+                $pasing['ID'] = $key2->ID;
+                $pasing['IdOrderResep'] = $key2->IdOrderResep;
+                $pasing['KodeBarang'] = $key2->KodeBarang;
+                $pasing['NamaBarang'] = $key2->NamaBarang;
+                $pasing['QryOrder'] = $key2->QryOrder;
+                $pasing['QryRealisasi'] = $key2->QryRealisasi;
+                $pasing['Signa'] = $key2->Signa;
+                $pasing['SignaTerjemahan'] = $key2->SignaTerjemahan;
+                $pasing['Keterangan'] = $key2->Keterangan;
+                $pasing['Review'] = $key2->Review;
+                $pasing['HasilReview'] = $key2->HasilReview;
+                $pasing['Batal'] = $key2->Batal;
+                $pasing['TglBatal'] = $key2->TglBatal;
+                $pasing['PetugasBatal'] = $key2->PetugasBatal;
+                $pasing['Racik'] = $key2->Racik;
+                $pasing['Header'] = $key2->Header;
+                $pasing['Satuan'] = $key2->Satuan;
+                $pasing['Satuan_Beli'] = $key2->Satuan_Beli;
+                $pasing['Konversi_satuan'] = $key2->Konversi_satuan;
+                $rows[] = $pasing;
+            } 
+            
+            return $this->sendResponse($rows, "Data Resep Ditemukan.");
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+     }
+
+     public function editSignaTerjemahanbyID(Request $request) {
+         // validate 
+         $request->validate([
+            "ID" => "required",
+            "SignaTerjemahan" => "required"
+        ]);
+        try { 
+            // Db Transaction
+            DB::beginTransaction();
+            $this->trsResep->editSignaTerjemahanbyID($request->ID,$request->SignaTerjemahan);
+            DB::commit();
+            return $this->sendResponse([], "Update Successfully !");
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+     }
+
+     public function viewprintLabelbyID(Request $request) {
+        try { 
+            $viewResepDetail = $this->trsResep->viewprintLabelbyID($request->ID); 
+            return $this->sendResponse($viewResepDetail, "Data Resep Ditemukan.");
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+     }
+
+     public function getPrinterLabel(Request $request) {
+        try { 
+            // cek ada gak datanya
+            if ($this->trsResep->getPrinterLabel($request)->count() < 1) {
+                return $this->sendError('Printer Not Found !', []);
+            }
+            $viewResepDetail = $this->trsResep->getPrinterLabel($request); 
+            return $this->sendResponse($viewResepDetail, "Data Ditemukan.");
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+     }
+
+     public function editReviewbyIDResep(Request $request) {
+        // validate 
+        $request->validate([
+           "IdOrderResep" => "required",
+       ]);
+
+        // cek ada gak datanya
+        if ($this->trsResep->viewOrderResepbyOrderIDV2($request->IdOrderResep)->count() < 1) {
+            return $this->sendError('Order ID Number Not Found !', []);
+        }
+       try { 
+           // Db Transaction
+           DB::beginTransaction();
+           $this->trsResep->editReviewbyIDResep($request->IdOrderResep);
+           DB::commit();
+           return $this->sendResponse([], "Update Successfully !");
+       }catch (Exception $e) { 
+           Log::info($e->getMessage());
+           return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+       }
+    }
     
 }

@@ -220,6 +220,7 @@ class aMutasiService extends Controller
                             $this->aStokRepository->deleteBukuStok($request,$key,"MT",$request->UnitTujuan);
                         }
                     } 
+                    $this->aOrderMutasiRepository->updateQtyOrderMutasi2($request,$key, 2-1);
                 }
                 // delete tabel buku
                  
