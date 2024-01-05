@@ -150,6 +150,25 @@ class OrderMutasiController extends Controller
         $execute =  $aOrderMutasiService->getOrderMutasiDetailbyID($request);
         return $execute;
     }
+    public function getOrderMutasiDetailRemainbyID(Request $request)
+    {
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $asupplierRepository = new aSupplierRepositoryImpl();
+        $aPurchaseRequestRepository = new aPurchaseRequisitionRepositoryImpl();
+        $aStokRepository = new aStokRepositoryImpl();
+        $aOrderMutasiRepository = new aOrderMutasiRepositoryImpl();
+        $aMasterUnitRepository = new aMasterUnitRepositoryImpl();
+        $aOrderMutasiService = new aOrderMutasiService(
+            $aBarangRepository,
+            $asupplierRepository,
+            $aPurchaseRequestRepository,
+            $aStokRepository,
+            $aOrderMutasiRepository,
+            $aMasterUnitRepository
+        );
+        $execute =  $aOrderMutasiService->getOrderMutasiDetailRemainbyID($request);
+        return $execute;
+    }
     public function getOrderMutasibyDateUser(Request $request)
     {
         $aBarangRepository = new aBarangRepositoryImpl();

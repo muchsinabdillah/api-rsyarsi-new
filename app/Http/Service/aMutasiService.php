@@ -62,6 +62,8 @@ class aMutasiService extends Controller
             "JenisMutasi" => "required",
             "JenisStok" => "required" 
         ]);
+
+        //dd(date("dmY", strtotime($request->TransactionDate)));
         try {
             // Db Transaction
             DB::beginTransaction();
@@ -193,7 +195,7 @@ class aMutasiService extends Controller
                     $mtQtyMutasi = $showData->QtyMutasi;
                     $mtQtyOrder = $showData->QtyOrder;
                     $mtQtySisa = $showData->QtySisa; 
- 
+                  
                     if($mtKonversi_QtyTotal <> $key['Konversi_QtyTotal']){ // Dirubah jika Qty nya ada Perubahan Aja
                        $goQtyMutasiSisaheaderBefore = $mtQtyMutasi + $key['QtyMutasi'];
                        $goQtyMutasiSisaheaderAfter = $goQtyMutasiSisaheaderBefore - $key['QtyMutasi'];
@@ -219,15 +221,18 @@ class aMutasiService extends Controller
                             $this->aStokRepository->updateStokTrs($request,$key,$totalstok,$request->UnitTujuan);
                             $this->aStokRepository->deleteBukuStok($request,$key,"MT",$request->UnitTujuan);
                         }
-                    } 
-                    $this->aOrderMutasiRepository->updateQtyOrderMutasi2($request,$key, 2-1);
+                    } else{
+                        $dataorderMutasidetail = $this->aOrderMutasiRepository->getOrderMutasiDetailbyIDBarangMutasi($request->TransactionOrderCode,$key['ProductCode'])->first();
+                        $this->aOrderMutasiRepository->updateQtyOrderMutasi2($request,$key, $dataorderMutasidetail->QtySisaMutasi-$key['QtyMutasi']);
+                    }
+                   
                 }
-                // delete tabel buku
-                 
+                
+                // delete tabel buku 
                         // CARI DO TERATAS YANG MASIH ADA QTY
                         first:
                         $getStokFirst = $this->aStokRepository->getStokExpiredFirst($request, $key);
-
+                     
                         //return $getStokFirst;
                         $DeliveryCodex = $getStokFirst->DeliveryCode;
                         
@@ -287,6 +292,10 @@ class aMutasiService extends Controller
                             goto first;
                         }
             }
+
+              // edit mutasi
+              $this->aMutasiRepository->editMutasi($request);
+
             DB::commit();
             return $this->sendResponse([], 'Items Add Successfully !');
         } catch (Exception $e) {
@@ -338,13 +347,197 @@ class aMutasiService extends Controller
             return $this->sendError('Data Transaction Gagal ditambahkan !', $e->getMessage());
         }
     }
-    public function voidOrderMutasi(Request $request)
+    public function voidMutasi(Request $request)
     {
-         
+        $request->validate([
+            "TransactionCode" => "required",  
+            "UnitOrder" => "required",
+            "UnitTujuan" => "required",
+            "DateVoid" => "required",
+            "UserVoid" => "required",
+            "Void" => "required"
+        ]);
+
+         // // cek ada gak datanya
+         if ($this->aMutasiRepository->getMutasibyID($request->TransactionCode)->count() < 1) {
+            return $this->sendError('Mutasi Number Not Found !', []);
+        }
+
+        // cek kode unit order
+        if ($this->aMasterUnitRepository->getUnitById($request->UnitOrder)->count() < 1) {
+            return $this->sendError('Unit Order Code Not Found !', []);
+        }
+        // cek kode unit tujuan
+        if ($this->aMasterUnitRepository->getUnitById($request->UnitTujuan)->count() < 1) {
+            return $this->sendError('Unit Tujuan Order Code Not Found !', []);
+        }
+        // cek kode unit ini bener ga atas transaksi ini
+        $cekdodetil = $this->aMutasiRepository->getMutasibyIDUnitOrder($request)->count();
+        if ($cekdodetil < 1) {
+            return $this->sendError('Kode Transaksi ini berbeda kode unitnya, cek data anda kembali !', []);
+        }
+
+        // VALIDASI BY BARANG
+        $dtlconsumable = $this->aMutasiRepository->getMutasiDetailbyID($request->TransactionCode);
+        
+        foreach ($dtlconsumable as $key2) {
+            // BARANG - cek kode barangnya ada ga
+            if ($this->aBarangRepository->getBarangbyId($key2->ProductCode)->count() < 1) {
+                return $this->sendError('Kode Barang tidak ditemukan !', []);
+            } 
+ 
+            // BARANG - cek Stok
+            $cekqtystok = $this->aStokRepository->cekStokbyIDBarangOnlyMutasi($key2->ProductCode,$request->UnitOrder)->first();
+           
+            $stokCurrent = (float)$cekqtystok->Qty;
+           
+                if ($stokCurrent < $key2->Konversi_QtyTotal) {
+                    return $this->sendError('Qty Stok ' . $key2->ProductName . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Mutasi ' . $key2->Konversi_QtyTotal . ' ! ', []);
+                }
+        
+        }
+
+        //eksekusi
+        $dtlconsumable = $this->aMutasiRepository->getMutasiDetailbyID($request->TransactionCode);
+        foreach ($dtlconsumable as $key2) {
+            $Konversi_QtyTotal = $key2->Konversi_QtyTotal;
+             // UPDATE STOK PLUS KE LOKASI STOK TUJUAN
+             $cekqtystok = $this->aStokRepository->cekStokbyIDBarangOnlyMutasi($key2->ProductCode,$request->UnitTujuan);
+             foreach ($cekqtystok as $valueStok) {
+                 $datastok = $valueStok->Qty;
+             } 
+             $sisaStok = $datastok + $Konversi_QtyTotal;   
+             $this->aStokRepository->updateStokPerItemMutasi($key2->ProductCode, $sisaStok, $request->UnitTujuan);
+             $cekBuku = $this->aStokRepository->cekBukuByTransactionandCodeProduct($key2->ProductCode,$key2,'MT');
+             foreach ($cekBuku as $data) {
+                 $asd = $data;
+             } 
+             $this->aStokRepository->addBukuStokInVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal, $request->UnitTujuan);
+            // UPDATE STOK PLUS KE LOKASI STOK TUJUAN
+
+            if($request->JenisStok == "STOK"){ 
+                // UPDATE STOK MINUS KE LOKASI STOK ORDER
+                    $cekqtystok = $this->aStokRepository->cekStokbyIDBarangOnlyMutasi($key2->ProductCode,$request->UnitOrder);
+                    foreach ($cekqtystok as $valueStok) {
+                        $datastok = $valueStok->Qty;
+                    } 
+                    $sisaStok = $datastok - $Konversi_QtyTotal;   
+                    $this->aStokRepository->updateStokPerItemMutasi($key2->ProductCode, $sisaStok, $request->UnitOrder);
+                    $cekBuku = $this->aStokRepository->cekBukuByTransactionandCodeProduct($key2->ProductCode,$key2,'MT');
+                    foreach ($cekBuku as $data) {
+                        $asd = $data;
+                    } 
+                    $this->aStokRepository->addBukuStokOutVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitOrder);
+                // UPDATE STOK MINUS KE LOKASI STOK ORDER
+            } 
+                $dataorderMutasidetail = $this->aOrderMutasiRepository->getOrderMutasiDetailbyIDBarangMutasi($request->TransactionOrderCode,$key2->ProductCode)->first();
+                $this->aOrderMutasiRepository->updateQtyOrderMutasi3($request,$key2->ProductCode, $dataorderMutasidetail->QtySisaMutasi+$key2->QtyMutasi);
+                $this->aMutasiRepository->voidMutasiDetailbyItemAll($request,$key2->ProductCode);
+
+           
+        }
+                $this->aMutasiRepository->voidMutasi($request);
+                DB::commit();
+                return $this->sendResponse([], 'Mutasi Void Successfully !');
     }
-    public function voidPurchaseOrderDetailbyItem(Request $request)
+    public function voidMutasiDetailbyItem(Request $request)
     {
-         
+        $request->validate([
+            "TransactionCode" => "required", 
+            "ProductCode" => "required",
+            "UnitOrder" => "required",
+            "UnitTujuan" => "required",
+            "DateVoid" => "required",
+            "UserVoid" => "required",
+            "Void" => "required"
+        ]);
+
+
+        // // cek ada gak datanya
+        if ($this->aMutasiRepository->getMutasibyID($request->TransactionCode)->count() < 1) {
+            return $this->sendError('Mutasi Number Not Found !', []);
+        }
+        // cek kode 
+        if ($this->aMasterUnitRepository->getUnitById($request->UnitOrder)->count() < 1) {
+            return $this->sendError('Unit Order Code Not Found !', []);
+        }
+
+        if ($this->aMasterUnitRepository->getUnitById($request->UnitTujuan)->count() < 1) {
+            return $this->sendError('Unit Tujuan Order Code Not Found !', []);
+        }
+        // cek kode unit ini bener ga atas transaksi ini
+        $cekdodetil = $this->aMutasiRepository->getMutasibyIDUnitOrder($request)->count();
+        if ($cekdodetil < 1) {
+            return $this->sendError('Kode Transaksi ini berbeda kode unitnya, cek data anda kembali !', []);
+        }
+
+        // BARANG - cek kode barangnya ada ga
+        if ($this->aBarangRepository->getBarangbyId($request->ProductCode)->count() < 1) {
+            return $this->sendError('Kode Barang tidak ditemukan !', []);
+        } 
+
+        // BARANG - cek aktif engga
+        $cekdodetil = $this->aMutasiRepository->getMutasiDetailbyIDandProductCode($request)->count();
+        if ($cekdodetil < 1) {
+            return $this->sendError('Kode Barang Sudah di Batalkan !', []);
+        }
+        // BARANG - cek Stok
+        $cekqtystok = $this->aStokRepository->cekStokbyIDBarangOnlyMutasi($request->ProductCode,$request->UnitOrder)->first();
+        $stokCurrent = (float)$cekqtystok->Qty;
+            if ($stokCurrent < $request->Konversi_QtyTotal) {
+                return $this->sendError('Qty Stok ' . $request->ProductName . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Mutasi ' . $request->Konversi_QtyTotal . ' ! ', []);
+            }
+      
+        try {
+            // Db Transaction
+            DB::beginTransaction(); 
+
+            $dtlMutasi = $this->aMutasiRepository->getMutasiDetailbyIDandProductCode($request)->first();
+            $Konversi_QtyTotal = $dtlMutasi->Konversi_QtyTotal;
+
+            // // UPDATE STOK PLUS KE LOKASI STOK TUJUAN
+            //     $cekqtystok = $this->aStokRepository->cekStokbyIDBarangOnlyMutasi($request->ProductCode,$request->UnitTujuan);
+            //     foreach ($cekqtystok as $valueStok) {
+            //         $datastok = $valueStok->Qty;
+            //     } 
+            //     $sisaStok = $datastok + $Konversi_QtyTotal;   
+            //     $this->aStokRepository->updateStokPerItemMutasi($request->ProductCode, $sisaStok, $request->UnitTujuan);
+            //     $cekBuku = $this->aStokRepository->cekBukuByTransactionandCodeProduct($request->ProductCode,$request,'MT');
+            //     foreach ($cekBuku as $data) {
+            //         $asd = $data;
+            //     } 
+            //     $this->aStokRepository->addBukuStokInVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitTujuan);
+            // // UPDATE STOK PLUS KE LOKASI STOK TUJUAN
+
+            // if($request->JenisStok == "STOK"){ 
+            //     // UPDATE STOK MINUS KE LOKASI STOK ORDER
+            //     $cekqtystok = $this->aStokRepository->cekStokbyIDBarangOnlyMutasi($request->ProductCode,$request->UnitOrder);
+            //     foreach ($cekqtystok as $valueStok) {
+            //         $datastok = $valueStok->Qty;
+            //     } 
+            //     $sisaStok = $datastok - $Konversi_QtyTotal;   
+            //     $this->aStokRepository->updateStokPerItemMutasi($request->ProductCode, $sisaStok, $request->UnitOrder);
+            //     $cekBuku = $this->aStokRepository->cekBukuByTransactionandCodeProduct($request->ProductCode,$request,'MT');
+            //     foreach ($cekBuku as $data) {
+            //         $asd = $data;
+            //     } 
+            //     $this->aStokRepository->addBukuStokOutVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitOrder);
+            //     // UPDATE STOK MINUS KE LOKASI STOK ORDER
+            // }
+            
+            $dataorderMutasidetail = $this->aOrderMutasiRepository->getOrderMutasiDetailbyIDBarangMutasi($request->TransactionOrderCode,$request->ProductCode)->first();
+            $this->aOrderMutasiRepository->updateQtyOrderMutasi3($request,$request->ProductCode, $dataorderMutasidetail->QtySisaMutasi+$dtlMutasi->QtyMutasi);
+            $this->aMutasiRepository->voidMutasiDetailbyItem($request);
+
+            DB::commit();
+            return $this->sendResponse([], 'Mutasi Detil Void Successfully !');
+
+        }catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e->getMessage());
+            return $this->sendError('Data Transaction Gagal !', $e->getMessage());
+        }
+
     }
     public function getMutasibyID($request)
     {
@@ -352,22 +545,14 @@ class aMutasiService extends Controller
         $request->validate([
             "TransasctionCode" => "required"
         ]);
-
         try {
-            // Db Transaction
-            DB::beginTransaction();
-
             // cek ada gak datanya
             if ($this->aMutasiRepository->getMutasibyID($request->TransasctionCode)->count() < 1) {
                 return $this->sendError('Transaction Number Not Found !', []);
             }
-
             $data = $this->aMutasiRepository->getMutasibyID($request->TransasctionCode);
-
-            DB::commit();
             return $this->sendResponse($data, 'Mutasi Data Found !');
         } catch (Exception $e) {
-            DB::rollBack();
             Log::info($e->getMessage());
             return $this->sendError('Mutasi Data Not Found !', $e->getMessage());
         }
@@ -380,20 +565,13 @@ class aMutasiService extends Controller
         ]);
 
         try {
-            // Db Transaction
-            DB::beginTransaction();
-
             // cek ada gak datanya
             if ($this->aMutasiRepository->getMutasiDetailbyID($request->TransasctionCode)->count() < 1) {
                 return $this->sendError('Transaction Number Not Found !', []);
             }
-
             $data = $this->aMutasiRepository->getMutasiDetailbyID($request->TransasctionCode);
-
-            DB::commit();
             return $this->sendResponse($data, 'Mutasi Detail Data Found !');
         } catch (Exception $e) {
-            DB::rollBack();
             Log::info($e->getMessage());
             return $this->sendError('Mutasi Detail Data Not Found !', $e->getMessage());
         }
@@ -404,17 +582,10 @@ class aMutasiService extends Controller
         $request->validate([
             "UserCreate" => "required"
         ]);
-
         try {
-            // Db Transaction
-            DB::beginTransaction();
-
             $data = $this->aMutasiRepository->getMutasibyDateUser($request);
-
-            DB::commit();
             return $this->sendResponse($data, 'Mutasi Data Found !');
         } catch (Exception $e) {
-            DB::rollBack();
             Log::info($e->getMessage());
             return $this->sendError('Mutasi detail Data Not Found !', $e->getMessage());
         }
@@ -427,15 +598,9 @@ class aMutasiService extends Controller
             "EndPeriode" => "required",
         ]);
         try {
-            // Db Transaction
-            DB::beginTransaction();
-
             $data = $this->aMutasiRepository->getMutasibyPeriode($request);
-
-            DB::commit();
             return $this->sendResponse($data, 'Mutasi Data Found !');
         } catch (Exception $e) {
-            DB::rollBack();
             Log::info($e->getMessage());
             return $this->sendError('Mutasi Data Not Found !', $e->getMessage());
         }

@@ -125,6 +125,16 @@ class aStokRepositoryImpl implements aStokRepositoryInterface
             ]);
         return $updatesatuan;
     }
+    public function updateStokPerItemMutasi($productcode, $QtyTotal, $Unit)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('Stoks')
+        ->where('ProductCode', $productcode)
+        ->where('Layanan', $Unit)
+            ->update([
+                'Qty' => $QtyTotal
+            ]);
+        return $updatesatuan;
+    }
     public function cekStokbyIDBarang($key, $unit)
     {
         return  DB::connection('sqlsrv')->table("v_stok")
@@ -144,6 +154,13 @@ class aStokRepositoryImpl implements aStokRepositoryInterface
         return  DB::connection('sqlsrv')->table("v_stok")
         ->where('ProductCode', $id)
         ->where('Layanan', $request->UnitCode)
+            ->get();
+    }
+    public function cekStokbyIDBarangOnlyMutasi($id, $unit)
+    {
+        return  DB::connection('sqlsrv')->table("v_stok")
+        ->where('ProductCode', $id)
+        ->where('Layanan', $unit)
             ->get();
     }
     public function updateStokPerItemBarang($request, $key, $QtyTotal)
@@ -247,24 +264,70 @@ class aStokRepositoryImpl implements aStokRepositoryInterface
             'DeliveryCode' => $key->DeliveryCode,
             'Unit' =>$key->Unit,
             'BatchNumber' => $key->BatchNumber
+        ]); 
+    }
+    public function addBukuStokOutVoidFromSelect($key,$reff,$request)
+    {
+        return  DB::connection('sqlsrv')->table("BukuStoks")->insert([
+            'TransactionCode' => $key->TransactionCode,
+            'TransactionDate' => Carbon::now(),
+            'UserCreate' =>  $request->UserVoid,
+            'ProductCode' => $key->ProductCode,
+            'ProductName' => $key->ProductName,
+            'Satuan' => $key->Satuan,
+            'QtyIn' => $key->QtyOut,
+            'Hpp' => $key->Hpp,
+            'PersediaanIn' => $key->PersediaanOut,
+            'TransactionCodeReff' =>$key->TransactionCodeReff,
+            'TransactionCodeReff2' => $reff,
+            'Status' => '2',
+            'ExpiredDate' => $key->ExpiredDate,
+            'DeliveryCode' => $key->DeliveryCode,
+            'Unit' =>$key->Unit,
+            'BatchNumber' => $key->BatchNumber
         ]);
-            // DB::connection('sqlsrv')->table('BukuStoks')
-            // ->insert(
-            //     (array)
-            // DB::connection('sqlsrv')->table('BukuStoks')
-            //         ->where('TransactionCodeReff', '=', $request->TransactionCode)
-            //         ->where('ProductCode', '=',  $key->ProductCode)
-            //         ->where('TransactionCodeReff2', '=', 'CM')
-            //         ->select('TransactionCode','TransactionDate', 
-            //         'UserCreate','ProductCode', 
-            //         'ProductName','Satuan', 
-            //         'QtyIn','Hpp', 
-            //         'PersediaanIn','TransactionCodeReff', 
-            //         DB::raw('CM_V  AS TransactionCodeReff2'),'Status', 
-            //         'DeliveryCode','Unit', 
-            //         'BatchNumber','ExpiredDate' )
-            //         ->first()
-            // );
+    }
+    public function addBukuStokInVoidFromSelectMutasi($key,$reff,$request,$Konversi_QtyTotal,$unit)
+    {
+        return  DB::connection('sqlsrv')->table("BukuStoks")->insert([
+            'TransactionCode' => $key->TransactionCode,
+            'TransactionDate' => Carbon::now(),
+            'UserCreate' =>  $request->UserVoid,
+            'ProductCode' => $key->ProductCode,
+            'ProductName' => $key->ProductName,
+            'Satuan' => $key->Satuan,
+            'QtyOut' => $Konversi_QtyTotal,
+            'Hpp' => $key->Hpp,
+            'PersediaanOut' => $Konversi_QtyTotal*$key->Hpp,
+            'TransactionCodeReff' =>$key->TransactionCodeReff,
+            'TransactionCodeReff2' => $reff,
+            'Status' => '2',
+            'ExpiredDate' => $key->ExpiredDate,
+            'DeliveryCode' => $key->DeliveryCode,
+            'Unit' =>$unit,
+            'BatchNumber' => $key->BatchNumber
+        ]); 
+    }
+    public function addBukuStokOutVoidFromSelectMutasi($key,$reff,$request,$Konversi_QtyTotal,$unit)
+    {
+        return  DB::connection('sqlsrv')->table("BukuStoks")->insert([
+            'TransactionCode' => $key->TransactionCode,
+            'TransactionDate' => Carbon::now(),
+            'UserCreate' =>  $request->UserVoid,
+            'ProductCode' => $key->ProductCode,
+            'ProductName' => $key->ProductName,
+            'Satuan' => $key->Satuan,
+            'QtyIn' => $Konversi_QtyTotal,
+            'Hpp' => $key->Hpp,
+            'PersediaanOut' => $Konversi_QtyTotal*$key->Hpp,
+            'TransactionCodeReff' =>$key->TransactionCodeReff,
+            'TransactionCodeReff2' => $reff,
+            'Status' => '2',
+            'ExpiredDate' => $key->ExpiredDate,
+            'DeliveryCode' => $key->DeliveryCode,
+            'Unit' =>$unit,
+            'BatchNumber' => $key->BatchNumber
+        ]);
     }
     public function cekBukuByTransactionandCodeProduct($id, $request,$typetrsReff)
     {
