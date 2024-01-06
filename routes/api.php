@@ -261,11 +261,12 @@ Route::group(["middleware"=>["auth:api"]], function(){
     Route::group(['prefix' => 'transaction/returbeli'], function () {
         Route::post("addReturBeliHeader", [ReturBeliController::class, "addReturBeliHeader"]);
         Route::post("addReturBeliFinish", [ReturBeliController::class, "addReturBeliFinish"]);
-        Route::post("voidReturBeli", [ReturBeliController::class, "voidReturBeli"]);
         Route::post("voidReturBeliDetailbyItem", [ReturBeliController::class, "voidReturBeliDetailbyItem"]);
+        Route::post("voidReturBeli", [ReturBeliController::class, "voidReturBeli"]);
         Route::post("getReturBelibyID", [ReturBeliController::class, "getReturBelibyID"]);
         Route::post("getReturBeliDetailbyID", [ReturBeliController::class, "getReturBeliDetailbyID"]);
         Route::post("getReturBelibyDateUser", [ReturBeliController::class, "getReturBelibyDateUser"]);
+        Route::post("getReturBelibyPeriode", [ReturBeliController::class, "getReturBelibyPeriode"]);
     });
 
     Route::group(['prefix' => 'information/inventory'], function () {

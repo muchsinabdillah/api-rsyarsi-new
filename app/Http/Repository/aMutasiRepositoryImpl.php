@@ -78,7 +78,7 @@ class aMutasiRepositoryImpl implements aMutasiRepositoryInterface
             ]);
         return $updatesatuan;
     }
-
+    
     public function getMutasibyID($id)
     {
         return  DB::connection('sqlsrv')->table("v_transaksi_mutasi_hdr")
@@ -108,7 +108,7 @@ class aMutasiRepositoryImpl implements aMutasiRepositoryInterface
     }
     public function voidMutasi($request)
     {
-        $updatesatuan =  DB::connection('sqlsrv')->table('OrderMutasis')
+        $updatesatuan =  DB::connection('sqlsrv')->table('Mutasis')
         ->where('TransactionCode', $request->TransactionCode)
             ->update([
                 'Void' => $request->Void,

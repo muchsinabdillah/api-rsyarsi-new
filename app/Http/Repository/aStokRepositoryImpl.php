@@ -190,6 +190,23 @@ class aStokRepositoryImpl implements aStokRepositoryInterface
             ->orderBy('ExpiredDate','asc')
             ->get()->first();
     }
+    public function getStokExpiredFirstGlobal($request, $key,$unit)
+    {
+        return  DB::connection('sqlsrv')->table("BukuStoks")
+        ->where('ProductCode', $key['ProductCode'])
+        ->where('Unit', $unit)
+        -> select(
+            'BukuStoks.DeliveryCode',
+            'BukuStoks.Hpp',
+            'BukuStoks.BatchNumber',
+            DB::raw('SUM(QtyIn)-SUM(QtyOut)  AS x'),
+            DB::raw("replace(CONVERT(VARCHAR(11),ExpiredDate, 111), ' / ',' - ') as ExpiredDate")
+            )
+            ->groupBy('BukuStoks.ExpiredDate','BukuStoks.DeliveryCode','BukuStoks.Hpp', 'BukuStoks.BatchNumber')
+            ->having(DB::raw('SUM(QtyIn)-SUM(QtyOut)'), '>', 0)
+            ->orderBy('ExpiredDate','asc')
+            ->get()->first();
+    }
     public function addBukuStokIn($request, $key, $TipeTrs, $DeliveryCode, $xhpp, $ExpiredDate,$BatchNumber, $qtynew, $persediaan, $UnitIn)
     {
         if($TipeTrs == "MT"){
@@ -224,6 +241,9 @@ class aStokRepositoryImpl implements aStokRepositoryInterface
             $qtystok = "0";
         }
         if ($TipeTrs == "CM") {
+            $qtystok = $qtynew; 
+        } 
+        if ($TipeTrs == "RB") {
             $qtystok = $qtynew; 
         } 
         return  DB::connection('sqlsrv')->table("BukuStoks")->insert([
@@ -296,9 +316,9 @@ class aStokRepositoryImpl implements aStokRepositoryInterface
             'ProductCode' => $key->ProductCode,
             'ProductName' => $key->ProductName,
             'Satuan' => $key->Satuan,
-            'QtyOut' => $Konversi_QtyTotal,
+            'QtyIn' => $Konversi_QtyTotal,
             'Hpp' => $key->Hpp,
-            'PersediaanOut' => $Konversi_QtyTotal*$key->Hpp,
+            'PersediaanIn' => $Konversi_QtyTotal*$key->Hpp,
             'TransactionCodeReff' =>$key->TransactionCodeReff,
             'TransactionCodeReff2' => $reff,
             'Status' => '2',
@@ -317,7 +337,7 @@ class aStokRepositoryImpl implements aStokRepositoryInterface
             'ProductCode' => $key->ProductCode,
             'ProductName' => $key->ProductName,
             'Satuan' => $key->Satuan,
-            'QtyIn' => $Konversi_QtyTotal,
+            'QtyOut' => $Konversi_QtyTotal,
             'Hpp' => $key->Hpp,
             'PersediaanOut' => $Konversi_QtyTotal*$key->Hpp,
             'TransactionCodeReff' =>$key->TransactionCodeReff,
