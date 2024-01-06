@@ -193,6 +193,13 @@ class aDeliveryOrderRepositoryImpl implements aDeliveryOrderRepositoryInterface
             ->where('ProductCode', $request->ProductCode)
             ->get();
     }
+    public function getDeliveryOrderDetailbyIDandProductCodeLoopRetur($deliveryCode,$ProductCode)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_do_Dtl")
+        ->where('TransactionCode', $deliveryCode)
+            ->where('ProductCode', $ProductCode)
+            ->get();
+    }
     public function getDeliveryOrderDetailbyIDnotIdTrsNow($key,$request)
     {
         return  DB::connection('sqlsrv')->table("v_transaksi_do_Dtl")
@@ -226,5 +233,51 @@ class aDeliveryOrderRepositoryImpl implements aDeliveryOrderRepositoryInterface
         return  DB::connection('sqlsrv')->table("v_transaksi_faktur_hdr")
         ->where('DeliveryCode', $noDo)
             ->get();
+    }
+    public function updateQtyRemainDeliveryOrder($request, $key, $qtyRemain)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('DeliveryOrderDetails')
+        ->where('TransactionCode', $request->TransactionOrderCode)
+            ->where('ProductCode', $key['ProductCode'])
+            ->where('Void', '0')
+            ->update([
+                'QtyDeliveryRemain' => $qtyRemain
+            ]);
+        return $updatesatuan;
+    }
+    public function updateQtyRemainDeliveryOrderRetur($request, $key, $qtyRemain)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('DeliveryOrderDetails')
+        ->where('TransactionCode', $request->DeliveryCode)
+            ->where('ProductCode', $key['ProductCode'])
+            ->where('Void', '0')
+            ->update([
+                'QtyDeliveryRemain' => $qtyRemain
+            ]);
+        return $updatesatuan;
+    }
+    public function updateQtyRemainDeliveryOrderReturVoid($request, $qtyRemain,$productCode)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('DeliveryOrderDetails')
+        ->where('TransactionCode', $request->DeliveryCode)
+            ->where('ProductCode', $productCode)
+            ->where('Void', '0')
+            ->update([
+                'QtyDeliveryRemain' => $qtyRemain
+            ]);
+        return $updatesatuan;
+    }
+    public function voidReturBelilbyItem($request)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('DeliveryOrderDetails')
+        ->where('TransactionCode', $request->TransactionCode)
+            ->where('ProductCode', $request->ProductCode)
+            ->update([
+                'Void' => $request->Void,
+                'DateVoid' => $request->DateVoid,
+                'UserVoid' => $request->UserVoid,
+                'ReasonVoid' => $request->ReasonVoid
+            ]);
+        return $updatesatuan;
     }
 }

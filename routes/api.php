@@ -43,6 +43,7 @@ use App\Http\Controllers\Api\AntrianPoliklinikController;
 use App\Http\Controllers\Api\EDocumentController;
 use App\Http\Controllers\Api\HasilMcuPDFController;
 use App\Http\Controllers\Api\PurchaseRequisitionController;
+use App\Http\Controllers\Api\ReturBeliController;
 use App\Http\Controllers\Api\SalesController;
 use App\Http\Controllers\Api\StokController;
 use App\Http\Controllers\ResepV2Controller;
@@ -201,6 +202,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("voidOrderMutasiDetailbyItem", [OrderMutasiController::class, "voidOrderMutasiDetailbyItem"]);
         Route::post("getOrderMutasibyID", [OrderMutasiController::class, "getOrderMutasibyID"]);
         Route::post("getOrderMutasiDetailbyID/", [OrderMutasiController::class, "getOrderMutasiDetailbyID"]);
+        Route::post("getOrderMutasiDetailRemainbyID/", [OrderMutasiController::class, "getOrderMutasiDetailRemainbyID"]);
         Route::post("getOrderMutasibyDateUser/", [OrderMutasiController::class, "getOrderMutasibyDateUser"]);
         Route::post("getOrderMutasibyPeriode/", [OrderMutasiController::class, "getOrderMutasibyPeriode"]);
     });
@@ -215,6 +217,11 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("getMutasiDetailbyID/", [MutasiController::class, "getMutasiDetailbyID"]);
         Route::post("getMutasibyDateUser/", [MutasiController::class, "getMutasibyDateUser"]);
         Route::post("getMutasibyPeriode/", [MutasiController::class, "getMutasibyPeriode"]);
+        
+        Route::post("voidMutasi/", [MutasiController::class, "voidMutasi"]);
+        Route::post("voidMutasiDetailbyItem/", [MutasiController::class, "voidMutasiDetailbyItem"]);
+
+
     });
     
     Route::group(['prefix' => 'transaction/faktur'], function () {
@@ -238,7 +245,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("getConsumablebyDateUser/", [ConsumableController::class, "getConsumablebyDateUser"]);
         Route::post("getConsumablebyPeriode/", [ConsumableController::class, "getConsumablebyPeriode"]);
     });
-
+    
     Route::group(['prefix' => 'transaction/sales'], function () {
         Route::post("addSalesHeader", [SalesController::class, "addSalesHeader"]);
         Route::post("addSalesDetail", [SalesController::class, "addSalesDetail"]);
@@ -250,7 +257,18 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("getSalesbyDateUser", [SalesController::class, "getSalesbyDateUser"]);
         Route::post("getSalesbyPeriode", [SalesController::class, "getSalesbyPeriode"]);
     });
-    
+
+    Route::group(['prefix' => 'transaction/returbeli'], function () {
+        Route::post("addReturBeliHeader", [ReturBeliController::class, "addReturBeliHeader"]);
+        Route::post("addReturBeliFinish", [ReturBeliController::class, "addReturBeliFinish"]);
+        Route::post("voidReturBeliDetailbyItem", [ReturBeliController::class, "voidReturBeliDetailbyItem"]);
+        Route::post("voidReturBeli", [ReturBeliController::class, "voidReturBeli"]);
+        Route::post("getReturBelibyID", [ReturBeliController::class, "getReturBelibyID"]);
+        Route::post("getReturBeliDetailbyID", [ReturBeliController::class, "getReturBeliDetailbyID"]);
+        Route::post("getReturBelibyDateUser", [ReturBeliController::class, "getReturBelibyDateUser"]);
+        Route::post("getReturBelibyPeriode", [ReturBeliController::class, "getReturBelibyPeriode"]);
+    });
+
     Route::group(['prefix' => 'information/inventory'], function () {
         Route::group(['prefix' => 'stok/'], function () { 
             Route::post("getStokBarangbyUnitNameLike", [StokController::class, "getStokBarangbyUnitNameLike"]);  

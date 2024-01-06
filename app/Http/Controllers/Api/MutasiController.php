@@ -68,12 +68,55 @@ class MutasiController extends Controller
     }
     public function editMutasi(Request $request)
     {
+        
     }
     public function voidMutasi(Request $request)
     {
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $asupplierRepository = new aSupplierRepositoryImpl();
+        $aPurchaseRequestRepository = new aPurchaseRequisitionRepositoryImpl();
+        $aStokRepository = new aStokRepositoryImpl();
+        $aOrderMutasiRepository = new aOrderMutasiRepositoryImpl();
+        $aMutasiRepositorya = new aMutasiRepositoryImpl();
+        $aMasterUnitRepository = new aMasterUnitRepositoryImpl();
+        $ahnaRepository =  new aHnaRepositoryImpl();
+        $aMutasiService = new aMutasiService(
+            $aBarangRepository,
+            $asupplierRepository,
+            $aPurchaseRequestRepository,
+            $aStokRepository,
+            $aOrderMutasiRepository, 
+            $aMasterUnitRepository,
+            $aMutasiRepositorya,      
+            $ahnaRepository
+
+        );
+        $execute =  $aMutasiService->voidMutasi($request);
+        return $execute;
     }
     public function voidMutasiDetailbyItem(Request $request)
     {
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $asupplierRepository = new aSupplierRepositoryImpl();
+        $aPurchaseRequestRepository = new aPurchaseRequisitionRepositoryImpl();
+        $aStokRepository = new aStokRepositoryImpl();
+        $aOrderMutasiRepository = new aOrderMutasiRepositoryImpl();
+        $aMutasiRepositorya = new aMutasiRepositoryImpl();
+        $aMasterUnitRepository = new aMasterUnitRepositoryImpl();
+        $ahnaRepository =  new aHnaRepositoryImpl();
+        $aMutasiService = new aMutasiService(
+            $aBarangRepository,
+            $asupplierRepository,
+            $aPurchaseRequestRepository,
+            $aStokRepository,
+            $aOrderMutasiRepository, 
+            $aMasterUnitRepository,
+            $aMutasiRepositorya,      
+            $ahnaRepository
+
+        );
+        $execute =  $aMutasiService->voidMutasiDetailbyItem($request);
+        return $execute;
     }
     public function getMutasibyID(Request $request)
     {

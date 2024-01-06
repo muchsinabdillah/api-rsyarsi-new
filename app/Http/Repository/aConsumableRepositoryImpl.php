@@ -25,6 +25,7 @@ class aConsumableRepositoryImpl implements aConsumableRepositoryInterface
             'Notes' => $request->Notes, 
             'TransactionCode' => $autoNumber, 
             'Group_Transaksi' => $request->Group_Transaksi, 
+            'NoRegistrasi' => $request->NoRegistrasi, 
             'TransactionDateFirst' => Carbon::now(),
             'UserCreateFirst' => $request->UserCreate,
             'ReffDateTrs' => date("dmY", strtotime($request->TransactionDate))
@@ -104,6 +105,7 @@ class aConsumableRepositoryImpl implements aConsumableRepositoryInterface
             'UnitCode' => $request->UnitTujuan,
             'Group_Transaksi' => $request->Group_Transaksi, 
             'Notes' => $request->Notes,
+            'NoRegistrasi' => $request->NoRegistrasi, 
             'TotalQtyOrder' => $request->TotalQtyOrder,
             'TotalRow' => $request->TotalRow, 
             'UserCreateLast' => $request->UserCreate,

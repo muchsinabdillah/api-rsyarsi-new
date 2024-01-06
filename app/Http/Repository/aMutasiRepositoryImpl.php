@@ -78,7 +78,7 @@ class aMutasiRepositoryImpl implements aMutasiRepositoryInterface
             ]);
         return $updatesatuan;
     }
-
+    
     public function getMutasibyID($id)
     {
         return  DB::connection('sqlsrv')->table("v_transaksi_mutasi_hdr")
@@ -87,6 +87,17 @@ class aMutasiRepositoryImpl implements aMutasiRepositoryInterface
             ->get();
     }
     
+    public function getMutasibyIDUnitOrder($request)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_mutasi_hdr")
+        ->where('TransactionCode',$request->TransactionCode)
+            ->where('Void', '0')
+            ->where('UnitOrder', $request->UnitOrder)
+            ->where('UnitTujuan', $request->UnitTujuan)
+            ->get();
+    }
+    
+
     public function getItemsDouble($request)
     {
         return  DB::connection('sqlsrv')->table("MutasiNewDetails")
@@ -97,7 +108,7 @@ class aMutasiRepositoryImpl implements aMutasiRepositoryInterface
     }
     public function voidMutasi($request)
     {
-        $updatesatuan =  DB::connection('sqlsrv')->table('OrderMutasis')
+        $updatesatuan =  DB::connection('sqlsrv')->table('Mutasis')
         ->where('TransactionCode', $request->TransactionCode)
             ->update([
                 'Void' => $request->Void,
@@ -110,8 +121,21 @@ class aMutasiRepositoryImpl implements aMutasiRepositoryInterface
     public function voidMutasiDetailbyItem($request)
     {
         $updatesatuan =  DB::connection('sqlsrv')->table('MutasiNewDetails')
-        ->where('TransactionCode', $request->TransasctionCode)
+        ->where('TransactionCode', $request->TransactionCode)
             ->where('ProductCode', $request->ProductCode)
+            ->update([
+                'Void' => $request->Void,
+                'DateVoid' => $request->DateVoid,
+                'UserVoid' => $request->UserVoid,
+                'ReasonVoid' => $request->ReasonVoid
+            ]);
+        return $updatesatuan;
+    }
+    public function voidMutasiDetailbyItemAll($request,$ProductCode)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('MutasiNewDetails')
+        ->where('TransactionCode', $request->TransactionCode)
+            ->where('ProductCode', $ProductCode)
             ->update([
                 'Void' => $request->Void,
                 'DateVoid' => $request->DateVoid,
@@ -177,6 +201,14 @@ class aMutasiRepositoryImpl implements aMutasiRepositoryInterface
     {
         return  DB::connection('sqlsrv')->table("v_transaksi_mutasi_hdr")
         ->whereBetween('TglPeriode', [$request->StartPeriode, $request->EndPeriode])
+            ->where('Void', '0')
+            ->get();
+    }
+    public function getMutasiDetailbyIDandProductCode($request)
+    {
+        return  DB::connection('sqlsrv')->table("MutasiNewDetails")
+        ->where('TransactionCode', $request->TransactionCode)
+            ->where('ProductCode', $request->ProductCode)
             ->where('Void', '0')
             ->get();
     }

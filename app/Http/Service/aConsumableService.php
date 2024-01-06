@@ -19,11 +19,13 @@ use App\Http\Repository\aSupplierRepositoryImpl;
 
 use App\Http\Repository\aMasterUnitRepositoryImpl;
 use App\Http\Repository\aDeliveryOrderRepositoryImpl; 
-use App\Http\Repository\aPurchaseOrderRepositoryImpl; 
+use App\Http\Repository\aPurchaseOrderRepositoryImpl;
+use App\Traits\FifoTrait;
 
 class aConsumableService extends Controller
 {
     use AutoNumberTrait;
+    use FifoTrait;
     private $aDeliveryOrder;
     private $aBarangRepository;
     private $aSupplierRepository;
@@ -106,11 +108,11 @@ class aConsumableService extends Controller
             "UnitTujuan" => "required",  
             "Notes" => "required",
             "TotalQtyOrder" => "required",
+            "NoRegistrasi" => "required",
             "TotalRow" => "required",
             "TransactionDate" => "required",
             "UserCreate" => "required"
         ]);
-
 
         // validasi 
         // // cek ada gak datanya
@@ -172,6 +174,7 @@ class aConsumableService extends Controller
                 if($getdatadetilmutasi->count() < 1){
                     if ($key['Qty'] > 0) {
                         $this->aConsumableRepository->addConsumableDetail($request, $key); 
+                        $this->fifoConsumable($request,$key,$xhpp); 
                     }
                 }else{
                     // jika sudah ada
@@ -180,65 +183,23 @@ class aConsumableService extends Controller
                     $mtKonversi_QtyTotal = $showData->Qty;
                     $mtQtyMutasi = $showData->Qty;
 
-                  //  if($mtKonversi_QtyTotal <> $key['Konversi_QtyTotal']){ // Dirubah jika Qty nya ada Perubahan Aja
-                        $goQtyMutasiSisaheaderBefore = $mtQtyMutasi + $key['Qty'];
-                        $goQtyMutasiSisaheaderAfter = $goQtyMutasiSisaheaderBefore - $key['Qty'];
-
-                        $goQtyMutasiSisaKovenrsiBefore = $mtKonversi_QtyTotal + $key['Konversi_QtyTotal'];
-                        $goQtyMutasiSisaKovenrsiAfter = $goQtyMutasiSisaKovenrsiBefore - $key['Konversi_QtyTotal'];
-
-                         $this->aConsumableRepository->editConsumableDetailbyIdBarang($request,$key);
-
+                   if($mtKonversi_QtyTotal <> $key['Konversi_QtyTotal']){ // Dirubah jika Qty nya ada Perubahan Aja
+                        // $goQtyMutasiSisaheaderBefore = $mtQtyMutasi + $key['Qty'];
+                        // $goQtyMutasiSisaheaderAfter = $goQtyMutasiSisaheaderBefore - $key['Qty'];
+                        // $goQtyMutasiSisaKovenrsiBefore = $mtKonversi_QtyTotal + $key['Konversi_QtyTotal'];
+                        // $goQtyMutasiSisaKovenrsiAfter = $goQtyMutasiSisaKovenrsiBefore - $key['Konversi_QtyTotal'];
+                        $this->aConsumableRepository->editConsumableDetailbyIdBarang($request,$key);
                         // replace stok ke awal
                         $getCurrentStok = $this->aStok->cekStokbyIDBarang($key, $request->UnitTujuan)->first();
                         $totalstok = $getCurrentStok->Qty + $mtKonversi_QtyTotal;
                         $this->aStok->updateStokTrs($request,$key,$totalstok,$request->UnitTujuan);
                         $this->aStok->deleteBukuStok($request,$key,"CM",$request->UnitTujuan);  
-                   // }  
+                        $this->fifoConsumable($request,$key,$xhpp);
+                   }  
                 }
 
                  
-                        // QUERY PENGURANGAN STOK METODE FIFO
-                        first:
-                        $getStokFirst = $this->aStok->getStokExpiredFirst($request, $key);
                         
-                        //  return $getStokFirst;
-                        $DeliveryCodex = $getStokFirst->DeliveryCode;
-                        //$xhpp = $getStokFirst->Hpp;
-                        $qtyBuku = $getStokFirst->x;
-                        $ExpiredDate = $getStokFirst->ExpiredDate;
-                        $BatchNumber = $getStokFirst->BatchNumber;
-
-                        if ($qtyBuku < $key['Konversi_QtyTotal']) {
-                            $qtynew = $qtyBuku;
-                            $persediaan = $qtynew * $xhpp;
-                        } else {
-                            $qtynew = $key['Konversi_QtyTotal'];
-                            $persediaan = $qtynew * $xhpp;
-                        }
-                        $TipeTrs = "CM";
-                        // // INSERT BUKU IN DI LAYANAN GUDANG
-                        $this->aStok->addBukuStokOut($request, $key, $TipeTrs, $DeliveryCodex, $xhpp, $ExpiredDate, $BatchNumber, $qtynew, $persediaan, $request->UnitTujuan);
-
-                        // update stok Tujuan / Gudang 
-                        if ($this->aStok->cekStokbyIDBarang($key, $request->UnitTujuan)->count() < 1) {
-                            //kalo g ada insert
-                            $this->aStok->addStokTrs($request, $key, $qtynew, $request->UnitTujuan);
-                        } else {
-                            //kallo ada ya update
-                            $sumstok = $this->aStok->cekStokbyIDBarang($key, $request->UnitTujuan);
-                            foreach ($sumstok as $value) {
-                                $QtyCurrent = $value->Qty;
-                            }
-                            $QtyTotal = $QtyCurrent - $qtynew;
-                            $this->aStok->updateStokTrs($request, $key, $QtyTotal, $request->UnitTujuan);
-                        }
-
-                        if ($qtynew < $key['Konversi_QtyTotal']) {
-                            $key['Konversi_QtyTotal'] = $key['Konversi_QtyTotal'] - $qtynew;
-                            goto first;
-                        }
-                        // QUERY PENGURANGAN STOK METODE FIFO
                         
             }
             // update tabel header

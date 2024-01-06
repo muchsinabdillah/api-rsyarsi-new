@@ -295,6 +295,32 @@ class aOrderMutasiService extends Controller
             return $this->sendError('Order Mutasi Data Not Found !', $e->getMessage());
         }
     }
+    public function getOrderMutasiDetailRemainbyID($request)
+    {
+        // validate 
+        $request->validate([
+            "TransasctionCode" => "required"
+        ]);
+
+        try {
+            // Db Transaction
+            DB::beginTransaction();
+
+            // cek ada gak datanya
+            if ($this->aOrderMutasiRepository->getOrderMutasiDetailbyID($request->TransasctionCode)->count() < 1) {
+                return $this->sendError('Transaction Number Not Found !', []);
+            }
+
+            $data = $this->aOrderMutasiRepository->getOrderMutasiDetailbyID($request->TransasctionCode);
+
+            DB::commit();
+            return $this->sendResponse($data, 'Order Mutasi Data Found !');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e->getMessage());
+            return $this->sendError('Order Mutasi Data Not Found !', $e->getMessage());
+        }
+    }
     public function getOrderMutasibyDateUser($request)
     {
         // validate 
