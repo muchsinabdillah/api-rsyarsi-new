@@ -21,6 +21,7 @@ class aReturBeliRepositoryImpl implements aReturBeliRepositoryInterface
             'TransactionCode' => $autoNumber,
             'TransactionDateFirst' => Carbon::now(),
             'UserCreateFirst' => $request->UserCreate,
+            'DeliveryCode' => $request->DeliveryCode,
             'ReffDateTrs' => date("dmY", strtotime($request->TransactionDate))
         ]);
     }
@@ -72,8 +73,8 @@ class aReturBeliRepositoryImpl implements aReturBeliRepositoryInterface
             ->update([
                 'QtyRetur' => $key['QtyRetur'],
                 'TotalReturBeli' => $key['TotalHargaRetur'],
-                'UserUpdate' => $key['UserAdd'], 
-                'DateUpdate' =>  Carbon::now() 
+                 'UserUpdate' => $key['UserAdd'], 
+                 'DateUpdate' =>  Carbon::now() 
             ]);
         return $updatesatuan;
     }

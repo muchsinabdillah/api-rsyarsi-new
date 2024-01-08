@@ -246,6 +246,9 @@ class aStokRepositoryImpl implements aStokRepositoryInterface
         if ($TipeTrs == "RB") {
             $qtystok = $qtynew; 
         } 
+        if ($TipeTrs == "TPR") {
+            $qtystok = $qtynew; 
+        } 
         return  DB::connection('sqlsrv')->table("BukuStoks")->insert([
             'TransactionCode' => $request->TransactionCode,
             'TransactionDate' => $request->TransactionDate,

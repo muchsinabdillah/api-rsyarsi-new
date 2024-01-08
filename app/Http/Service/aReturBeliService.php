@@ -314,7 +314,7 @@ class aReturBeliService extends Controller
             return $this->sendError('Kode Transaksi ini berbeda kode unitnya, cek data anda kembali !', []);
         }
         // cek kode unit ini bener ga atas transaksi ini
-        $cekdodetil = $this->returbeliRepository->getReturBelibyID($request)->count();
+        $cekdodetil = $this->returbeliRepository->getReturBelibyID($request->TransactionCode)->count();
         if ($cekdodetil < 1) {
             return $this->sendError('Kode Transaksi Retur Beli Sudah di Batalkan !', []);
         }

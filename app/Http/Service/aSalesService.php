@@ -174,7 +174,14 @@ class aSalesService extends Controller
             DB::beginTransaction(); 
 
             // // billinga
-            $this->billingRepository->insertHeader($request,$request->TransactionCode);
+            $cekbill = $this->billingRepository->getBillingFo($request)->count(); 
+            //cek jika sudah ada di table
+            if ( $cekbill > 0) {
+                //update
+            }else{
+                //insert
+                $this->billingRepository->insertHeader($request,$request->TransactionCode);
+            }
 
             foreach ($request->Items as $key) {
                 $getdatadetilmutasi = $this->aSalesRepository->getSalesDetailbyIDBarang($request,$key);
@@ -254,10 +261,14 @@ class aSalesService extends Controller
                         //UPDATE SIGNA TERJEMAHAN
                         if ($key['Racik'] <> 0 ){
                             if ($key['RacikHeader'] == 1){
-                                $this->trsResepRepository->editSignaTerjemahanbyID($key['IDResepDetail'],$key['AturanPakai']);
+                                if ($key['IDResepDetail'] != 'null'){
+                                     $this->trsResepRepository->editSignaTerjemahanbyID($key['IDResepDetail'],$key['AturanPakai']);
+                                }
                             }
                         }else{
-                            $this->trsResepRepository->editSignaTerjemahanbyID($key['IDResepDetail'],$key['AturanPakai']);
+                            if ($key['IDResepDetail'] != 'null'){
+                                $this->trsResepRepository->editSignaTerjemahanbyID($key['IDResepDetail'],$key['AturanPakai']);
+                            }
                         }
                 
                     // insert billing detail

@@ -33,7 +33,11 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
             'NoRegistrasi' => $request->NoRegistrasi, 
             'TransactionDateFirst' => Carbon::now(),
             'UserCreateFirst' => $request->UserCreate,
-            'ReffDateTrs' => date("dmY", strtotime($request->TransactionDate))
+            'ReffDateTrs' => date("dmY", strtotime($request->TransactionDate)),
+            'NamaPembeli' => $request->NamaPembeli,
+            'GenderPembeli' => $request->GenderPembeli,
+            'AlamatPembeli' => $request->AlamatPembeli,
+            'TglLahirPembeli' => $request->TglLahirPembeli
         ]);
     }
     public function getSalesbyID($id)

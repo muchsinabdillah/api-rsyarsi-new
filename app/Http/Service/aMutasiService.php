@@ -428,8 +428,8 @@ class aMutasiService extends Controller
             }
             
         // BARANG - cek aktif engga getMutasiDetailbyID
-        $cekdodetil = $this->aMutasiRepository->getMutasiDetailbyID($request)->count();
-        if ($cekdodetil < 1) {
+        $cekdodetil = $this->aMutasiRepository->getMutasiDetailbyID($request->TransactionCode)->count();
+        if ($cekdodetil <= 1) {
               return $this->sendError('Kode Barang atas Transaksi Mutasi ini Hanya 1, Silahkan Hapus semua Transaksi Mutasi Beli ini !', []);
         }
         
