@@ -422,4 +422,26 @@ trait AutoNumberTrait
 
         return $numberx;
     }
+    public function  BookingNumber($request, $getmax)
+    {
+        $AWAL = 'TRB';
+        $ddatedmy = date(
+            "dmY",
+            strtotime($request['transactiondate'])
+        );
+        $coutn = DB::connection('sqlsrv9')
+        ->table("BookingBeds")
+        ->where(
+            'ReffDateTrs',
+            $ddatedmy
+        )->get();
+        $no = 1;
+        if ($coutn->count() > 0) {
+            $numberx =  $AWAL  .  $ddatedmy .   sprintf("%04s", Str::substr($getmax, 11, 4) + 1);
+        } else {
+            $numberx =   $AWAL  . $ddatedmy .  sprintf("%04s", $no);
+        }
+
+        return $numberx;
+    }
 }

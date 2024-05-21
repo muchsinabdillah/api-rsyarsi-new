@@ -1,17 +1,19 @@
 <?php
 
-use App\Http\Controllers\Api\AdjusmentController;
 use App\Http\Controllers\Api\Wilayah;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\Api\BPJSKesehatan;
 use App\Http\Controllers\Api\MedicalRecord;
+use App\Http\Controllers\ResepV2Controller;
+use App\Http\Controllers\Api\StokController;
 use App\Http\Controllers\Api\UnitController;
-use App\Http\Controllers\Api\UserController; 
 use App\Http\Controllers\Api\GroupController;
 use App\Http\Controllers\Api\JenisController;
 use App\Http\Controllers\Api\ResepController;
+use App\Http\Controllers\Api\SalesController;
 use App\Http\Controllers\Api\TarifController;
+use App\Http\Controllers\Api\UserController; 
 use App\Http\Controllers\Api\VisitController;
 use App\Http\Controllers\Api\BarangController;
 use App\Http\Controllers\Api\DoctorController;
@@ -23,11 +25,17 @@ use App\Http\Controllers\Api\WilayahController;
 use App\Http\Controllers\Api\GolonganController;
 use App\Http\Controllers\Api\KelompokController;
 use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\AdjusmentController;
 use App\Http\Controllers\Api\AssesmentController;
+use App\Http\Controllers\Api\EDocumentController;
 use App\Http\Controllers\Api\RadiologiController;
+use App\Http\Controllers\Api\ReturBeliController;
+use App\Http\Controllers\Api\ReturJualController;
+use App\Http\Controllers\Api\BookingBedController;
 use App\Http\Controllers\Api\ConsumableController;
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\FormulariumController;
+use App\Http\Controllers\Api\HasilMcuPDFController;
 use App\Http\Controllers\Api\OrderMutasiController;
 use App\Http\Controllers\Api\AntrianKasirController;
 use App\Http\Controllers\Api\LaboratoriumController;
@@ -40,14 +48,7 @@ use App\Http\Controllers\Api\PurchaseOrderController;
 use App\Http\Controllers\Api\ScheduleDoctorController;
 use App\Http\Controllers\Api\AntrianAdmissionController;
 use App\Http\Controllers\Api\AntrianPoliklinikController;
-use App\Http\Controllers\Api\EDocumentController;
-use App\Http\Controllers\Api\HasilMcuPDFController;
 use App\Http\Controllers\Api\PurchaseRequisitionController;
-use App\Http\Controllers\Api\ReturBeliController;
-use App\Http\Controllers\Api\ReturJualController;
-use App\Http\Controllers\Api\SalesController;
-use App\Http\Controllers\Api\StokController;
-use App\Http\Controllers\ResepV2Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -612,18 +613,21 @@ Route::group(["middleware"=>["auth:api"]], function(){
         });
     }); 
 
-    // booking bed
-    Route::group(['prefix' => 'BookingBed/'], function () {
-        Route::group(['prefix' => 'transaction/'], function () {
-            Route::post("create", [BPJSKesehatanController::class, "create"]);
-            Route::post("edit", [BPJSKesehatanController::class, "edit"]);
-            Route::post("delete", [BPJSKesehatanController::class, "delete"]);
-            Route::post("view", [BPJSKesehatanController::class, "view"]);
-        });
-        Route::group(['prefix' => 'information/'], function () {
-            
-        });
+   // booking bed
+   Route::group(['prefix' => 'BookingBed/'], function () {
+    Route::group(['prefix' => 'transaction/'], function () {
+        Route::post("create", [BookingBedController::class, "create"]);
+        Route::post("edit", [BookingBedController::class, "edit"]);
+        Route::post("void", [BookingBedController::class, "void"]);
+        Route::get("view/{id}", [BookingBedController::class, "view"]);
+        Route::post("listAllActive", [BookingBedController::class, "listAllActive"]);
+        Route::post("listAllArchive", [BookingBedController::class, "listAllArchive"]);
+        Route::post("listAllActivebyNoMR", [BookingBedController::class, "listAllActivebyNoMR"]);
     });
+    Route::group(['prefix' => 'information/'], function () {
+        
+    });
+});
 });
  
 //semua route API yang membutuhkan authentication sekarang didaftarkan dalam grup middleware sesuai dengan nama yang sudah dibuat di kernel

@@ -23,7 +23,7 @@ use App\Http\Repository\bMedicalRecordRepositoryImpl;
 use App\Http\Repository\aScheduleDoctorRepositoryImpl;
 use App\Http\Repository\aPurchaseRequisitionRepositoryImpl;
 use App\Http\Repository\bVisitRepositoryImpl;
-
+date_default_timezone_set("Asia/Jakarta");
 class bAppointmentService extends Controller {
     use AutoNumberTrait;
     private $kamaroperasiRepository;
@@ -751,6 +751,7 @@ class bAppointmentService extends Controller {
         }  
     }  
     public function CheckIn(Request $request){ 
+        date_default_timezone_set("Asia/Jakarta");
         DB::connection('sqlsrv3')->beginTransaction();
         try{
             
