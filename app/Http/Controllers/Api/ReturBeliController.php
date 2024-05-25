@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Controller; 
 use App\Http\Service\aReturBeliService;
 use App\Http\Repository\aHnaRepositoryImpl;
 use App\Http\Repository\aStokRepositoryImpl;

@@ -57,5 +57,12 @@ class BookingBedController extends Controller
         $aBookingBedService = new aBookingBedService($aBookingBedRepositoryImpl);
         return $aBookingBedService->getListBookingBedActiveByNoMR($request);
     }
+
+    public function viewByMatch($id,$nomr)
+    {
+        $aBookingBedRepositoryImpl = new aBookingBedRepositoryImpl();
+        $aBookingBedService = new aBookingBedService($aBookingBedRepositoryImpl);
+        return $aBookingBedService->viewByMatch($id,$nomr);
+    }
     
 }

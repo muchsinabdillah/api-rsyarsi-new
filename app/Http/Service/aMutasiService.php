@@ -231,7 +231,9 @@ class aMutasiService extends Controller
                     }  
                 }
                $this->aMutasiRepository->editMutasiDetailbyIdBarang($request,$key,$xhpp);
+ 
 
+         
                 // jurnal
                 $note = 'Persediaan Mutasi Barang '. $key['ProductName'].' No. Pemakaian : ' . $request->TransactionCode . ' Konversi_QtyTotal : ' . $key['Konversi_QtyTotal'];
                 $noteHpp = 'Hpp Persediaan Mutasi Barang '. $key['ProductName'].' No. Pemakaian : ' . $request->TransactionCode . ' Konversi_QtyTotal : ' . $key['Konversi_QtyTotal'];
@@ -273,7 +275,7 @@ class aMutasiService extends Controller
                         $key['Konversi_QtyTotal'],$xhpp,
                         $key['ProductCode'],$key['ProductName'],$request->UnitOrder
                     );  
-
+                       
                     $this->aJurnal->addJurnalDetailDebetHppGlobal(
                         $note, $cekrek->first()->RekHpp,
                         $request->TransactionCode,

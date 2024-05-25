@@ -33,6 +33,7 @@ class aBookingBedRepositoryImpl implements aBookingBedRepositoryInterface
             'dateentri' => Carbon::now(),
             'ReffDateTrs' => date("dmY", strtotime($request->transactiondate)),
             'jenisbooking' => $request->jenisbooking,
+            'jenispasien' => $request->jenispasien,
         ]);
     }
     public function editTrs($request)
@@ -94,16 +95,17 @@ class aBookingBedRepositoryImpl implements aBookingBedRepositoryInterface
         return  DB::connection('sqlsrv9')->table("BookingBeds")
         ->where('transactioncode',$id)
         ->where('void', '0')
-        ->select('*', DB::raw("replace(CONVERT(VARCHAR(11), bookingbeddate, 111), '/','-') as tglbooking"),DB::raw("CASE WHEN bookingstatus='0' then 'OPEN' ELSE 'CLOSED' END AS StatusName"))
+        ->select('*', DB::raw("replace(CONVERT(VARCHAR(11), bookingbeddate, 111), '/','-') as tglbooking"),DB::raw("CASE WHEN bookingstatus='0' then 'OPEN' ELSE 'CLOSED' END AS StatusName"),DB::raw("replace(CONVERT(VARCHAR(11), patientbirthdate, 111), '/','-') as patientbirthdate"))
         ->get();
     }
 
-    public function getTrsBookingBedByMRActive($request)
+    public function getTrsBookingBedByMRActiveSameDay($request)
     {
         return  DB::connection('sqlsrv9')->table("BookingBeds")
         ->where('bookingstatus', '0')
         ->where('void', '0')
         ->where('medicalrecordnumber', $request->medicalrecordnumber)
+        ->where(DB::raw("replace(CONVERT(VARCHAR(11), bookingbeddate, 111), '/','-')"), $request->bookingbeddate)
         ->get();
     }
 

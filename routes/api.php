@@ -615,19 +615,20 @@ Route::group(["middleware"=>["auth:api"]], function(){
 
    // booking bed
    Route::group(['prefix' => 'BookingBed/'], function () {
-    Route::group(['prefix' => 'transaction/'], function () {
-        Route::post("create", [BookingBedController::class, "create"]);
-        Route::post("edit", [BookingBedController::class, "edit"]);
-        Route::post("void", [BookingBedController::class, "void"]);
-        Route::get("view/{id}", [BookingBedController::class, "view"]);
-        Route::post("listAllActive", [BookingBedController::class, "listAllActive"]);
-        Route::post("listAllArchive", [BookingBedController::class, "listAllArchive"]);
-        Route::post("listAllActivebyNoMR", [BookingBedController::class, "listAllActivebyNoMR"]);
+        Route::group(['prefix' => 'transaction/'], function () {
+            Route::post("create", [BookingBedController::class, "create"]);
+            Route::post("edit", [BookingBedController::class, "edit"]);
+            Route::post("void", [BookingBedController::class, "void"]);
+            Route::get("view/{id}", [BookingBedController::class, "view"]);
+            Route::get("viewByMatch/{id}/{nomr}", [BookingBedController::class, "view"]);
+            Route::post("listAllActive", [BookingBedController::class, "listAllActive"]);
+            Route::post("listAllArchive", [BookingBedController::class, "listAllArchive"]);
+            Route::post("listAllActivebyNoMR", [BookingBedController::class, "listAllActivebyNoMR"]);
+        });
+        Route::group(['prefix' => 'information/'], function () {
+            
+        });
     });
-    Route::group(['prefix' => 'information/'], function () {
-        
-    });
-});
 });
  
 //semua route API yang membutuhkan authentication sekarang didaftarkan dalam grup middleware sesuai dengan nama yang sudah dibuat di kernel

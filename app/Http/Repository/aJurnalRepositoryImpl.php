@@ -309,7 +309,7 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
         return  DB::connection('sqlsrv4')->table("TA_JURNAL_DTL")->insert([
             'FS_KD_JURNAL' => $TransactionCode,
             'FS_KET_REFF' => $keterangan, 
-            'FN_DEBET' => $hpp * $Qty,
+            'FN_DEBET' => floatval($hpp) * floatval($Qty),
             'FN_KREDIT' => '0',
             'FB_VOID' => '0',
             'FS_REK' => $rekPersediaan,
@@ -329,7 +329,7 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
         return  DB::connection('sqlsrv4')->table("TA_JURNAL_DTL")->insert([
             'FS_KD_JURNAL' => $TransactionCode,
             'FS_KET_REFF' => $keterangan, 
-            'FN_KREDIT' => $hpp * $Qty,
+            'FN_KREDIT' => floatval($hpp) * floatval($Qty),
             'FN_DEBET' => '0',
             'FB_VOID' => '0',
             'FS_REK' => $rekPersediaan,
@@ -349,7 +349,7 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
         return  DB::connection('sqlsrv4')->table("TA_JURNAL_DTL")->insert([
             'FS_KD_JURNAL' => $TransactionCode,
             'FS_KET_REFF' => $keterangan, 
-            'FN_DEBET' => $hpp * $Qty,
+            'FN_DEBET' => floatval($hpp) * floatval($Qty),
             'FN_KREDIT' => '0',
             'FB_VOID' => '0',
             'FS_REK' => $rekHpp,
@@ -369,7 +369,7 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
         return  DB::connection('sqlsrv4')->table("TA_JURNAL_DTL")->insert([
             'FS_KD_JURNAL' => $TransactionCode,
             'FS_KET_REFF' => $keterangan, 
-            'FN_KREDIT' => $hpp * $Qty,
+            'FN_KREDIT' => floatval($hpp) * floatval($Qty),
             'FN_DEBET' => '0',
             'FB_VOID' => '0',
             'FS_REK' => $rekHpp,

@@ -31,17 +31,19 @@ class aBookingBedService extends Controller
             "roomid" => "required",
             "bedid" => "required",
             "notes" => "required",
-            "medicalrecordnumber" => "required",
+            //"medicalrecordnumber" => "required",
             "patientname" => "required",
             "userentri" => "required",
             "jenisbooking" => "required",
         ]);
 
         try {   
-            //cek jika ada nomr yang masih ada aktif reservasi
-            $count = $this->aBookingBedRepositoryImpl->getTrsBookingBedByMRActive($request)->count();
-            if ($count > 0) {
-                return $this->sendError("No MR tersebut ada transaksi booking yang masih aktif !", []);
+            if ($request->jenispasien == 'Lama'){
+                //cek jika ada nomr yang masih ada aktif reservasi di hari yang sama
+                $count = $this->aBookingBedRepositoryImpl->getTrsBookingBedByMRActiveSameDay($request)->count();
+                if ($count > 0) {
+                    return $this->sendError("No MR tersebut ada transaksi booking yang masih aktif di hari yang sama !", []);
+                }
             }
             
             //cek jika kamar sudah terisi / booked atau belum
@@ -94,7 +96,7 @@ class aBookingBedService extends Controller
             "roomid" => "required",
             "bedid" => "required",
             "notes" => "required",
-            "medicalrecordnumber" => "required",
+            //"medicalrecordnumber" => "required",
             "patientname" => "required",
             "userupdate" => "required",
             "jenisbooking" => "required",
@@ -241,6 +243,23 @@ class aBookingBedService extends Controller
                 return $this->sendResponse($data, "Data list booking bed ditemukan.");
             } else {
                 return $this->sendError("Data list booking bed Not Found.", []);
+            }
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+    }
+
+    public function viewByMatch($id,$nomr)
+    {
+        try {   
+            
+            $count = $this->aBookingBedRepositoryImpl->getTrsBookingBedByTrsCodeActive($id)->count();
+            if ($count > 0) {
+                $data = $this->aBookingBedRepositoryImpl->getTrsBookingBedByTrsCodeActive($id)->first();
+                return $this->sendResponse($data, "Data booking bed ditemukan.");
+            } else {
+                return $this->sendError("Data booking bed Not Found.", []);
             }
         }catch (Exception $e) { 
             Log::info($e->getMessage());
