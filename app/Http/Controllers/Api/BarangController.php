@@ -179,4 +179,20 @@ class BarangController extends Controller
         $getAllBarang =  $aBarangService->getIPUnitFarmasibyIP($ip);
         return $getAllBarang;
     }
+    public function getHistoryHargaBeli($id)
+    {
+      $aBarangRepository = new aBarangRepositoryImpl();
+        $aSupplierRepository = new aSupplierRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $addBarang =  $aBarangService->getHistoryHargaBeli($id);
+        return $addBarang;
+    }
+    public function getHistoryHargaJual($id)
+    {
+      $aBarangRepository = new aBarangRepositoryImpl();
+        $aSupplierRepository = new aSupplierRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $addBarang =  $aBarangService->getHistoryHargaJual($id);
+        return $addBarang;
+    }
 }

@@ -205,4 +205,25 @@ class DeliveryOrderController extends Controller
         $adddetail =  $aPurchaseOrderService->voidDeliveryOrderDetailbyItem($request);
         return $adddetail;
     }
+    public function getCalculateDateTempobyIDSupplier(Request $request)
+    {
+        $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $asupplierRepository = new aSupplierRepositoryImpl();
+        $aPurchaseOrderRepository = new aPurchaseOrderRepositoryImpl();
+        $sStok = new aStokRepositoryImpl();
+        $aHna = new aHnaRepositoryImpl();
+        $aJurnal = new aJurnalRepositoryImpl();
+        $aPurchaseOrderService = new aDeliveryOrderService(
+            $aDeliveryOrderRepository,
+            $aBarangRepository,
+            $asupplierRepository,
+            $aPurchaseOrderRepository,
+            $sStok,
+            $aHna,
+            $aJurnal
+        );
+        $adddetail =  $aPurchaseOrderService->getCalculateDateTempobyIDSupplier($request);
+        return $adddetail;
+    }
 }

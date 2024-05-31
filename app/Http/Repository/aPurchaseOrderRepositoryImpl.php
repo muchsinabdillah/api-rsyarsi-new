@@ -227,5 +227,17 @@ class aPurchaseOrderRepositoryImpl implements aPurchaseOrderRepositoryInterface
             ]);
         return $updatesatuan;
     }
+    public function closePurchaseOrder($request)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('PurchaseOrders')
+            ->where('PurchaseCode', $request->PurchaseCode)
+            ->update([
+                'ClosePO' => $request->Close,
+                'DateClosePO' => Carbon::now(),
+                'UserClosePO' => $request->UserClose,
+                'ReasonClosePO' => $request->ReasonClose
+            ]);
+        return $updatesatuan;
+    }
 }
 

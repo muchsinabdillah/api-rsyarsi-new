@@ -286,13 +286,13 @@ class aStokRepositoryImpl implements aStokRepositoryInterface
         return  DB::connection('sqlsrv')->table("BukuStoks")
         ->where('ProductCode', $key['ProductCode'])
         ->where('Unit', $request->UnitTujuan)
-        ->where('Status', '1')
+        // ->where('Status', '1')
         -> select(
             'BukuStoks.DeliveryCode',
             'BukuStoks.Hpp',
             'BukuStoks.BatchNumber',
             DB::raw('SUM(QtyIn)-SUM(QtyOut)  AS x'),
-            DB::raw("replace(CONVERT(VARCHAR(11),ExpiredDate, 111), ' / ',' - ') as ExpiredDate")
+            DB::raw("replace(CONVERT(VARCHAR(11),ExpiredDate, 111), '/','-') as ExpiredDate")
             )
             ->groupBy('BukuStoks.ExpiredDate','BukuStoks.DeliveryCode','BukuStoks.Hpp', 'BukuStoks.BatchNumber')
             ->having(DB::raw('SUM(QtyIn)-SUM(QtyOut)'), '>', 0)
@@ -303,14 +303,14 @@ class aStokRepositoryImpl implements aStokRepositoryInterface
     {
         return  DB::connection('sqlsrv')->table("BukuStoks")
         ->where('ProductCode', $key['ProductCode'])
-        ->where('Status', '1')
+        // ->where('Status', '1')
         ->where('Unit', $unit)
         -> select(
             'BukuStoks.DeliveryCode',
             'BukuStoks.Hpp',
             'BukuStoks.BatchNumber',
             DB::raw('SUM(QtyIn)-SUM(QtyOut)  AS x'),
-            DB::raw("replace(CONVERT(VARCHAR(11),ExpiredDate, 111), ' / ',' - ') as ExpiredDate")
+            DB::raw("replace(CONVERT(VARCHAR(11),ExpiredDate, 111), '/','-') as ExpiredDate")
             )
             ->groupBy('BukuStoks.ExpiredDate','BukuStoks.DeliveryCode','BukuStoks.Hpp', 'BukuStoks.BatchNumber')
             ->having(DB::raw('SUM(QtyIn)-SUM(QtyOut)'), '>', 0)

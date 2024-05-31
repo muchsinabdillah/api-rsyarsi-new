@@ -480,4 +480,30 @@ class aBarangService extends Controller
             return $this->sendError("Data Not Found.", [], 400);
         }
     }
+
+    public function getHistoryHargaBeli($id)
+    {
+        // validator 
+        $count = $this->aBarangRepository->getHistoryHargaBeli($id)->count();
+
+        if ($count > 0) {
+            $data = $this->aBarangRepository->getHistoryHargaBeli($id);
+            return $this->sendResponse($data, "Data ditemukan.");
+        } else {
+            return $this->sendError("Data Product Not Found.", [], 400);
+        }
+    }
+
+    public function getHistoryHargaJual($id)
+    {
+        // validator 
+        $count = $this->aBarangRepository->getHistoryHargaJual($id)->count();
+
+        if ($count > 0) {
+            $data = $this->aBarangRepository->getHistoryHargaJual($id);
+            return $this->sendResponse($data, "Data ditemukan.");
+        } else {
+            return $this->sendError("Data Product Not Found.", [], 400);
+        }
+    }
 }

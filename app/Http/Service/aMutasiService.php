@@ -380,7 +380,7 @@ class aMutasiService extends Controller
             } 
  
             // BARANG - cek Stok
-            $cekqtystok = $this->aStokRepository->cekStokbyIDBarangOnlyMutasi($key2->ProductCode,$request->UnitOrder)->first();
+            $cekqtystok = $this->aStokRepository->cekStokbyIDBarangOnlyMutasi($key2->ProductCode,$request->UnitTujuan)->first();
             $stokCurrent = (float)$cekqtystok->Qty;
            
                 if ($stokCurrent < $key2->Konversi_QtyTotal) {
@@ -485,7 +485,7 @@ class aMutasiService extends Controller
         }
 
         // BARANG - cek Stok
-        $cekqtystok = $this->aStokRepository->cekStokbyIDBarangOnlyMutasi($request->ProductCode,$request->UnitOrder)->first();
+        $cekqtystok = $this->aStokRepository->cekStokbyIDBarangOnlyMutasi($request->ProductCode,$request->UnitTujuan)->first();
         $stokCurrent = (float)$cekqtystok->Qty;
             if ($stokCurrent < $request->Konversi_QtyTotal) {
                 return $this->sendError('Qty Stok ' . $request->ProductName . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Mutasi ' . $request->Konversi_QtyTotal . ' ! ', []);

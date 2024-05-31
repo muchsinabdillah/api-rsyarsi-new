@@ -77,7 +77,10 @@ class aDeliveryOrderRepositoryImpl implements aDeliveryOrderRepositoryInterface
                 'GrandtotalDelivery' => $request->GrandtotalDelivery,
                 'PurchaseOrderCode' => $request->PurchaseOrderCode,
                 'UnitCode' => $request->UnitCode, 
-                'JenisDelivery' => $request->JenisDelivery
+                'JenisDelivery' => $request->JenisDelivery,
+                'JenisPembayaran' => $request->JenisPembayaran,
+                'DateTempo' => $request->DateTempo,
+                'isJurnal' => '1'
             ]);
         return $updatesatuan;
     }

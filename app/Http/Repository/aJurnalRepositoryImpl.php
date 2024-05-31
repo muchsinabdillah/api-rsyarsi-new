@@ -36,7 +36,7 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
             'FS_REK' => $rekPersediaan,
             'FS_KD_REFF' => $request->ProductCode,
             'FS_KD_REG' => $request->ProductCode,
-            'FS_KD_UNIT' => '',
+            'FS_KD_UNIT' => $request->UnitCode,
             'FB_UNIT_USAHA' => '0',
             'FB_LEDGER' => '0',
             'BP_TIPE' => '0',
@@ -55,7 +55,7 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
             'FS_REK' => $rekhutang,
             'FS_KD_REFF' => $request->TransactionCode,
             'FS_KD_REG' => $request->TransactionCode,
-            'FS_KD_UNIT' => '',
+            'FS_KD_UNIT' => $request->UnitCode,
             'FB_UNIT_USAHA' => '0',
             'FB_LEDGER' => '0',
             'BP_TIPE' => '0',
@@ -139,7 +139,7 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
             'FS_REK' => $rekhutang,
             'FS_KD_REFF' => $request->DeliveryCode,
             'FS_KD_REG' => $request->DeliveryCode,
-            'FS_KD_UNIT' => '',
+            'FS_KD_UNIT' => $request->UnitPembelian,
             'FB_UNIT_USAHA' => '0',
             'FB_LEDGER' => '1',
             'BP_TIPE' => $request->TipeHutang, // Hutang
@@ -158,7 +158,7 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
             'FS_REK' => $rekhutang,
             'FS_KD_REFF' => $request->DeliveryCode,
             'FS_KD_REG' => $request->DeliveryCode,
-            'FS_KD_UNIT' => '',
+            'FS_KD_UNIT' => $request->UnitPembelian,
             'FB_UNIT_USAHA' => '0',
             'FB_LEDGER' => '1',
             'BP_TIPE' =>  '',
@@ -177,7 +177,7 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
             'FS_REK' => $rekhutang,
             'FS_KD_REFF' => $request->TransactionCode,
             'FS_KD_REG' => $request->TransactionCode,
-            'FS_KD_UNIT' => '',
+            'FS_KD_UNIT' => $request->UnitCode,
             'FB_UNIT_USAHA' => '0',
             'FB_LEDGER' => '1',
             'BP_TIPE' =>  '',
@@ -215,7 +215,7 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
             'FS_REK' => $rekhutang,
             'FS_KD_REFF' => $request->TransactionCode,
             'FS_KD_REG' => $request->TransactionCode,
-            'FS_KD_UNIT' => '',
+            'FS_KD_UNIT' => $request->UnitCode,
             'FB_UNIT_USAHA' => '0',
             'FB_LEDGER' => '1',
             'BP_TIPE' =>  '',
@@ -253,7 +253,7 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
             'FS_REK' => $rekhutang,
             'FS_KD_REFF' => $request->DeliveryCode,
             'FS_KD_REG' => $request->DeliveryCode,
-            'FS_KD_UNIT' => '',
+            'FS_KD_UNIT' => $request->UnitPembelian,
             'FB_UNIT_USAHA' => '0',
             'FB_LEDGER' => '1',
             'BP_TIPE' =>  '',
@@ -272,7 +272,7 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
             'FS_REK' => $rekhutang,
             'FS_KD_REFF' => $request->DeliveryCode,
             'FS_KD_REG' => $request->DeliveryCode,
-            'FS_KD_UNIT' => '',
+            'FS_KD_UNIT' => $request->UnitPembelian,
             'FB_UNIT_USAHA' => '0',
             'FB_LEDGER' => '1',
             'BP_TIPE' =>  '',
@@ -324,7 +324,7 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
         ]);
     }
     public function addJurnalDetailKreditPersediaanGlobal($keterangan,$rekPersediaan,$TransactionCode
-        ,$Qty,$hpp,$ProductCode,$ProductName)
+        ,$Qty,$hpp,$ProductCode,$ProductName,$unit)
     {
         return  DB::connection('sqlsrv4')->table("TA_JURNAL_DTL")->insert([
             'FS_KD_JURNAL' => $TransactionCode,
@@ -335,7 +335,7 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
             'FS_REK' => $rekPersediaan,
             'FS_KD_REFF' => $ProductCode,
             'FS_KD_REG' => $ProductCode,
-            'FS_KD_UNIT' => '',
+            'FS_KD_UNIT' => $unit,
             'FB_UNIT_USAHA' => '0',
             'FB_LEDGER' => '0',
             'BP_TIPE' => '0',

@@ -26,7 +26,9 @@ class aSupplierRepositoryImpl implements aSupplierRepositoryInterface
             'Country/Region' => $request->Country,
             'Notes' => $request->Notes,
             'lock' => $request->lock,
-            'suplier' => $request->suplier
+            'suplier' => $request->suplier,
+            'LeadTime_Days' => $request->LeadTime,
+            'LamaJatuhTempo_Days' => $request->JatuhTempo,
         ]);
     }
     public function editSupplier($request)
@@ -50,7 +52,9 @@ class aSupplierRepositoryImpl implements aSupplierRepositoryInterface
             'Country/Region' => $request->Country,
             'Notes' => $request->Notes,
             'lock' => $request->lock,
-            'suplier' => $request->suplier
+            'suplier' => $request->suplier,
+            'LeadTime_Days' => $request->LeadTime,
+            'LamaJatuhTempo_Days' => $request->JatuhTempo,
         ]);
         return $updateSupplier;
     }
@@ -76,7 +80,9 @@ class aSupplierRepositoryImpl implements aSupplierRepositoryInterface
             'Country/Region as Region ',
             'Notes',
             'lock',
-            'suplier'
+            'suplier',
+            'LeadTime_Days',
+            'LamaJatuhTempo_Days',
         )
         ->where('ID', $id)->get();
     }
@@ -101,7 +107,10 @@ class aSupplierRepositoryImpl implements aSupplierRepositoryInterface
             'Country/Region as Region ',
             'Notes',
             'lock',
-            'suplier')
+            'suplier',
+            'LeadTime_Days',
+            'LamaJatuhTempo_Days',
+            )
         ->get();
     }
 }

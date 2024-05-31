@@ -61,6 +61,12 @@ class aPurchaseOrderService extends Controller
                 return $this->sendError('Purchase Order Code Not Found !', []);
             }
 
+             // cek jika qty remain 0 semua
+             if ($this->aPurchaseRequisitionRepository->getPurchaseRequisitionQtyRemain($request->PurchaseReqCode)->first()->totalQtyRemainPR < 1) {
+                return $this->sendError('Qty Purchase Requisition sudah Nol semua barang. Tidak ada lagi Barang yang harus di Beli ! ', []);
+            }
+
+
             $getmax = $this->aPurchaseOrder->getMaxCode($request);
             if ($getmax->count() > 0) {
                 foreach ($getmax as $datanumber) {
@@ -237,10 +243,15 @@ class aPurchaseOrderService extends Controller
                     $qtyremainPRAfter = $QtyQtyRemainPR + $QtyPurchase; 
                     $this->aPurchaseRequisitionRepository->updateQtyRemainPRbyPo2($request->PurchaseRequisitonCode,$ProductCode,$qtyremainPRAfter);
             }
+            
+            //insert log
+            $getDataTrs = $this->aPurchaseOrder->getPurchaseOrderbyID($request->PurchaseCode)->first();
+            $this->aBarangRepository->insertLog('PURCHASE ORDER',$request->PurchaseCode,$getDataTrs->NameUserCreate,$request->ReasonVoid);
 
             // void detail pr - reset qty order
             $this->aPurchaseOrder->voidPurchaseDetailAllOrder($request);
             $this->aPurchaseOrder->voidPurchaseOrder($request);
+
 
             DB::commit();
             return $this->sendResponse([], 'Purchase Order Void Successfully !');
@@ -448,5 +459,70 @@ class aPurchaseOrderService extends Controller
             return $this->sendError('Transaksi Gagal di Proses !', $e->getMessage());
         } 
         
+    }
+
+    public function closePurchaseOrder(Request $request)
+    {
+        // validate 
+        $request->validate([
+            "PurchaseCode" => "required",
+            "DateClose" => "required",
+            "UserClose" => "required",
+            "Close" => "required",
+            "ReasonClose" => "required",
+        ]);
+
+        try {
+            // Db Transaction
+            DB::beginTransaction();
+
+            // // cek ada gak datanya
+            if ($this->aPurchaseOrder->getPurchaseOrderbyID($request->PurchaseCode)->count() < 1) {
+                return $this->sendError('Purchase Order Number Not Found !', []);
+            }
+            // if ($this->aPurchaseOrder->getPurchaseOrderDetailbyID($request->PurchaseCode)->count() < 1) {
+            //     return $this->sendError('Purchase Order Detail Number Not Found !', []);
+            // }
+            // // // cek sudah di approved belum 
+            // if ($this->aPurchaseOrder->getPurchaseOrderApprovedbyID($request->PurchaseCode)->count() > 0) {
+            //     return $this->sendError('Purchase Order Number Has Been Approved !', []);
+            // }
+            // if ($this->aPurchaseOrder->getPurchaseOrderDetailbyID($request->PurchaseCode)->count() < 1) {
+            //     return $this->sendError('Purchase Order Detail Number Not Found !', []);
+            // }
+
+            
+            // // void detail pr - reset qty order
+            // $getPodetil = $this->aPurchaseOrder->getPurchaseOrderDetailbyID($request->PurchaseCode);
+           
+            // foreach ($getPodetil as $valueDodetil) {
+            //     $QtyPurchase = $valueDodetil->QtyPurchase;
+            //     $ProductCode = $valueDodetil->ProductCode;
+            //         $getPr = $this->aPurchaseRequisitionRepository->getPurchaseRequisitionDetailPObyIDBarang2($request->PurchaseRequisitonCode,$ProductCode);
+                    
+            //         if ($getPr->count() < 1) {
+                        
+            //             return $this->sendError('Purchase Requisition Detail Not Found !', []);
+            //         } 
+            //         $QtyQtyRemainPR = $getPr->first()->QtyRemainPR;
+            //         $qtyremainPRAfter = $QtyQtyRemainPR + $QtyPurchase; 
+            //         $this->aPurchaseRequisitionRepository->updateQtyRemainPRbyPo2($request->PurchaseRequisitonCode,$ProductCode,$qtyremainPRAfter);
+            // }
+
+            // void detail pr - reset qty order
+           // $this->aPurchaseOrder->voidPurchaseDetailAllOrder($request);
+            $this->aPurchaseOrder->closePurchaseOrder($request);
+
+            // //insert log
+            // $getDataTrs = $this->aPurchaseOrder->getPurchaseOrderbyID($request->PurchaseCode)->first();
+            // $this->aBarangRepository->insertLog('PURCHASE ORDER',$request->PurchaseCode,$getDataTrs->NameUserCreate,$request->ReasonVoid);
+
+            DB::commit();
+            return $this->sendResponse([], 'Purchase Order Close Successfully !');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e->getMessage());
+            return $this->sendError('Transaction Close Failed !', $e->getMessage());
+        }
     }
 }

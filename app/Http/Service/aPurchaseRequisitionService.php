@@ -173,8 +173,13 @@ class aPurchaseRequisitionService extends Controller
                 return $this->sendError('Transaction Number Has Been Approved !', []);
             }
             
+            //insert log
+            $getDataTrs = $this->aPurchaseRequisitionRepository->getPurchaseRequisitionbyID($request->TransasctionCode)->first();
+            $this->aBarangRepository->insertLog('PURCHASE REQUISITION',$request->TransasctionCode,$getDataTrs->NameUserCreate,'');
+            
             $this->aPurchaseRequisitionRepository->voidPurchaseRequisitionDetailAll($request);
             $this->aPurchaseRequisitionRepository->voidPurchaseRequisition($request);
+
 
             DB::commit();
             return $this->sendResponse([], 'Purchase Requisition Void Successfully !');

@@ -168,7 +168,9 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::get("getIPUnitFarmasibyId/{id}", [BarangController::class, "getIPUnitFarmasibyId"]);
         Route::get("getIPUnitFarmasibyIP/{ip}", [BarangController::class, "getIPUnitFarmasibyIP"]);
 
-        
+        Route::get("getHistoryHargaBeli/{id}", [BarangController::class, "getHistoryHargaBeli"]);
+        Route::get("getHistoryHargaJual/{id}", [BarangController::class, "getHistoryHargaJual"]);
+
     });
 
     //inventory
@@ -199,6 +201,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("approvalFirst/", [PurchaseOrderController::class, "approvalFirst"]);
         Route::post("approvalSecond/", [PurchaseOrderController::class, "approvalSecond"]);
         Route::post("approvalThirth/", [PurchaseOrderController::class, "approvalThirth"]);
+        Route::post("closePurchaseOrder", [PurchaseOrderController::class, "closePurchaseOrder"]);
     });
 
     Route::group(['prefix' => 'transaction/deliveryorder'], function () {
@@ -212,6 +215,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("voidDeliveryOrder", [DeliveryOrderController::class, "voidDeliveryOrder"]);
         Route::post("voidDeliveryOrderDetailAllOrder", [DeliveryOrderController::class, "voidDeliveryOrderDetailAllOrder"]);
         Route::post("voidDeliveryOrderDetailbyItem", [DeliveryOrderController::class, "voidDeliveryOrderDetailbyItem"]);
+        Route::post("getCalculateDateTempobyIDSupplier", [DeliveryOrderController::class, "getCalculateDateTempobyIDSupplier"]);
     });
 
     Route::group(['prefix' => 'transaction/ordermutasi'], function () {

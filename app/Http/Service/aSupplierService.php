@@ -32,7 +32,9 @@ class aSupplierService extends Controller
             "mobile_phone" => "required", 
             "Address" => "required",
             "lock" => "required",
-            "suplier" => "required" 
+            "suplier" => "required" ,
+            "LeadTime" => "required" ,
+            "JatuhTempo" => "required" ,
         ]);
 
         if ($validator->fails()) {

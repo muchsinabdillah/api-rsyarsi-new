@@ -190,4 +190,19 @@ class PurchaseOrderController extends Controller
         $edit =  $aPurchaseOrderService->approvalThirth($request);
         return $edit;
     }
+    public function closePurchaseOrder(Request $request)
+    {
+        $aPurchaseOrderRepository = new aPurchaseOrderRepositoryImpl();
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $asupplierRepository = new aSupplierRepositoryImpl();
+        $aPurchaseRequestRepository = new aPurchaseRequisitionRepositoryImpl();
+        $aPurchaseOrderService = new aPurchaseOrderService(
+            $aPurchaseOrderRepository,
+            $aBarangRepository,
+            $asupplierRepository,
+            $aPurchaseRequestRepository
+        );
+        $edit =  $aPurchaseOrderService->closePurchaseOrder($request);
+        return $edit;
+    }
 }

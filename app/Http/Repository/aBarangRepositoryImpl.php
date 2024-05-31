@@ -5,6 +5,7 @@ namespace App\Http\Repository;
 use App\Models\gallery;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class aBarangRepositoryImpl implements aBarangRepositoryInterface
 {
@@ -16,7 +17,6 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
             'NamaKMG' => $request->ProductNameAlias,
             'Discontinued' => $request->Discontinue,
             'Category' => $request->Category,
-            'Group_DK' => $request->Group_DK,
             'Satuan_Beli' => $request->Satuan_Beli,
             'Unit Satuan' => $request->Unit_Satuan,
             'Konversi_satuan' => $request->Konversi_satuan,
@@ -32,12 +32,14 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
             'Kemasan' => $request->Kemasan,
             'Kode_Barcode' => $request->Kode_Barcode,
             'flag_telemedicine' => $request->flag_telemedicine,
+            'JenisBarang' => $request->Jenis_Barang,
+            'Golongan' => $request->Golongan_Obat,
+            'Group_DK' => $request->Group_DK,
             'KD_PDP' => $request->KD_PDP,
         ]);
     } 
     public function editBarang($request)
     {
-
         $updateBarang =  DB::connection('sqlsrv')->table('Products')
             ->where('ID', $request->ID)
             ->update(['Product Code' => $request->ProductCode,
@@ -45,7 +47,6 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
             'NamaKMG' => $request->ProductNameAlias,
             'Discontinued' => $request->Discontinue,
             'Category' => $request->Category,
-            'Group_DK' => $request->Group_DK,
             'Satuan_Beli' => $request->Satuan_Beli,
             'Unit Satuan' => $request->Unit_Satuan,
             'Konversi_satuan' => $request->Konversi_satuan,
@@ -61,7 +62,10 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
             'Kemasan' => $request->Kemasan,
             'Kode_Barcode' => $request->Kode_Barcode,
             'flag_telemedicine' => $request->flag_telemedicine,
-            'KD_PDP' => $request->KD_PDP
+            'JenisBarang' => $request->Jenis_Barang,
+            'Golongan' => $request->Golongan_Obat,
+            'Group_DK' => $request->Group_DK,
+            'KD_PDP' => $request->KD_PDP,
             ]);
         return $updateBarang;
     }
@@ -90,7 +94,10 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
             'Efek_Samping',
             'Peringatan',
             'Kemasan',
-            'Kode_Barcode' 
+            'Kode_Barcode' ,
+            'Golongan',
+            'KD_PDP',
+            'JenisBarang'
             )
             ->where('ID', $id)
             ->get();
@@ -366,4 +373,53 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
             ->where('IPAddress', $request)
             ->get();
     }
+    public function getHistoryHargaBeli($id)
+    {
+        return  DB::connection('sqlsrv')->table("Hpps")
+            ->where('ProductCode', $id)
+            ->select(
+                'id',
+                'DeliveryCode',
+                'DeliveryDate',
+                'NominalHargabeli',
+                'NominalDiskon',
+                'NominalHpp',
+                'UserCreate',
+                DB::raw("CASE WHEN Batal = '1' then 'BATAL' ELSE 'TIDAK BATAL' END AS Status"),
+                'UserBatal'
+            )
+            ->get();
+    }
+
+    public function getHistoryHargaJual($id)
+    {
+        return  DB::connection('sqlsrv')->table("Hnas")
+            ->where('ProductCode', $id)
+            ->select(
+                'id',
+                'DeliveryCode',
+                'DeliveryDate',
+                'NominalHna',
+                'NominalHnaMinDiskon',
+                'UserCreate',
+                'StartDate',
+                'ExpiredDate',
+                DB::raw("CASE WHEN Batal = '1' then 'BATAL' ELSE 'TIDAK BATAL' END AS Status"),
+                'UserBatal',
+                'TglBatal'
+            )
+            ->get();
+    }
+
+    public function insertLog($TransactionType,$TransactionNumber,$UserCreate,$Reasons)
+    {
+        return  DB::connection('sqlsrv')->table("LogInventories")->insert([
+            'TransactionType' => $TransactionType,
+            'TransactionNumber' => $TransactionNumber,
+            'UserCreate' => $UserCreate,
+            'DateCreate' => Carbon::now(),
+            'Reasons' => $Reasons,
+        ]);
+    } 
+
 }

@@ -207,4 +207,15 @@ class aPurchaseRequisitionRepositoryImpl implements aPurchaseRequisitionReposito
             ]);
         return $updatesatuan;
     }
+
+    public function getPurchaseRequisitionQtyRemain($id)
+    {
+        return  DB::connection('sqlsrv')->table("PurchaseRequisitionDetails")
+        ->where('TransactionCode', $id)
+        ->where('Void', '0')
+        ->where('QtyRemainPR','<>', '0')
+        //->select(DB::raw('sum(QtyRemainPR) as totalQtyRemainPR'))
+        ->select(DB::raw('count(QtyRemainPR) as totalQtyRemainPR'))
+        ->get();
+    }
 }

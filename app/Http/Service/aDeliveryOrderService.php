@@ -75,6 +75,23 @@ class aDeliveryOrderService extends Controller
                 return $this->sendError('No. Transaksi Purchase Order tidak ditemukan !', []);
             }
 
+            // // cek ada gak datanya
+            $rekHutangbarang = $this->aJurnal->getRekHutangBarang();
+            if ($rekHutangbarang->count() < 1) {
+                return $this->sendError('Rekening Hutang Barang Kosong, Silahkan Maping Dahulu !', []);
+            } 
+            // cek rek diskon pembelian detil
+            $rekDiskonPembelian = $this->aJurnal->getRekBiayaPembelianlain();
+            if ($rekDiskonPembelian->count() < 1) {
+                return $this->sendError('Rekening Diskon Pembelian Kosong, Silahkan Maping Dahulu !', []);
+            } 
+
+             // cek rek ppn masukan
+             $rekPPNMasukan = $this->aJurnal->getRekPPNMasukan();
+             if ($rekPPNMasukan->count() < 1) {
+                 return $this->sendError('Rekening PPN Masukan Kosong, Silahkan Maping Dahulu !', []);
+             } 
+
             $getmax = $this->aDeliveryOrder->getMaxCode($request);
             if ($getmax->count() > 0) {
                 foreach ($getmax as $datanumber) {
@@ -130,6 +147,12 @@ class aDeliveryOrderService extends Controller
        
             
             foreach ($request->Items as $key) {
+
+                    if ($key['KonversiQty'] > 1){
+                        $konversiqtytotal = $key['Konversi_QtyTotal'];
+                    }else{
+                        $konversiqtytotal = 1;
+                    }
        
                 # code...
                 // // cek kode barangnya ada ga
@@ -138,7 +161,8 @@ class aDeliveryOrderService extends Controller
 
                     // cek hpp dulu ada gak
                     $hpp = $this->aHna->getHpp($key,$request);
-                    $nilaiHppBaru = ($key['Price']-$key['DiscountRp'])/$key['Konversi_QtyTotal']; 
+                    //$nilaiHppBaru = ($key['Price']-$key['DiscountRp'])/$key['Konversi_QtyTotal']; 
+                    $nilaiHppBaru = ($key['Price']/$konversiqtytotal-$key['DiscountRp']); 
                  
                    
                     if($hpp->count() > 0 ){   
@@ -188,10 +212,13 @@ class aDeliveryOrderService extends Controller
                     if($request->JenisPurchase == "1"){
                         if($request->JenisDeliveryOrder <> "LUAR"){
                             $hnaHigh = $this->aHna->getHnaHigh($key,$request);
-                            $hna = ($key['Price'] / $key['Konversi_QtyTotal']);
-                            $taxconert = $key['TaxRp']/$key['Konversi_QtyTotal'];
+                            // $hna = ($key['Price'] / $key['Konversi_QtyTotal']);
+                            // $taxconert = $key['TaxRp']/$key['Konversi_QtyTotal'];
+                            $hna = ($key['Price'] / $konversiqtytotal);
+                            $taxconert = $key['TaxRp']/$konversiqtytotal;
                             $nilaiHnaBaru = $hna + $taxconert;
-                            $discountConvert =  $key['DiscountRp']/$key['Konversi_QtyTotal'];
+                            //$discountConvert =  $key['DiscountRp']/$key['Konversi_QtyTotal'];
+                            $discountConvert =  $key['DiscountRp']/$konversiqtytotal;
                             $hnaTaxDiskon = (($hna - $discountConvert) + $taxconert );
                             if($hnaHigh->count() < 1 ){ 
                                 $nilaiHnaFix = $nilaiHnaBaru;
@@ -213,7 +240,8 @@ class aDeliveryOrderService extends Controller
                         
                         $hpp = $this->aHna->getHpp($key,$request);
                         
-                        $nilaiHppBaru = ($key['Price']-$key['DiscountRp'])/$key['Konversi_QtyTotal']; 
+                        //$nilaiHppBaru = ($key['Price']-$key['DiscountRp'])/$key['Konversi_QtyTotal']; 
+                        $nilaiHppBaru = ($key['Price']/$konversiqtytotal-$key['DiscountRp']); 
                         if($hpp->count() > 0  ){ 
                             $NilaiHppTerakhir = $hpp->first()->first()->NominalHpp; 
                             $nilaiHppFix = ($NilaiHppTerakhir+$nilaiHppBaru)/2;
@@ -274,10 +302,13 @@ class aDeliveryOrderService extends Controller
                      if($request->JenisPurchase == "1"){
                         if($request->JenisDeliveryOrder <> "LUAR"){
                             $hnaHigh = $this->aHna->getHnaHigh($key,$request);
-                            $hna = ($key['Price'] / $key['Konversi_QtyTotal']);
-                            $taxconert = $key['TaxRp']/$key['Konversi_QtyTotal'];
+                            // $hna = ($key['Price'] / $key['Konversi_QtyTotal']);
+                            // $taxconert = $key['TaxRp']/$key['Konversi_QtyTotal'];
+                            $hna = ($key['Price'] / $konversiqtytotal);
+                            $taxconert = $key['TaxRp']/$konversiqtytotal;
                             $nilaiHnaBaru = $hna + $taxconert;
-                            $discountConvert =  $key['DiscountRp']/$key['Konversi_QtyTotal'];
+                            //$discountConvert =  $key['DiscountRp']/$key['Konversi_QtyTotal'];
+                            $discountConvert =  $key['DiscountRp']/$konversiqtytotal;
                             $hnaTaxDiskon = (($hna - $discountConvert) + $taxconert);
                             
                             if($hnaHigh->count() < 1 ){
@@ -323,7 +354,8 @@ class aDeliveryOrderService extends Controller
             "TotalRowDO" => "required",
             "TotalQtyDO" => "required",
             "JenisDelivery" => "required",
-            "UnitCode" => "required"
+            "UnitCode" => "required",
+            "JenisPembayaran" => "required",
         ]);
         try {
             // Db Transaction
@@ -365,6 +397,8 @@ class aDeliveryOrderService extends Controller
             foreach ($cekDodetil as $valueDo) { 
 
                 $cekrek = $this->aJurnal->getRekeningPersediaaan($valueDo->ProductCode); 
+                //test needed
+                //$valueDo['UnitCode'] = $request->UnitCode;
                 $this->aJurnal->addJurnalDetailDebetPersediaan($valueDo, $cekrek->first()->RekPersediaan); 
 
                 if($valueDo->DiscountRpTTL > 0 ){
@@ -477,9 +511,14 @@ class aDeliveryOrderService extends Controller
                 $this->aPurchaseOrderRepository->editQtyPurchaseRemain($request, $qtyremainPO, $key2->ProductCode);
 
             }
+            
+            //insert log
+            $getDataTrs = $this->aDeliveryOrder->getDeliveryOrderbyID($request->TransactionCode)->first();
+            $this->aBarangRepository->insertLog('DELIVERY ORDER',$request->TransactionCode,$getDataTrs->NamaUser,$request->ReasonVoid);
            
             $this->aDeliveryOrder->voidDeliveryOrderDetailAllOrder($request);
             $this->aDeliveryOrder->voidDeliveryOrder($request);
+
 
             DB::commit();
             return $this->sendResponse([], 'Transaksi Delivery Order berhasil dibatalkan !');
@@ -631,6 +670,32 @@ class aDeliveryOrderService extends Controller
         try {
             $data = $this->aDeliveryOrder->getDeliveryOrderbyPeriode($request);
             return $this->sendResponse($data, 'No. Transaksi Delivery Order di ditemukan !');
+        } catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Delivery Order Data Not Found !', $e->getMessage());
+        }
+    }
+
+    public function getCalculateDateTempobyIDSupplier($request)
+    {
+        // validate 
+        $request->validate([
+            "TransasctionDate" => "required",
+            "IDSupplier" => "required",
+        ]);
+
+        try {
+            $datatempo = $this->aSupplierRepository->getSupplierbyId($request->IDSupplier)->first()->LamaJatuhTempo_Days;
+            // cek ada gak datanya
+            if ($datatempo == null) {
+                return $this->sendError('Tanggal jatuh tempo di master supplier masih kosong ! Mohon dilengkapi untuk kalkulasi tanggal jatuh tempo !', []);
+            }
+
+            //calulcate
+            $datetrs = date('Y-m-d', strtotime($request->TransasctionDate));
+            $getdatetempo = date('Y-m-d', strtotime($datetrs. ' + '.$datatempo.' days'));
+
+            return $this->sendResponse($getdatetempo, 'Tanggal jatuh tempo ditemukan !');
         } catch (Exception $e) { 
             Log::info($e->getMessage());
             return $this->sendError('Delivery Order Data Not Found !', $e->getMessage());
