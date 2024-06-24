@@ -444,4 +444,48 @@ trait AutoNumberTrait
 
         return $numberx;
     }
+    public function  ReturJual($request, $getmax)
+    {
+        $AWAL = 'TRJ';
+        $ddatedmy = date(
+            "dmY",
+            strtotime($request['TransactionDate'])
+        );
+        $coutn = DB::connection('sqlsrv')
+        ->table("ReturnSales")
+        ->where(
+            'ReffDateTrs',
+            $ddatedmy
+        )->get();
+        $no = 1;
+        if ($coutn->count() > 0) {
+            $numberx =  $AWAL  .  $ddatedmy .   sprintf("%04s", Str::substr($getmax, 11, 4) + 1);
+        } else {
+            $numberx =   $AWAL  . $ddatedmy .  sprintf("%04s", $no);
+        }
+
+        return $numberx;
+    }
+    public function  AdjusmentNumber($request, $getmax)
+    {
+        $AWAL = 'TAD';
+        $ddatedmy = date(
+            "dmY",
+            strtotime($request['TransactionDate'])
+        );
+        $coutn = DB::connection('sqlsrv')
+        ->table("Adjusments")
+        ->where(
+            'ReffDateTrs',
+            $ddatedmy
+        )->get();
+        $no = 1;
+        if ($coutn->count() > 0) {
+            $numberx =  $AWAL  .  $ddatedmy .   sprintf("%04s", Str::substr($getmax, 11, 4) + 1);
+        } else {
+            $numberx =   $AWAL  . $ddatedmy .  sprintf("%04s", $no);
+        }
+
+        return $numberx;
+    }
 }

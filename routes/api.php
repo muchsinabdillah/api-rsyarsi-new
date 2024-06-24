@@ -72,7 +72,7 @@ Route::post("register", [UserController::class,"register"]);
 Route::post("genToken", [UserController::class, "genToken"]);
 Route::post("getLoginSimrs", [UserController::class, "getLoginSimrs"]);
 Route::post("getLoginSimrsToken", [UserController::class, "getLoginSimrsToken"]);
-
+Route::post("getLoginMitraMCU", [UserController::class, "getLoginMitraMCU"]);
 
 // untuk bpjs
 Route::get("token", [UserController::class, "token"]);
@@ -568,6 +568,8 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("hasilMCUTreadmill", [HasilMcuPDFController::class, "hasilMCUTreadmill"]);
         Route::post("hasilMCUJiwa", [HasilMcuPDFController::class, "hasilMCUJiwa"]);
         Route::post("hasilMCUBebasNarkoba", [HasilMcuPDFController::class, "hasilMCUBebasNarkoba"]);
+        Route::post("getRekapSDSbyPeriode", [HasilMcuPDFController::class, "getRekapSDSbyPeriode"]); 
+        Route::post("getRekapMCU", [HasilMcuPDFController::class, "getRekapMCU"]); 
     });
 
     // edocument
@@ -614,6 +616,9 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::group(['prefix' => 'OTP/'], function () {
             Route::post("insert", [EDocumentController::class, "insertOTP"]);
             Route::post("verify", [EDocumentController::class, "verifyOTP"]);
+        });
+        Route::group(['prefix' => 'HasilMcu/'], function () {
+            Route::post("byId", [EDocumentController::class, "getHasilMCUbyId"]); 
         });
     }); 
 

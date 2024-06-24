@@ -357,6 +357,7 @@ class aDeliveryOrderService extends Controller
             "UnitCode" => "required",
             "JenisPembayaran" => "required",
         ]);
+        
         try {
             // Db Transaction
             DB::beginTransaction();
@@ -366,6 +367,7 @@ class aDeliveryOrderService extends Controller
             if ($rekHutangbarang->count() < 1) {
                 return $this->sendError('Rekening Hutang Barang Kosong, Silahkan Maping Dahulu !', []);
             } 
+            
             // cek rek diskon pembelian detil
             $rekDiskonPembelian = $this->aJurnal->getRekBiayaPembelianlain();
             if ($rekDiskonPembelian->count() < 1) {
@@ -377,11 +379,11 @@ class aDeliveryOrderService extends Controller
             if ($rekPPNMasukan->count() < 1) {
                 return $this->sendError('Rekening PPN Masukan Kosong, Silahkan Maping Dahulu !', []);
             } 
-
+         
             if ($this->aDeliveryOrder->getDeliveryOrderbyID($request->TransactionCode)->count() < 1) {
                 return $this->sendError('No. Transaksi Delivery Order tidak ditemukan !', []);
             } 
-           
+        
             $this->aJurnal->delJurnalHdr($request);
             $this->aJurnal->delJurnalDtl($request);
 
@@ -395,7 +397,7 @@ class aDeliveryOrderService extends Controller
             }
             
             foreach ($cekDodetil as $valueDo) { 
-
+                
                 $cekrek = $this->aJurnal->getRekeningPersediaaan($valueDo->ProductCode); 
                 //test needed
                 //$valueDo['UnitCode'] = $request->UnitCode;

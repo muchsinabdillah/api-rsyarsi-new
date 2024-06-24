@@ -100,6 +100,8 @@ class aFakturService extends Controller
         // validate 
         $request->validate([
             "TransactionCode" => "required",
+            "NoPurchaseOrder" => "required",
+            "Pph23" => "required",
             "DeliveryCode" => "required",
             "UnitPembelian" => "required",
             "TransactionDate" => "required",
@@ -203,7 +205,12 @@ class aFakturService extends Controller
                 }
                 $autonumberHtg = $this->HuatngNumber($request, $TransactionCodehtg);
                 $notehtg = 'Faktur Pembelian No. : ' . $request->TransactionCode . ' , No Penerimaan Barang : ' . $request->DeliveryCode;
-                $this->aFakturRepository->addHutangHeader($notehtg, $request, $autonumberHtg);
+                if ($request->TipeHutang == '1'){
+                    $kdrekening = '31100001';
+                }else{
+                    $kdrekening = '31100002';
+                }
+                $this->aFakturRepository->addHutangHeader($notehtg, $request, $autonumberHtg,$kdrekening);
                 $this->aFakturRepository->addHutangDetail($request, $autonumberHtg);
 
                 $this->aJurnal->addJurnalHeaderFaktur($request, $notes);
@@ -224,7 +231,12 @@ class aFakturService extends Controller
                 $this->aJurnal->addJurnalDetailDebetDiskonPembelianLain($request, $rekdiskonpembelianLain->rekening, $getHutang->first()->KD_HUTANG);
                 $this->aJurnal->addJurnalDetailDebetBiayaPembelianLain($request, $rekbiayalain->rekening, $getHutang->first()->KD_HUTANG);
             }
-            $this->aFakturRepository->updateFakturHeader($request);
+            if($request->TotalTax > 0){
+                $includeppn = "1";
+            }else{
+                $includeppn = "0";
+            }
+            $this->aFakturRepository->updateFakturHeader($request,$includeppn);
             DB::commit();
             return $this->sendResponse([], 'Items Faktur Add Successfully !  ');
         } catch (Exception $e) {
@@ -312,7 +324,9 @@ class aFakturService extends Controller
             if ($this->aFakturRepository->getFakturbyID($request->TransactionCode)->count() < 1) {
                 return $this->sendError('Faktur Number Not Found !', []);
             }
-
+            if ($this->aFakturRepository->getHutangbyID($request)->first()->KD_ORDER != null || $this->aFakturRepository->getHutangbyID($request)->first()->KD_ORDER != '') {
+                return $this->sendError('Hutang sudah ada order pembayaran !', []);
+            }
             // Load Data All Do Detil Untuk Di Looping 
             $dtlDo = $this->aFakturRepository->getFakturDetailbyID($request->TransactionCode);
  

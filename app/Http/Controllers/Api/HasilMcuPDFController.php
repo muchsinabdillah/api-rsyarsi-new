@@ -68,6 +68,20 @@ class HasilMcuPDFController extends Controller
         $user =  $userService->hasilMCUBebasNarkoba($request);
         return $user; 
     }
+    public function getRekapSDSbyPeriode(Request $request){
+        $hasilmcu = new bHasilMCURepositoryImpl();  
+        $visit = new bVisitRepositoryImpl();  
+        $userService = new bHasilMCUService($hasilmcu,$visit);
+        $user =  $userService->getRekapSDSbyPeriode($request);
+        return $user; 
+    }
+    public function getRekapMCU(Request $request){
+        $hasilmcu = new bHasilMCURepositoryImpl();  
+        $visit = new bVisitRepositoryImpl();  
+        $userService = new bHasilMCUService($hasilmcu,$visit);
+        $user =  $userService->getRekapMCU($request);
+        return $user; 
+    }
 }
 
 

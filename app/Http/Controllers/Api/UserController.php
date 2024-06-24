@@ -49,4 +49,10 @@ class UserController extends Controller
         $user =  $userService->getLoginSimrsToken($request);
         return $user;
     }
+    public function getLoginMitraMCU(Request $request){  
+        $userRepository = new UserRepositoryImpl();
+        $userService = new UserService($userRepository);
+        $user =  $userService->getLoginMitraMCU($request);
+        return $user;
+    }
 }

@@ -160,4 +160,25 @@ class UserService extends Controller {
             return $this->sendError("login Gagal.", []);
         }
     }
+    public function getLoginMitraMCU(Request $request)
+    {
+        // validator  
+        $request->validate([
+            "username" => "required",
+            "password" => "required" 
+        ]);
+
+        //login
+        $loginUser = $this->userRepository->getLoginMitraMCU($request);
+        
+        if ($loginUser) {
+        
+            return $this->sendResponse($loginUser ,"Login berhasil.");  
+
+
+        } else {
+            //response
+            return $this->sendError("login Gagal.", []);
+        }
+    }
 }

@@ -68,4 +68,12 @@ class UserRepositoryImpl  implements UserRepositoryInterface
         ->where('NoPIN', $username) 
         ->get();
     }
+    public function getLoginMitraMCU($request){
+        return  DB::connection('sqlsrv2')->table("user_mitra")
+        ->select(DB::raw("nama as [First Name]"),DB::raw("null as [Last Name]"),DB::raw("0 as GroupUser"),DB::raw("0 as JenisAntrian"),'group_jaminan','id_jaminan')
+        ->where('username', $request->username)
+        ->where('password', $request->password)
+        ->where('is_active','1')
+        ->get();
+    }
 }

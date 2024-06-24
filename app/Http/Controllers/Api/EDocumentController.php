@@ -125,4 +125,10 @@ class EDocumentController extends Controller
         $user =  $userService->getSuketSehatbyId($request);
         return $user; 
     }
+    public function getHasilMCUbyId(Request $request){
+        $eDocuemnt = new bEdocumentRepositoryImpl();   
+        $userService = new bEdocumentService($eDocuemnt);
+        $user =  $userService->getHasilMCUbyId($request);
+        return $user; 
+    }
 }

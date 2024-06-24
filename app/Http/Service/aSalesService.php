@@ -72,6 +72,8 @@ class aSalesService extends Controller
             "Group_Transaksi" => "required", 
             "Notes" => "required" ,
             //"JenisPasien" => "required" ,
+            "GroupJaminan" => "required" ,
+            "KodeJaminan" => "required" ,
         ]);
 
         
@@ -152,9 +154,11 @@ class aSalesService extends Controller
         foreach ($request->Items as $key) {
             # code...
             // cek kode barangnya ada ga
-            $cekstok = $this->sStokRepository->cekStokbyIDBarang($key, $request->UnitTujuan)->count(); 
-            if ( $cekstok < 1) {
-                return  $this->sendError('Qty Stok Tidak ada diLayanan Tujuan Ini ! ' , []);
+            $cekstok = $this->sStokRepository->cekStokbyIDBarang($key, $request->UnitTujuan)->count();
+            if ($key['Qty'] <> 0){ 
+                if ( $cekstok < 1) {
+                    return  $this->sendError('Qty Stok Tidak ada diLayanan Tujuan Ini ! ' , []);
+                }
             }
         }
 
@@ -165,19 +169,20 @@ class aSalesService extends Controller
             $cekstok = $this->sStokRepository->cekStokbyIDBarang($key, $request->UnitTujuan)->first();
             $getdatadetilmutasi = $this->aSalesRepository->getSalesDetailbyIDBarang($request, $key);
             $vGetMutasiDetil =  $getdatadetilmutasi->first();
-             
-            if($getdatadetilmutasi->count() < 1 ){
-                $stokCurrent = (float)$cekstok->Qty;
-                if ($stokCurrent < $key['Qty']) {
-                    return $this->sendError('Qty Stok ' . $key['ProductName'] . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Pakai ' . $key['Qty'] . ' ! ', []);
+            if ($key['Qty'] <> 0){ 
+                if($getdatadetilmutasi->count() < 1 ){
+                    $stokCurrent = (float)$cekstok->Qty;
+                    if ($stokCurrent < $key['Qty']) {
+                        return $this->sendError('Qty Stok ' . $key['ProductName'] . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Pakai ' . $key['Qty'] . ' ! ', []);
+                    }
+                }else{
+                    $stokCurrent = (float)$cekstok->Qty;
+                    $getStokPlus = $vGetMutasiDetil->Qty + $stokCurrent;
+                    $stokminus = $getStokPlus - $key['Qty'];
+                    if ($stokminus < 0) {
+                        return $this->sendError('Qty Stok ' . $key['ProductName'] . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Pakai ' . $key['Qty'] . ' ! ', []);
+                    } 
                 }
-            }else{
-                $stokCurrent = (float)$cekstok->Qty;
-                $getStokPlus = $vGetMutasiDetil->Qty + $stokCurrent;
-                $stokminus = $getStokPlus - $key['Qty'];
-                if ($stokminus < 0) {
-                    return $this->sendError('Qty Stok ' . $key['ProductName'] . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Pakai ' . $key['Qty'] . ' ! ', []);
-                } 
             }
         }
 

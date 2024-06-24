@@ -177,6 +177,13 @@ class bEdocumentRepositoryImpl implements bEdocumentRepositoryInterface
         ->where('statusResume','<>','VERIFIED')
         ->get();
     }
+    public function getHasilMCUbyId($idTrs)
+    {
+        return  DB::connection('sqlsrv6')
+        ->table("T_HASIL_MCU_PDF_HDR") 
+        ->where('Uuid', $idTrs) 
+        ->get();
+    }
     public function insertOTP($request)
     {
         return  DB::connection('Syslog')->table("Otps")->insert([

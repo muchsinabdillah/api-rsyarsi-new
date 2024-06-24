@@ -707,7 +707,9 @@ class bAppointmenNonBPJSService extends Controller {
                 $NoKartuBPJS = $databooking->NoKartuBPJS;
                  // validasi checkin, tapi DATA PROVINSI KOSONG
                  $dataMedrecProvinsi = $this->medrecRepository->getMedrecbyNoMR($NoMrfix);
+             
                  $xdataMedrecProvinsi = $dataMedrecProvinsi->first();
+               
                  if ($xdataMedrecProvinsi->kelurahan == null ) {
                      return $this->sendError("Data Medical Record anda belum lengkap, Silahkan ke Counter Pendaftaran untuk melengkapi Data Medical Record Anda.", $databooking); 
                  }

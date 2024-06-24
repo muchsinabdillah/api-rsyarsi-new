@@ -10,8 +10,12 @@ class aSupplierRepositoryImpl implements aSupplierRepositoryInterface
 {
     public function addSupplier($request)
     {
+
+ 
         return  DB::connection('sqlsrv')->table("Suppliers")->insert([
             'IdPabrikan' => $request->IdPabrikan,
+            'NamaBank' => $request->NamaBank,
+            'NoRekening' => $request->NoRekening,
             'Company' => $request->Company,
             'Last Name' => $request->last_name,
             'First Name' => $request->first_name,
@@ -38,6 +42,8 @@ class aSupplierRepositoryImpl implements aSupplierRepositoryInterface
             ->where('ID', $request->ID)
             ->update([
             'IdPabrikan' => $request->IdPabrikan,
+            'NamaBank' => $request->NamaBank,
+            'NoRekening' => $request->NoRekening,
             'Company' => $request->Company,
             'Last Name' => $request->last_name,
             'First Name' => $request->first_name,
@@ -83,6 +89,8 @@ class aSupplierRepositoryImpl implements aSupplierRepositoryInterface
             'suplier',
             'LeadTime_Days',
             'LamaJatuhTempo_Days',
+            'NamaBank',
+            'NoRekening'
         )
         ->where('ID', $id)->get();
     }

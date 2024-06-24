@@ -174,9 +174,8 @@ class aPurchaseRequisitionService extends Controller
             }
             
             //insert log
-            $getDataTrs = $this->aPurchaseRequisitionRepository->getPurchaseRequisitionbyID($request->TransasctionCode)->first();
-            $this->aBarangRepository->insertLog('PURCHASE REQUISITION',$request->TransasctionCode,$getDataTrs->NameUserCreate,'');
-            
+            $getDataTrs = $this->aPurchaseRequisitionRepository->getPurchaseRequisitionbyID($request->TransasctionCode)->first(); 
+            $this->aBarangRepository->insertLog('PURCHASE REQUISITION',$request->TransasctionCode,$getDataTrs->NamaUserCreate,'');
             $this->aPurchaseRequisitionRepository->voidPurchaseRequisitionDetailAll($request);
             $this->aPurchaseRequisitionRepository->voidPurchaseRequisition($request);
 

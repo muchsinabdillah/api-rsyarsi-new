@@ -245,9 +245,8 @@ class aPurchaseOrderService extends Controller
             }
             
             //insert log
-            $getDataTrs = $this->aPurchaseOrder->getPurchaseOrderbyID($request->PurchaseCode)->first();
-            $this->aBarangRepository->insertLog('PURCHASE ORDER',$request->PurchaseCode,$getDataTrs->NameUserCreate,$request->ReasonVoid);
-
+            $getDataTrs = $this->aPurchaseOrder->getPurchaseOrderbyID($request->PurchaseCode)->first(); 
+            $this->aBarangRepository->insertLog('PURCHASE ORDER',$request->PurchaseCode,$getDataTrs->NamaUserCreate,$request->ReasonVoid);
             // void detail pr - reset qty order
             $this->aPurchaseOrder->voidPurchaseDetailAllOrder($request);
             $this->aPurchaseOrder->voidPurchaseOrder($request);
@@ -287,6 +286,9 @@ class aPurchaseOrderService extends Controller
             }
             if ($this->aPurchaseRequisitionRepository->getPurchaseRequisitionDetailPObyIDBarang($request)->count() < 1) {
                 return $this->sendError('Purchase Order with This Code Item Invalid !', []);
+            }
+            if ($this->aPurchaseOrder->getPurchaseOrderDetailbyID($request->PurchaseCode)->count() == 1) {
+                return $this->sendError('Purchase Order Detail Hanya 1 Item, Silahkan Hapus Transaksi !', []);
             }
             $this->aPurchaseOrder->voidPurchaseOrderDetailbyItem($request);
 

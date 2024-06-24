@@ -20,7 +20,7 @@ class aSupplierService extends Controller
     }
 
     public function addSupplier(Request $request)
-    {
+    { 
         // validator 
         $validator = Validator::make($request->all(), [
             "IdPabrikan" => "required",
@@ -34,6 +34,8 @@ class aSupplierService extends Controller
             "lock" => "required",
             "suplier" => "required" ,
             "LeadTime" => "required" ,
+            "NoRekening" => "required" ,
+            "NamaBank" => "required" ,
             "JatuhTempo" => "required" ,
         ]);
 
@@ -80,6 +82,8 @@ class aSupplierService extends Controller
             "mobile_phone" => "required",
             "Address" => "required",
             "lock" => "required",
+            "NoRekening" => "required" ,
+            "NamaBank" => "required" ,
             "suplier" => "required" 
         ]);
 

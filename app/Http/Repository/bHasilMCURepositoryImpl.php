@@ -91,9 +91,19 @@ class bHasilMCURepositoryImpl implements bHasilMCURepositoryInterface
         ->orderBy('ID', 'DESC')
         ->get();
     }
+    public function listReportPDFMCUbyJaminan($request)
+    {
+        return  DB::connection('sqlsrv5')->table("View_ReportPdfHasilMCU")
+        ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), [Visit Date], 111), '/','-')"),
+        [$request->tglPeriodeBerobatAwal,$request->tglPeriodeBerobatAkhir])  
+        ->orderBy('ID', 'DESC')
+        ->where('KodeJaminan',$request->id_jaminan)
+        ->where('TipePasien',$request->group_jaminan)
+        ->get();
+    }
     public function hasilMCUTreadmill($reg)
     {
-        return  DB::connection('sqlsrv5')->table("MR_MCU_HASIL_TREADMILL")
+        return  DB::connection('sqlsrv5')->table("View_HasilTreadmill")
         ->where('NoRegistrasi',$reg)
         ->get();
     }
@@ -115,6 +125,114 @@ class bHasilMCURepositoryImpl implements bHasilMCURepositoryInterface
         ->select(  'AliasDokter', 'NamaDokter')
          ->where('NoRegistrasi',$reg)
          ->where('ShowCetakanKonsul','1')
+        ->get();
+    }
+    public function reportsds($reg)
+    {
+        return  DB::connection('sqlsrv5')->table("EMR_MCU_SDS")
+        ->where('NoRegistrasi',$reg)
+        ->where('Batal','0')
+        ->get();
+    }
+    public function getRekapSDSbyPeriode($request)
+    {
+        return  DB::connection('sqlsrv5')->table("View_RekapSDS")
+        ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), TglPemeriksaan, 111), '/','-')"),
+        [$request->tglPeriodeBerobatAwal,$request->tglPeriodeBerobatAkhir])  
+        ->get();
+    }
+    public function getRekapKetKesehatanMCU($request)
+    {
+        return  DB::connection('sqlsrv5')->table("View_RekapKetKesehatan")
+        ->select(DB::raw("KetKesehatan as label"),DB::raw("count(isnull(KetKesehatan,0)) as dataset"))
+        ->where('TipePasien',$request->TipePenjamin)
+        ->where('KodeJaminan',$request->NamaPenjamin)
+        ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), [Visit Date], 111), '/','-')"),
+        [$request->tglAwal,$request->tglAkhir])  
+        ->groupBy('KetKesehatan')
+        ->get();
+    }
+    public function getRekapDiagnosaKerjaMCU($request)
+    {
+        return  DB::connection('sqlsrv5')->table("View_DiagnosaKerjaMCU")
+        ->select(DB::raw("NamaDiagnosaKerja as label"),DB::raw("count(isnull(NamaDiagnosaKerja,0)) as dataset"))
+        ->where('TipePasien',$request->TipePenjamin)
+        ->where('KodeJaminan',$request->NamaPenjamin)
+        ->where('IdUnit','53')
+        ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), [Visit Date], 111), '/','-')"),
+        [$request->tglAwal,$request->tglAkhir])  
+        ->groupBy('NamaDiagnosaKerja')
+        ->get();
+    }
+    public function getRekapJenisKelaminMCU($request)
+    {
+        return  DB::connection('sqlsrv6')->table("dataRWJ")
+        ->select(DB::raw("Sex as label"),DB::raw("count(isnull(Sex,0)) as dataset"))
+        ->where('TipePasien',$request->TipePenjamin)
+        ->where('KodeJaminan',$request->NamaPenjamin)
+        ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), [Visit Date], 111), '/','-')"),
+        [$request->tglAwal,$request->tglAkhir])  
+        ->where('IdUnit','53')
+        ->groupBy('Sex')
+        ->get();
+    }
+    public function getRekapUmurMCU($request)
+    {
+        $query2 = DB::connection('sqlsrv6')->table("dataRWJ")
+        ->select(DB::raw("'29 Hari sd 18 tahun' as 'label'"),DB::raw("count( isnull(datediff(dd,DateOfBirth,getdate()),0) ) as 'dataset'"))
+        ->where('TipePasien',$request->TipePenjamin)
+        ->where('KodeJaminan',$request->NamaPenjamin)
+        ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), [Visit Date], 111), '/','-')"),
+        [$request->tglAwal,$request->tglAkhir]) 
+        ->whereRaw("datediff(dd,DateOfBirth,getdate()) between '29' and '6570'")
+        ->where('IdUnit','53');
+
+        $query3 = DB::connection('sqlsrv6')->table("dataRWJ")
+        ->select(DB::raw("'29 Hari sd 18 tahun' as 'label'"),DB::raw("count( isnull(datediff(dd,DateOfBirth,getdate()),0) ) as 'dataset'"))
+        ->where('TipePasien',$request->TipePenjamin)
+        ->where('KodeJaminan',$request->NamaPenjamin)
+        ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), [Visit Date], 111), '/','-')"),
+        [$request->tglAwal,$request->tglAkhir]) 
+        ->whereRaw("datediff(dd,DateOfBirth,getdate()) between '6571' and '21900'")
+        ->where('IdUnit','53');
+
+        return DB::connection('sqlsrv6')->table("dataRWJ")
+        ->select(DB::raw("'0 sd 28 hari' as 'label'"),DB::raw("count( isnull(datediff(dd,DateOfBirth,getdate()),0) ) as 'dataset'"))
+        ->where('TipePasien',$request->TipePenjamin)
+        ->where('KodeJaminan',$request->NamaPenjamin)
+        ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), [Visit Date], 111), '/','-')"),
+        [$request->tglAwal,$request->tglAkhir])  
+        ->whereRaw("datediff(dd,DateOfBirth,getdate()) between '0' and '28'")
+        ->where('IdUnit','53')
+        ->unionAll($query2)
+        ->unionAll($query3)
+        ->get();
+
+    }
+    public function hasilMCUSaran($reg)
+    {
+        return  DB::connection('sqlsrv5')->table("MR_TEMPLEAT_MCU_DETAIL")
+        ->where('NoRegistrasi',$reg)
+        ->get();
+    }
+    public function hasilMCUSaranSpesialis($reg)
+    {
+        return  DB::connection('sqlsrv5')->table("View_SaranSpesialis")
+        ->where('NoRegistrasi',$reg)
+        ->get();
+    }
+    public function hasilMCUDiagnosa($reg)
+    {
+        return  DB::connection('sqlsrv5')->table("View_DiagnosaKerjaMCU")
+        ->where('NoRegistrasi',$reg)
+        ->select(
+        'NoMR',
+        'NoEpisode',
+        'NoRegistrasi',
+        'NamaDiagnosaKerja',
+        'ICD_CODE',
+        'KATEGORI',
+        )
         ->get();
     }
     

@@ -240,8 +240,8 @@ class aReturJualService extends Controller
                 $request['SubtotalQtyPrice'] = $request->TotalQtyReturJual*-1;
                 $request['Discount_Prosen'] = $getdatasaleshdr->Discount;
                 $request['Discount'] = 0;
-                $request['Subtotal'] = $request->TotalReturJualRp*-1;
-                $request['Grandtotal'] = $getdatasaleshdr->GrandTotal*-1;
+                $request['Subtotal'] = $request->TotalReturJualRp*-1; 
+                $request['Grandtotal'] = $getdatasaleshdr->Grandtotal*-1;
                 $request['NoMr'] = $getdataregpasien->NoMR;
                 $request['NoEpisode'] = $getdataregpasien->NoEpisode;
                 $request['GroupJaminan'] = $getdataregpasien->TipePasien;

@@ -364,4 +364,21 @@ class bEdocumentService extends Controller
             return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
         }
     }
+    public function getHasilMCUbyId($request)
+    {
+        try {   
+            // validator 
+            $data = $this->bEducationRepository->getHasilMCUbyId($request->IdTrs);
+            $count = $data->count(); 
+            if ($count > 0) {
+                $dataFix = $data->first();
+                return $this->sendResponse($dataFix, "Data Document ditemukan.");
+            } else {
+                return $this->sendError("Data Document tidak ditemukan.", []);
+            }
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+    }
 }

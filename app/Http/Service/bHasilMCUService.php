@@ -40,18 +40,26 @@ class bHasilMCUService extends Controller {
             return response()->json($validator->errors(), 400);
         }
         try{
-            
             // validasi jika Kode Pemriksaan Sudah Ada
             $dokter = $this->hasilmcu->showKonsulDokterMCU($request->NoRegistrasi);
             $header = $this->hasilmcu->hasilMCU($request->NoRegistrasi);
+            //return $header;
             $header2 = $this->hasilmcu->hasilMCU2($request->NoRegistrasi);
             $pasien = $this->visit->getRegistrationRajalbyNoreg($request->NoRegistrasi);
+            $reportsds = $this->hasilmcu->reportsds($request->NoRegistrasi)->first();
+            $saran = $this->hasilmcu->hasilMCUSaran($request->NoRegistrasi);
+            $saranSpesialis = $this->hasilmcu->hasilMCUSaranSpesialis($request->NoRegistrasi)->first();
+            $diagnosa = $this->hasilmcu->hasilMCUDiagnosa($request->NoRegistrasi);
             
             $response = [
                 'registrasi' => $pasien, 
                 'dokter' => $dokter, 
                 'reportMCU1' => $header, 
                 'reportMCU2' => $header2 , 
+                'reportsds' => $reportsds , 
+                'saran' => $saran , 
+                'saranSpesialis' => $saranSpesialis , 
+                'diagnosa' => $diagnosa , 
             ];
             if($header->count() > 0  ){
                 
@@ -149,8 +157,11 @@ class bHasilMCUService extends Controller {
             return $this->sendError("Masukan Periode Akhir.", []);
         }
         try{
-            // validasi jika Kode Pemriksaan Sudah Ada
-            $header = $this->hasilmcu->listReportPDFMCU($request);
+            if ($request->role == 'mitra'){
+                $header = $this->hasilmcu->listReportPDFMCUbyJaminan($request);
+            }else{
+                $header = $this->hasilmcu->listReportPDFMCU($request);
+            }
             if($header->count() > 0  ){
                 
                 return $this->sendResponse($header,"Document Report PDF MCU Ditemukan.");  
@@ -228,6 +239,70 @@ class bHasilMCUService extends Controller {
                 return $this->sendResponse($data,"Hasil MCU Bebas Narkoba Ditemukan.");  
             }else{
                 return $this->sendError("Hasil MCU Bebas Narkoba Tidak Ditemukan.",[]);
+            }
+            
+        }catch (Exception $e) { 
+            
+            Log::info($e->getMessage());
+            return  $this->sendError($e->getMessage());
+        }
+    }
+    
+    public function getRekapSDSbyPeriode($request)
+    {
+        $validator = Validator::make($request->all(), [
+            "tglPeriodeBerobatAwal" => "required" ,
+            "tglPeriodeBerobatAkhir" => "required"  
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+        try{
+            // validasi jika Kode Pemriksaan Sudah Ada
+            $data = $this->hasilmcu->getRekapSDSbyPeriode($request);
+            if($data->count() > 0  ){
+                
+                return $this->sendResponse($data,"Hasil Assesment SDS Ditemukan.");  
+            }else{
+                return $this->sendError("Hasil Assesment SDS Tidak Ditemukan.",[]);
+            }
+            
+        }catch (Exception $e) { 
+            
+            Log::info($e->getMessage());
+            return  $this->sendError($e->getMessage());
+        }
+    }
+
+    public function getRekapMCU($request)
+    {
+        $validator = Validator::make($request->all(), [
+            "tglAwal" => "required"  ,
+            "tglAkhir" => "required"  ,
+            "JenisRekap" => "required" ,
+            "TipePenjamin" => "required"  ,
+            "NamaPenjamin" => "required"  
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+        try{
+            if ($request->JenisRekap == 'KETERANGAN_KESEHATAN'){
+                $data = $this->hasilmcu->getRekapKetKesehatanMCU($request);
+            }else if ($request->JenisRekap == 'DIAGNOSA_KERJA'){
+                $data = $this->hasilmcu->getRekapDiagnosaKerjaMCU($request);
+            }else if ($request->JenisRekap == 'JENIS_KELAMIN'){
+                $data = $this->hasilmcu->getRekapJenisKelaminMCU($request);
+            }else if ($request->JenisRekap == 'UMUR'){
+                $data = $this->hasilmcu->getRekapUmurMCU($request);
+            }else{
+                $data = 0;
+            }
+
+            if($data->count() > 0  ){
+                return $this->sendResponse($data,"Hasil Rekap Ditemukan.");   
+            }else{
+                return $this->sendError("Hasil Rekap Tidak Ditemukan.",[]);
             }
             
         }catch (Exception $e) { 

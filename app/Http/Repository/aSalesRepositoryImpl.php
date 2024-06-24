@@ -39,7 +39,9 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
             'AlamatPembeli' => $request->AlamatPembeli,
             'TglLahirPembeli' => $request->TglLahirPembeli,
             'JenisPasien' => $request->JenisPasien,
-            'NIPKaryawan' => $request->NIP_Karyawan
+            'NIPKaryawan' => $request->NIP_Karyawan,
+            'GroupJaminan' => $request->GroupJaminan,
+            'KodeJaminan' => $request->KodeJaminan
         ]);
     }
     public function getSalesbyID($id)

@@ -26,12 +26,14 @@ class aFakturRepositoryImpl implements aFakturRepositoryInterface
             'ReffDateTrs' => date("dmY", strtotime($request->TransactionDate))
         ]);
     }
-    public function updateFakturHeader($request)
+    public function updateFakturHeader($request,$includeppn)
     {
         $updatesatuan =  DB::connection('sqlsrv')->table('Fakturs')
         ->where('TransactionCode', $request->TransactionCode) 
         ->update([
             'UserCreate' => $request->UserCreate,
+            'PurchaseOrderCode' => $request->NoPurchaseOrder,
+            'Pph23' => $request->Pph23,
             'SupplierCode' => $request->SupplierCode,
             'UserCreateLast' => $request->UserCreate,
             'Keterangan' => $request->Keterangan,
@@ -51,7 +53,8 @@ class aFakturRepositoryImpl implements aFakturRepositoryInterface
             'Subtotal' => $request->Subtotal,
             'DiskonLain' => $request->DiskonLain,
             'BiayaLain' => $request->BiayaLain,
-            'Grandtotal' => $request->Grandtotal
+            'Grandtotal' => $request->Grandtotal,
+            'IncludePPN' => $includeppn
             ]);
         return $updatesatuan;
     }
@@ -75,7 +78,7 @@ class aFakturRepositoryImpl implements aFakturRepositoryInterface
             'UserAdd' =>  $request->UserCreate
         ]);
     }
-    public function addHutangHeader($notes,$request, $autonumberHtg)
+    public function addHutangHeader($notes,$request, $autonumberHtg,$kdrekening)
     {
         return  DB::connection('sqlsrv4')->table("HUTANG_REKANAN")->insert([
             'KD_HUTANG' => $autonumberHtg,
@@ -86,7 +89,7 @@ class aFakturRepositoryImpl implements aFakturRepositoryInterface
             'SISA_HUTANG' => $request->Grandtotal,
             'KET' => $notes,
             'KET2' => $request->TransactionCode,
-            'KET3' => '',
+            'KET3' => $kdrekening,
             'TGL_TEMPO' => $request->TglJatuhTempo,
             'TGL_FAKTUR' => $request->DateFakturPBF,
             'NO_FAKTUR' => $request->NoFakturPBF,
