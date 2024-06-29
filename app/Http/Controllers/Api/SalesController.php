@@ -235,4 +235,28 @@ class SalesController extends Controller
         return $add; 
 
     }
+    public function getConsumableChargedPeriode(Request $request){
+      
+        $trsResepRepository = new aTrsResepRepositoryImpl(); 
+        $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $asupplierRepository = new aSupplierRepositoryImpl();
+        $sStokRepository = new aStokRepositoryImpl();    
+        $aHnaRepository = new aHnaRepositoryImpl();
+        $aMasterUnitRepository = new aMasterUnitRepositoryImpl(); 
+        $aSalesRepository = new aSalesRepositoryImpl();
+        $visitRepository = new bVisitRepositoryImpl();
+        $billingRepository = new bBillingRepositoryImpl();
+        $userService = new aSalesService($trsResepRepository,
+                    $aDeliveryOrderRepository,
+                    $aBarangRepository,
+                    $asupplierRepository,
+                    $sStokRepository,
+                    $aHnaRepository,
+                    $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+
+$add =  $userService->getConsumableChargedPeriode($request);
+return $add; 
+
+}
 }

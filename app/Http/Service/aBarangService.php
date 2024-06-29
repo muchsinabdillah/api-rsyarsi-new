@@ -529,4 +529,17 @@ class aBarangService extends Controller
             return $this->sendError("Data Paket Detail Not Found.", [], 400);
         }
     }
+    public function getBarangKonversibyId($id)
+    {
+        // validator 
+    
+        $count = $this->aBarangRepository->getBarangKonversibyId($id)->count();
+   
+        if ($count > 0) {
+            $data = $this->aBarangRepository->getBarangKonversibyId($id); 
+            return $this->sendResponse($data, "Data Product ditemukan.");
+        } else {
+            return $this->sendError("Data Product Found.", [], 400);
+        }
+    }
 }

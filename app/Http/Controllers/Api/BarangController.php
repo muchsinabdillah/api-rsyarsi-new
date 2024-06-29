@@ -211,4 +211,13 @@ class BarangController extends Controller
         $addBarang =  $aBarangService->getDataPaketDetailbyIDHdr($request);
         return $addBarang;
     }
+    public function getBarangKonversibyId($id)
+    {
+        //
+      $aBarangRepository = new aBarangRepositoryImpl();
+        $aSupplierRepository = new aSupplierRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $getAllBarang =  $aBarangService->getBarangKonversibyId($id);
+        return $getAllBarang;
+    }
 }

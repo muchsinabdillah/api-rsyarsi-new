@@ -38,19 +38,19 @@ class aJaminanRepositoryImpl implements aJaminanRepositoryInterface
             ->where('StatusAktif', $idgroupjaminan)
             ->where('ID', $idjaminan)
             ->where('NamaPerusahaan', 'UMUM')
-            ->select('ID','NamaPerusahaan')
+            //->select('ID','NamaPerusahaan')
             ->get();
         }elseif($idgroupjaminan == "2"){
             return  DB::connection('sqlsrv2')->table("MstrPerusahaanAsuransi")
             ->where('StatusAktif', $idgroupjaminan)
             ->where('ID', $idjaminan)
-            ->select('ID','NamaPerusahaan')
+           // ->select('ID','NamaPerusahaan')
             ->get();
         }elseif($idgroupjaminan == "5"){
             return  DB::connection('sqlsrv2')->table("MstrPerusahaanJPK")
             ->where('StatusAktif', $idgroupjaminan)
             ->where('ID', $idjaminan)
-            ->select('ID','NamaPerusahaan')
+            //->select('ID','NamaPerusahaan')
             ->get();
         }
         

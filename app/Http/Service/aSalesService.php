@@ -73,6 +73,7 @@ class aSalesService extends Controller
             "Notes" => "required" ,
             //"JenisPasien" => "required" ,
             "GroupJaminan" => "required" ,
+            "Jaminan" => "required" ,
             "KodeJaminan" => "required" ,
         ]);
 
@@ -598,4 +599,25 @@ class aSalesService extends Controller
     //     }
 
     // }
+    public function getConsumableChargedPeriode($request)
+    {
+        // validate 
+        $request->validate([
+            "tglPeriodeAwal" => "required",
+            "tglPeriodeAkhir" => "required"
+        ]);
+        
+        try {
+            // Db Transaction
+            $data = $this->aSalesRepository->getConsumableChargedPeriode($request);
+            // // cek ada gak datanya
+            if ($this->aSalesRepository->getConsumableChargedPeriode($request)->count() < 1) {
+                return $this->sendError('Sales Transaction Number Not Found !', []);
+            }
+            return $this->sendResponse($data, 'Sales Transaction Data Found !');
+        } catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Sales Transaction Data Not Found !', $e->getMessage());
+        }
+    }
 }

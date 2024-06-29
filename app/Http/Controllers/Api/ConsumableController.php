@@ -17,6 +17,7 @@ use App\Http\Repository\aDeliveryOrderRepositoryImpl;
 use App\Http\Repository\aPurchaseOrderRepositoryImpl;
 use App\Http\Repository\bBillingRepositoryImpl;
 use App\Http\Repository\bVisitRepositoryImpl;
+use App\Http\Repository\aJaminanRepositoryImpl;
 
 class ConsumableController extends Controller
 {
@@ -35,6 +36,7 @@ class ConsumableController extends Controller
         $aHnaRepository = new aHnaRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl;
+        $jaminanRepository = new aJaminanRepositoryImpl;
         $aConsumableService = new aConsumableService(
             $aDeliveryOrderRepository,
             $aBarangRepository,
@@ -47,7 +49,8 @@ class ConsumableController extends Controller
             $aMasterUnitRepository,
             $aHnaRepository,
             $billingRepository,
-            $visitRepository
+            $visitRepository,
+            $jaminanRepository
         );
         $addHeader =  $aConsumableService->addConsumableHeader($request);
         return $addHeader;
@@ -66,6 +69,7 @@ class ConsumableController extends Controller
         $aHnaRepository = new aHnaRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl;
+        $jaminanRepository = new aJaminanRepositoryImpl;
         $aConsumableService = new aConsumableService(
             $aDeliveryOrderRepository,
             $aBarangRepository,
@@ -78,7 +82,8 @@ class ConsumableController extends Controller
             $aMasterUnitRepository,
             $aHnaRepository,
             $billingRepository,
-            $visitRepository
+            $visitRepository,
+            $jaminanRepository
         );
         $addHeader =  $aConsumableService->addConsumableDetail($request);
         return $addHeader;
@@ -97,6 +102,7 @@ class ConsumableController extends Controller
         $aHnaRepository = new aHnaRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl;
+        $jaminanRepository = new aJaminanRepositoryImpl;
         $aConsumableService = new aConsumableService(
             $aDeliveryOrderRepository,
             $aBarangRepository,
@@ -109,7 +115,8 @@ class ConsumableController extends Controller
             $aMasterUnitRepository,
             $aHnaRepository,
             $billingRepository,
-            $visitRepository
+            $visitRepository,
+            $jaminanRepository
         );
         $addHeader =  $aConsumableService->voidConsumable($request);
         return $addHeader;
@@ -128,6 +135,7 @@ class ConsumableController extends Controller
         $aHnaRepository = new aHnaRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl;
+        $jaminanRepository = new aJaminanRepositoryImpl;
         $aConsumableService = new aConsumableService(
             $aDeliveryOrderRepository,
             $aBarangRepository,
@@ -140,7 +148,8 @@ class ConsumableController extends Controller
             $aMasterUnitRepository,
             $aHnaRepository,
             $billingRepository,
-            $visitRepository
+            $visitRepository,
+            $jaminanRepository
         );
         $addHeader =  $aConsumableService->voidConsumableDetailbyItem($request);
         return $addHeader;
@@ -159,6 +168,7 @@ class ConsumableController extends Controller
         $aHnaRepository = new aHnaRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl;
+        $jaminanRepository = new aJaminanRepositoryImpl;
         $aConsumableService = new aConsumableService(
             $aDeliveryOrderRepository,
             $aBarangRepository,
@@ -171,7 +181,8 @@ class ConsumableController extends Controller
             $aMasterUnitRepository,
             $aHnaRepository,
             $billingRepository,
-            $visitRepository
+            $visitRepository,
+            $jaminanRepository
         );
         $addHeader =  $aConsumableService->getConsumablebyID($request);
         return $addHeader;
@@ -190,6 +201,7 @@ class ConsumableController extends Controller
         $aHnaRepository = new aHnaRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl;
+        $jaminanRepository = new aJaminanRepositoryImpl;
         $aConsumableService = new aConsumableService(
             $aDeliveryOrderRepository,
             $aBarangRepository,
@@ -202,7 +214,8 @@ class ConsumableController extends Controller
             $aMasterUnitRepository,
             $aHnaRepository,
             $billingRepository,
-            $visitRepository
+            $visitRepository,
+            $jaminanRepository
         );
         $addHeader =  $aConsumableService->getConsumableDetailbyID($request);
         return $addHeader;
@@ -220,6 +233,7 @@ class ConsumableController extends Controller
         $aHnaRepository = new aHnaRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl;
+        $jaminanRepository = new aJaminanRepositoryImpl;
         $aConsumableService = new aConsumableService(
             $aDeliveryOrderRepository,
             $aBarangRepository,
@@ -232,7 +246,8 @@ class ConsumableController extends Controller
             $aMasterUnitRepository,
             $aHnaRepository,
             $billingRepository,
-            $visitRepository
+            $visitRepository,
+            $jaminanRepository
         );
         $addHeader =  $aConsumableService->getConsumablebyDateUser($request);
         return $addHeader;
@@ -250,6 +265,7 @@ class ConsumableController extends Controller
         $aHnaRepository = new aHnaRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl;
+        $jaminanRepository = new aJaminanRepositoryImpl;
         $aConsumableService = new aConsumableService(
             $aDeliveryOrderRepository,
             $aBarangRepository,
@@ -262,9 +278,43 @@ class ConsumableController extends Controller
             $aMasterUnitRepository,
             $aHnaRepository,
             $billingRepository,
-            $visitRepository
+            $visitRepository,
+            $jaminanRepository
         );
         $addHeader =  $aConsumableService->getConsumablebyPeriode($request);
+        return $addHeader;
+    }
+    public function addConsumableDetailPaket(Request $request)
+    {
+        $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $asupplierRepository = new aSupplierRepositoryImpl();
+        $aPurchaseOrderRepository = new aPurchaseOrderRepositoryImpl();
+        $sStok = new aStokRepositoryImpl();
+        $aHna = new aHnaRepositoryImpl();
+        $aJurnal = new aJurnalRepositoryImpl();
+        $aConsumableRepository = new aConsumableRepositoryImpl();
+        $aMasterUnitRepository = new aMasterUnitRepositoryImpl();
+        $aHnaRepository = new aHnaRepositoryImpl();
+        $billingRepository = new bBillingRepositoryImpl();
+        $visitRepository = new bVisitRepositoryImpl;
+        $jaminanRepository = new aJaminanRepositoryImpl;
+        $aConsumableService = new aConsumableService(
+            $aDeliveryOrderRepository,
+            $aBarangRepository,
+            $asupplierRepository,
+            $aPurchaseOrderRepository,
+            $sStok,
+            $aHna,
+            $aJurnal,
+            $aConsumableRepository,
+            $aMasterUnitRepository,
+            $aHnaRepository,
+            $billingRepository,
+            $visitRepository,
+            $jaminanRepository
+        );
+        $addHeader =  $aConsumableService->addConsumableDetailPaket($request);
         return $addHeader;
     }
 }

@@ -434,4 +434,18 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
         ->where('id_header', $id_header)
             ->get();
     }
+    public function getBarangKonversibyId($id)
+    {
+        return  DB::connection('sqlsrv')
+            ->table("ProductKonversis")
+            ->select(
+            'id',
+            'IdBarang',
+            'SatuanBeli', 
+            'SatuanJual',
+            'NilaiKonversi' 
+            )
+            ->where('idBarang', $id)
+            ->get();
+    }
 }

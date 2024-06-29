@@ -146,6 +146,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("editBarang", [BarangController::class, "editBarang"]);
         Route::get("getBarangAll", [BarangController::class, "getBarangAll"]);
         Route::get("getBarangbyId/{id}", [BarangController::class, "getBarangbyId"]);
+        Route::get("getBarangKonversibyId/{id}", [BarangController::class, "getBarangKonversibyId"]);
 
         Route::post("addBarangSupplier", [BarangController::class, "addBarangSupplier"]); 
         Route::delete("deleteBarangSupplier", [BarangController::class, "deleteBarangSupplier"]);
@@ -231,6 +232,8 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("getOrderMutasibyDateUser/", [OrderMutasiController::class, "getOrderMutasibyDateUser"]);
         Route::post("getOrderMutasibyPeriode/", [OrderMutasiController::class, "getOrderMutasibyPeriode"]);
         Route::post("approval/", [OrderMutasiController::class, "approval"]);
+        Route::post("addOrderMutasiDetailPaket/", [OrderMutasiController::class, "addOrderMutasiDetailPaket"]);
+
     });
 
     Route::group(['prefix' => 'transaction/mutasi'], function () {
@@ -266,7 +269,9 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("getConsumablebyID", [ConsumableController::class, "getConsumablebyID"]);
         Route::post("getConsumableDetailbyID/", [ConsumableController::class, "getConsumableDetailbyID"]);
         Route::post("getConsumablebyDateUser/", [ConsumableController::class, "getConsumablebyDateUser"]);
-        Route::post("getConsumablebyPeriode/", [ConsumableController::class, "getConsumablebyPeriode"]);
+        Route::post("getConsumablebyPeriode/", [ConsumableController::class, "getConsumablebyPeriode"]);   
+        Route::post("addConsumableDetailPaket/", [ConsumableController::class, "addConsumableDetailPaket"]);
+    
     });
     
     Route::group(['prefix' => 'transaction/sales'], function () {
@@ -278,6 +283,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("getSalesbyID", [SalesController::class, "getSalesbyID"]);
         Route::post("getSalesDetailbyID", [SalesController::class, "getSalesDetailbyID"]);
         Route::post("getSalesbyDateUser", [SalesController::class, "getSalesbyDateUser"]);
+        Route::post("getConsumableChargedPeriode", [SalesController::class, "getConsumableChargedPeriode"]);
         Route::post("getSalesbyPeriode", [SalesController::class, "getSalesbyPeriode"]);
     });
 

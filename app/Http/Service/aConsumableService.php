@@ -23,6 +23,7 @@ use App\Http\Repository\aPurchaseOrderRepositoryImpl;
 use App\Traits\FifoTrait;
 use App\Http\Repository\bBillingRepositoryImpl;
 use App\Http\Repository\bVisitRepositoryImpl;
+use App\Http\Repository\aJaminanRepositoryImpl;
 
 class aConsumableService extends Controller
 {
@@ -41,6 +42,7 @@ class aConsumableService extends Controller
     private $ahnaRepository;
     private $billingRepository;
     private $visitRepository;
+    private $jaminanRepository;
 
     public function __construct(
         aDeliveryOrderRepositoryImpl $aDeliveryOrder,
@@ -54,7 +56,8 @@ class aConsumableService extends Controller
         aMasterUnitRepositoryImpl $aMasterUnitRepository,
         aHnaRepositoryImpl $ahnaRepository,
         bBillingRepositoryImpl $billingRepository,
-        bVisitRepositoryImpl $visitRepository
+        bVisitRepositoryImpl $visitRepository,
+        aJaminanRepositoryImpl $jaminanRepository
     ) {
         $this->aDeliveryOrder = $aDeliveryOrder;
         $this->aBarangRepository = $aBarangRepository;
@@ -68,6 +71,7 @@ class aConsumableService extends Controller
         $this->ahnaRepository = $ahnaRepository;
         $this->billingRepository = $billingRepository;
         $this->visitRepository = $visitRepository;
+        $this->jaminanRepository = $jaminanRepository;
     }
 
     public function addConsumableHeader(Request $request)
@@ -584,6 +588,204 @@ class aConsumableService extends Controller
         } catch (Exception $e) { 
             Log::info($e->getMessage());
             return $this->sendError('Transaksi Gagal diproses !', $e->getMessage());
+        }
+    }
+
+    public function addConsumableDetailPaket(Request $request)
+    {
+        try {
+            // Db Transaction
+            DB::beginTransaction(); 
+            $request->validate([
+                // "TransactionCode" => "required",
+                // // "ProductCode" => "required",
+                // // "ProductName" => "required",
+                // // "Satuan" => "required",
+                // // "Satuan_Konversi" => "required",
+                // // "KonversiQty" => "required",
+                // // "Konversi_QtyTotal" => "required",
+                // // "QtyStok" => "required",
+                // // "QtyOrderMutasi" => "required",
+                // // "QtySisaMutasi" => "required",
+                //  "UserAdd" => "required" ,
+                // "UnitOrder" => "required",
+                // "IdPaket" => "required" 
+                "TransactionCode" => "required",
+                "UnitTujuan" => "required",
+                "IdPaket" => "required" ,
+                //"NoRegistrasi" => "required" 
+            ]);
+
+                        // validasi 
+                // // cek ada gak datanya
+                if ($this->aConsumableRepository->getConsumablebyID($request->TransactionCode)->count() < 1) {
+                    return $this->sendError('No. Transaksi Pemakaian Barang tidak ditemukan !', []);
+                }
+
+                
+                // // cek sudah di approved belum 
+                // if ($this->aOrderMutasiRepository->getOrderMutasiApprovedbyID($request->TransactionCode)->count() > 0) {
+                //     return $this->sendError('Transaksi Order Mutasi sudah di Approve !', []);
+                // }
+                $message = [];
+                //get data paket detail by id header
+                $datapaket = $this->aBarangRepository->getDataPaketDetailbyIDHdr($request->IdPaket);
+                foreach ($datapaket as $key) {
+                    //cek kode barangnya ada ga
+                    if ($this->aBarangRepository->getBarangbyId($key->product_id)->count() < 1) {
+                        //return $this->sendError('Kode Barang tidak ditemukan !', []);
+                        //array_push($message,'Kode barang '.$key->product_id.' tidak ditemukan !');
+                        continue;
+                    }
+                    // // //cek barang dobel gak 
+                    $datapass['ProductCode'] = $key->product_id;
+                    $getdatadetilmutasi = $this->aConsumableRepository->getConsumableDetailbyIDBarang($request, $datapass);
+                    if ($getdatadetilmutasi->count() > 0) {
+                        //return $this->sendError('Kode Barang sudah ada sebelumnya, tidak boleh lebih dari 1 !', []);
+                        //array_push($message,'Kode barang '.$key->product_id.' sudah ada sebelumnya, tidak boleh lebih dari 1 !');
+                        continue;
+                    }
+
+                    if ($request->NoRegistrasi != ''){
+                        $tipereg = substr($request->NoRegistrasi, 0, 2);
+                        if ($tipereg == 'RJ'){
+                            $getdataregpasien = $this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi)->first();
+                        }elseif($tipereg == 'RI'){
+                            $getdataregpasien = $this->visitRepository->getRegistrationRanapbyNoreg($request->NoRegistrasi)->first();
+                        }else{
+                            return  $this->sendError('Nomor Registrasi Tidak Valid ! ' , []);
+                        }
+                        $request['GroupJaminan'] = $getdataregpasien->TipePasien;
+                        $request['KodeJaminan'] = $getdataregpasien->KodeJaminan;
+                        $datajaminan = $this->jaminanRepository->getJaminanAllAktifbyId($request['GroupJaminan'],$request['KodeJaminan'])->first();
+                        $datagenform = (object)null; 
+                        $datagenform->IDBarang = $key->product_id;
+                        $datagenform->IDFormularium = $datajaminan->IDFormularium;
+                        $dataformularium = $this->aBarangRepository->getBarangbyIdAndIDFormularium($datagenform);
+                        if ($dataformularium->count() < 1){
+                            continue;
+                        }
+                    }
+
+
+                    $databarang = $this->aBarangRepository->getBarangbyId($key->product_id);
+                    $datagen['ProductCode'] = $key->product_id;
+                    $datagen['ProductName'] = $databarang->first()->{'Product Name'};
+                    $datagen['Qty'] = $key->quantity;
+                    $datagen['Konversi_QtyTotal'] = $key->quantity;
+                    $datagen['Satuan_Konversi'] = $databarang->first()->{'Unit Satuan'};
+                    $datagen['KonversiQty'] = $key->quantity;
+                    $datagen['Satuan'] = $databarang->first()->Satuan_Beli;
+                    array_push($message,$datagen);
+
+                //     $databarang = $this->aBarangRepository->getBarangbyId($key->product_id);
+                //     $datapass['ProductCode'] = $key->product_id;
+                //     $datastok = $this->aStokRepository->cekStokbyIDBarang($datapass, $request->UnitTujuan);
+                //     if ($datastok->count() < 1){
+                //         //return $this->sendError('Kode Product tidak ada di stok layanan !', []);
+                //             array_push($message,'Barang '. $databarang->first()->{'Product Name'} . '(' .$key->product_id . ') tidak ada di layanan tujuan ini !');
+                //             continue;
+                //     }
+
+                //     $getdatadetilmutasi = $this->aConsumableRepository->getConsumableDetailbyIDBarang($request, $datapass);
+                //     $vGetMutasiDetil =  $getdatadetilmutasi->first();
+                //     if($getdatadetilmutasi->count() < 1 ){
+                //         $stokCurrent = (float)$datastok->Qty;
+                //         if ($stokCurrent < $key['quantity']) {
+                //             // return $this->sendError('Qty Stok ' . $key['ProductName'] . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Pakai ' . $key['quantity'] . ' ! ', []);
+                //             array_push($message,'Qty Stok ' . $databarang->first()->{'Product Name'} . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Pakai ' . $key['quantity'] . ' ! ',);
+                //             continue;
+                //         }
+                //     }else{
+                //         $stokCurrent = (float)$datastok->Qty;
+                //         $getStokPlus = $vGetMutasiDetil->Qty + $stokCurrent;
+                //         $stokminus = $getStokPlus - $key['quantity'];
+                //         if ($stokminus < 0) {
+                //             // return $this->sendError('Qty Stok ' . $key['ProductName'] . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Pakai ' . $key['quantity'] . ' ! ', []);
+                //             array_push($message,'Qty Stok ' . $databarang->first()->{'Product Name'} . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Pakai ' . $key['quantity'] . ' ! ',);
+                //             continue;
+                //         } 
+                //     }
+                //     //-------------------------------------------------------------
+
+                //     $this->aJurnal->delJurnalHdr($request);
+                //     $this->aJurnal->delJurnalDtl($request);
+        
+
+
+                //     //-----------------------------------------------------------------
+                //     // get Hpp Average 
+                //     $getHppBarang = $this->ahnaRepository->getHppAverage($datapass)->first()->first();
+                //     $xhpp = $getHppBarang->NominalHpp;
+                //     //passing data
+                //     $datagen['ProductCode'] = $key->product_id;
+                //     $datagen['ProductName'] = $databarang->first()->{'Product Name'};
+                //     $datagen['Qty'] = $key->quantity;
+                //     $datagen['Konversi_QtyTotal'] = $key->quantity;
+                //     $datagen['Satuan_Konversi'] = $databarang->first()->Satuan_Beli;
+                //     $datagen['KonversiQty'] = $key->quantity;
+                //     $datagen['Satuan'] = $databarang->first()->{'Unit Satuan'};
+                //     if($getdatadetilmutasi->count() < 1){
+                //         if ($key['quantity'] > 0) {
+                //             $this->aConsumableRepository->addConsumableDetail($request, $datagen); 
+                //             $this->fifoConsumable($request,$datagen,$xhpp); 
+                //         }
+                //     }else{
+                //         // jika sudah ada
+                //         $showData = $getdatadetilmutasi->first();
+                    
+                //         $mtKonversi_QtyTotal = $showData->Qty;
+                //         $mtQtyMutasi = $showData->Qty;
+
+                //     if($mtKonversi_QtyTotal <> $key['quantity']){ // Dirubah jika Qty nya ada Perubahan Aja
+                //             // $goQtyMutasiSisaheaderBefore = $mtQtyMutasi + $key['Qty'];
+                //             // $goQtyMutasiSisaheaderAfter = $goQtyMutasiSisaheaderBefore - $key['Qty'];
+                //             // $goQtyMutasiSisaKovenrsiBefore = $mtKonversi_QtyTotal + $key['Konversi_QtyTotal'];
+                //             // $goQtyMutasiSisaKovenrsiAfter = $goQtyMutasiSisaKovenrsiBefore - $key['Konversi_QtyTotal'];
+                //             $this->aConsumableRepository->editConsumableDetailbyIdBarang($request,$datagen);
+                //             // replace stok ke awal
+                //             //$getCurrentStok = $this->aStok->cekStokbyIDBarang($key, $request->UnitTujuan)->first();
+                //             //$totalstok = $getCurrentStok->Qty + $mtKonversi_QtyTotal;
+                //         //  $this->aStok->updateStokTrs($request,$key,$totalstok,$request->UnitTujuan);
+                //             $this->aStok->deleteBukuStok($request,$key,"CM",$request->UnitTujuan);  
+                //             $this->aStok->deleteDataStoks($request,$key,"CM",$request->UnitTujuan);  
+                //             $this->fifoConsumable($request,$datagen,$xhpp);
+                //     }  
+                //     } 
+                //     //--------------------------------------------------------------------
+
+                //     $datagen = (object)null; 
+                //     $datagen->TransactionCode = $request->TransactionCode;
+                //     $datagen->ProductCode = $key->product_id;
+                //     $datagen->ProductName = $databarang->first()->{'Product Name'};
+                //     $datagen->Satuan = $databarang->first()->{'Unit Satuan'};
+                //     $datagen->Satuan_Konversi = $databarang->first()->Satuan_Beli;
+                //     $datagen->KonversiQty = $key->quantity;
+                //     $datagen->Konversi_QtyTotal = $key->quantity;
+                //     $datagen->QtyStok = $datastok->first()->Qty;
+                //     $datagen->QtyOrderMutasi = $key->quantity;
+                //     $datagen->QtySisaMutasi = $qtysisa;
+                //     $datagen->UserAdd = $request->UserAdd;
+
+                // // // //cek barang dobel gak 
+                // if ($this->aOrderMutasiRepository->getItemsDouble($datagen)->count() > 0) {
+                //     //return $this->sendError('Kode Barang sudah ada sebelumnya, tidak boleh lebih dari 1 !', []);
+                //     array_push($message,'Kode barang '.$key->product_id.' sudah ada sebelumnya, tidak boleh lebih dari 1 !');
+                //     continue;
+                // }
+
+                //     $getHppBarang = $this->ahnaRepository->getHppAveragebyCode($key->product_id)->first()->first();
+                //     $xhpp = $getHppBarang->NominalHpp;
+                //     $this->aOrderMutasiRepository->addOrderMutasiDetail($datagen, $xhpp);
+                  
+                }
+                
+            //DB::commit();
+            return $this->sendResponse($message, 'Order Mutasi Detail berhasil di tambahkan !');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e->getMessage());
+            return $this->sendError('Transaksi tidak dapat di proses !', $e->getMessage());
         }
     }
 }

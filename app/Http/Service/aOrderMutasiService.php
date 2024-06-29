@@ -400,29 +400,32 @@ class aOrderMutasiService extends Controller
                     // cek kode barangnya ada ga
                     if ($this->aBarangRepository->getBarangbyId($key->product_id)->count() < 1) {
                         //return $this->sendError('Kode Barang tidak ditemukan !', []);
-                        array_push($message,'Kode Barang '.$key->product_id.' tidak ditemukan !');
-                    }else{
+                        array_push($message,'Kode barang '.$key->product_id.' tidak ditemukan !');
+                        continue;
+                    }
 
                     $databarang = $this->aBarangRepository->getBarangbyId($key->product_id);
                     $datapass['ProductCode'] = $key->product_id;
                     $datastok = $this->aStokRepository->cekStokbyIDBarang($datapass, $request->UnitOrder);
                     if ($datastok->count() < 1){
                         //return $this->sendError('Kode Product tidak ada di stok layanan !', []);
-                            array_push($message,'Product '. $databarang->first()->{'Product Name'} . '(' .$key->product_id . ') tidak ada di layanan ');
-                    }else{
+                            array_push($message,'Barang '. $databarang->first()->{'Product Name'} . '(' .$key->product_id . ') tidak ada di layanan ');
+                            continue;
+                    }
 
                     $qtysisa = $datastok->first()->Qty - $key->quantity;
                     if ($qtysisa < 0){
                         //return $this->sendError('Qty order melebihi qty stok !', []);
-                        array_push($message,'Product '. $databarang->first()->{'Product Name'} . '(' .$key->product_id . ') qty order ('.$key->quantity.') melebihi qty stok ('.$datastok->first()->Qty.')');
+                        array_push($message,'Barang '. $databarang->first()->{'Product Name'} . '(' .$key->product_id . ') qty order ('.$key->quantity.') melebihi qty stok ('.$datastok->first()->Qty.')');
+                        continue;
                     }
 
                     $datagen = (object)null; 
                     $datagen->TransactionCode = $request->TransactionCode;
                     $datagen->ProductCode = $key->product_id;
                     $datagen->ProductName = $databarang->first()->{'Product Name'};
-                    $datagen->Satuan = $databarang->first()->{'Unit Satuan'};
-                    $datagen->Satuan_Konversi = $databarang->first()->Satuan_Beli;
+                    $datagen->Satuan = $databarang->first()->Satuan_Beli;
+                    $datagen->Satuan_Konversi = $databarang->first()->{'Unit Satuan'};
                     $datagen->KonversiQty = $key->quantity;
                     $datagen->Konversi_QtyTotal = $key->quantity;
                     $datagen->QtyStok = $datastok->first()->Qty;
@@ -433,14 +436,14 @@ class aOrderMutasiService extends Controller
                 // // //cek barang dobel gak 
                 if ($this->aOrderMutasiRepository->getItemsDouble($datagen)->count() > 0) {
                     //return $this->sendError('Kode Barang sudah ada sebelumnya, tidak boleh lebih dari 1 !', []);
-                    array_push($message,'Kode Barang '.$key->product_id.' sudah ada sebelumnya, tidak boleh lebih dari 1 !');
+                    array_push($message,'Kode barang '.$key->product_id.' sudah ada sebelumnya, tidak boleh lebih dari 1 !');
+                    continue;
                 }
 
                     $getHppBarang = $this->ahnaRepository->getHppAveragebyCode($key->product_id)->first()->first();
                     $xhpp = $getHppBarang->NominalHpp;
-                    //$this->aOrderMutasiRepository->addOrderMutasiDetail($datagen, $xhpp);
-                    }
-                  }
+                    $this->aOrderMutasiRepository->addOrderMutasiDetail($datagen, $xhpp);
+                  
                 }
                 
             DB::commit();

@@ -39,6 +39,7 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
             'AlamatPembeli' => $request->AlamatPembeli,
             'TglLahirPembeli' => $request->TglLahirPembeli,
             'JenisPasien' => $request->JenisPasien,
+            'NamaJaminan' => $request->Jaminan,
             'NIPKaryawan' => $request->NIP_Karyawan,
             'GroupJaminan' => $request->GroupJaminan,
             'KodeJaminan' => $request->KodeJaminan
@@ -218,5 +219,11 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
             ]);
         return $updatesatuan;
     }
-    
+    public function getConsumableChargedPeriode($request)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_sales_hdr")
+            ->where('Group_Transaksi', 'CONSUMABLE')
+            ->whereBetween('TglPeriode', [$request->tglPeriodeAwal, $request->tglPeriodeAkhir])
+            ->get();
+    }
 }

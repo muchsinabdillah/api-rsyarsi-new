@@ -246,7 +246,19 @@ return [
             'encrypt' => 'yes',
             'trust_server_certificate' => true,
         ],
-        
+        'Apotik_V2' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST_Apotik_V2', '127.0.0.1'),
+            'port' => env('DB_PORT_Apotik_V2', '1433'),
+            'database' => env('DB_DATABASE_Apotik_V2', 'forge'),
+            'username' => env('DB_USERNAME_Apotik_V2', 'forge'),
+            'password' => env('DB_PASSWORD_Apotik_V2', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'encrypt' => 'yes',
+            'trust_server_certificate' => true,
+        ],
     ],
 
     /*
