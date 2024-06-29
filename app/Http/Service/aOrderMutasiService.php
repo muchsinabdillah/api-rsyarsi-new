@@ -172,6 +172,11 @@ class aOrderMutasiService extends Controller
             if ($request->TotalQtyOrder < 1) {
                 return $this->sendError('Kode Barang tidak ada Qty, Transaksi tidak dapat di edit !', []);
             }
+            if ($this->aMasterUnitRepository->getUnitById($request->UnitTujuan)->first()->deff_farmasi == '1'){
+                $request['Approved'] = '0';
+            }else{
+                $request['Approved'] = '1';
+            }
             $this->aOrderMutasiRepository->editOrderMutasi($request);
 
             DB::commit();
@@ -351,6 +356,95 @@ class aOrderMutasiService extends Controller
             $data = $this->aOrderMutasiRepository->approval($request);
             DB::commit();
             return $this->sendResponse($data, 'Order Mutasi Berhasil di Approve !');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e->getMessage());
+            return $this->sendError('Transaksi tidak dapat di proses !', $e->getMessage());
+        }
+    }
+    public function addOrderMutasiDetailPaket(Request $request)
+    {
+        try {
+            // Db Transaction
+            DB::beginTransaction(); 
+            $request->validate([
+                "TransactionCode" => "required",
+                // "ProductCode" => "required",
+                // "ProductName" => "required",
+                // "Satuan" => "required",
+                // "Satuan_Konversi" => "required",
+                // "KonversiQty" => "required",
+                // "Konversi_QtyTotal" => "required",
+                // "QtyStok" => "required",
+                // "QtyOrderMutasi" => "required",
+                // "QtySisaMutasi" => "required",
+                 "UserAdd" => "required" ,
+                "UnitOrder" => "required",
+                "IdPaket" => "required" 
+            ]);
+
+                // cek ada gak datanya
+                if ($this->aOrderMutasiRepository->getOrderMutasibyID($request->TransactionCode)->count() < 1) {
+                    return $this->sendError('No. Transaksi Order Mutasi tidak ditemukan !', []);
+                }
+
+                
+                // cek sudah di approved belum 
+                if ($this->aOrderMutasiRepository->getOrderMutasiApprovedbyID($request->TransactionCode)->count() > 0) {
+                    return $this->sendError('Transaksi Order Mutasi sudah di Approve !', []);
+                }
+                $message = [];
+                //get data paket detail by id header
+                $datapaket = $this->aBarangRepository->getDataPaketDetailbyIDHdr($request->IdPaket);
+                foreach ($datapaket as $key) {
+                    // cek kode barangnya ada ga
+                    if ($this->aBarangRepository->getBarangbyId($key->product_id)->count() < 1) {
+                        //return $this->sendError('Kode Barang tidak ditemukan !', []);
+                        array_push($message,'Kode Barang '.$key->product_id.' tidak ditemukan !');
+                    }else{
+
+                    $databarang = $this->aBarangRepository->getBarangbyId($key->product_id);
+                    $datapass['ProductCode'] = $key->product_id;
+                    $datastok = $this->aStokRepository->cekStokbyIDBarang($datapass, $request->UnitOrder);
+                    if ($datastok->count() < 1){
+                        //return $this->sendError('Kode Product tidak ada di stok layanan !', []);
+                            array_push($message,'Product '. $databarang->first()->{'Product Name'} . '(' .$key->product_id . ') tidak ada di layanan ');
+                    }else{
+
+                    $qtysisa = $datastok->first()->Qty - $key->quantity;
+                    if ($qtysisa < 0){
+                        //return $this->sendError('Qty order melebihi qty stok !', []);
+                        array_push($message,'Product '. $databarang->first()->{'Product Name'} . '(' .$key->product_id . ') qty order ('.$key->quantity.') melebihi qty stok ('.$datastok->first()->Qty.')');
+                    }
+
+                    $datagen = (object)null; 
+                    $datagen->TransactionCode = $request->TransactionCode;
+                    $datagen->ProductCode = $key->product_id;
+                    $datagen->ProductName = $databarang->first()->{'Product Name'};
+                    $datagen->Satuan = $databarang->first()->{'Unit Satuan'};
+                    $datagen->Satuan_Konversi = $databarang->first()->Satuan_Beli;
+                    $datagen->KonversiQty = $key->quantity;
+                    $datagen->Konversi_QtyTotal = $key->quantity;
+                    $datagen->QtyStok = $datastok->first()->Qty;
+                    $datagen->QtyOrderMutasi = $key->quantity;
+                    $datagen->QtySisaMutasi = $qtysisa;
+                    $datagen->UserAdd = $request->UserAdd;
+
+                // // //cek barang dobel gak 
+                if ($this->aOrderMutasiRepository->getItemsDouble($datagen)->count() > 0) {
+                    //return $this->sendError('Kode Barang sudah ada sebelumnya, tidak boleh lebih dari 1 !', []);
+                    array_push($message,'Kode Barang '.$key->product_id.' sudah ada sebelumnya, tidak boleh lebih dari 1 !');
+                }
+
+                    $getHppBarang = $this->ahnaRepository->getHppAveragebyCode($key->product_id)->first()->first();
+                    $xhpp = $getHppBarang->NominalHpp;
+                    //$this->aOrderMutasiRepository->addOrderMutasiDetail($datagen, $xhpp);
+                    }
+                  }
+                }
+                
+            DB::commit();
+            return $this->sendResponse($message, 'Order Mutasi Detail berhasil di tambahkan !');
         } catch (Exception $e) {
             DB::rollBack();
             Log::info($e->getMessage());

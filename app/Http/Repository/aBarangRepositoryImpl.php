@@ -421,5 +421,17 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
             'Reasons' => $Reasons,
         ]);
     } 
-
+    public function getDataPaketbyNameLike($keywords)
+    {
+        return  DB::connection('sqlsrv')->table("PaketItems")
+        ->where('nama_paket', 'like', '%' . $keywords . '%')
+            ->get();
+    }
+    
+    public function getDataPaketDetailbyIDHdr($id_header)
+    {
+        return  DB::connection('sqlsrv')->table("PaketItemDetails")
+        ->where('id_header', $id_header)
+            ->get();
+    }
 }

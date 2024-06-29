@@ -506,4 +506,27 @@ class aBarangService extends Controller
             return $this->sendError("Data Product Not Found.", [], 400);
         }
     }
+    public function getDataPaketbyNameLike(Request $request)
+    {
+        // validator 
+        $count = $this->aBarangRepository->getDataPaketbyNameLike($request->keywords)->count();
+        if ($count > 0) {
+            $data = $this->aBarangRepository->getDataPaketbyNameLike($request->keywords);
+            return $this->sendResponse($data, "Data ditemukan.");
+        } else {
+            return $this->sendError("Data Paket Not Found.", [], 400);
+        }
+    }
+
+    public function getDataPaketDetailbyIDHdr(Request $request)
+    {
+        // validator 
+        $count = $this->aBarangRepository->getDataPaketDetailbyIDHdr($request->id_header)->count();
+        if ($count > 0) {
+            $data = $this->aBarangRepository->getDataPaketDetailbyIDHdr($request->id_header);
+            return $this->sendResponse($data, "Data ditemukan.");
+        } else {
+            return $this->sendError("Data Paket Detail Not Found.", [], 400);
+        }
+    }
 }

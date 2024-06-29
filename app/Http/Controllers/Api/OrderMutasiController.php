@@ -249,4 +249,25 @@ class OrderMutasiController extends Controller
         $execute =  $aOrderMutasiService->approval($request);
         return $execute;
     }
+    public function addOrderMutasiDetailPaket(Request $request)
+    {
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $asupplierRepository = new aSupplierRepositoryImpl();
+        $aPurchaseRequestRepository = new aPurchaseRequisitionRepositoryImpl();
+        $aStokRepository = new aStokRepositoryImpl();
+        $aOrderMutasiRepository = new aOrderMutasiRepositoryImpl();
+        $aMasterUnitRepository = new aMasterUnitRepositoryImpl();
+        $aHnaRepository = new aHnaRepositoryImpl();
+        $aOrderMutasiService = new aOrderMutasiService(
+            $aBarangRepository,
+            $asupplierRepository,
+            $aPurchaseRequestRepository,
+            $aStokRepository,
+            $aOrderMutasiRepository,
+            $aMasterUnitRepository,
+            $aHnaRepository 
+        );
+        $execute =  $aOrderMutasiService->addOrderMutasiDetailPaket($request);
+        return $execute;
+    }
 }

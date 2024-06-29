@@ -56,7 +56,8 @@ class aOrderMutasiRepositoryImpl implements aOrderMutasiRepositoryInterface
                 'UserCreate' => $request->UserCreate,
                 'JenisMutasi' => $request->JenisMutasi,
                 'JenisStok' => $request->JenisStok,
-                'TransactionDate' => $request->TransactionDate
+                'TransactionDate' => $request->TransactionDate,
+                'Approved' => $request->Approved
             ]);
         return $updatesatuan;
     }

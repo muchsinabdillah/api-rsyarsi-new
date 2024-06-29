@@ -170,7 +170,8 @@ Route::group(["middleware"=>["auth:api"]], function(){
 
         Route::get("getHistoryHargaBeli/{id}", [BarangController::class, "getHistoryHargaBeli"]);
         Route::get("getHistoryHargaJual/{id}", [BarangController::class, "getHistoryHargaJual"]);
-
+        Route::post("getDataPaketbyNameLike", [BarangController::class, "getDataPaketbyNameLike"]);
+        Route::post("getDataPaketDetailbyIDHdr", [BarangController::class, "getDataPaketDetailbyIDHdr"]);
     });
 
     //inventory
@@ -342,6 +343,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("getScheduleSelectedDay/", [ScheduleDoctorController::class, "getScheduleSelectedDay"]);  
         Route::post("getScheduleSelectedDayGroupByDoctor/", [ScheduleDoctorController::class, "getScheduleSelectedDayGroupByDoctor"]);  
         Route::post("getScheduleDoctorbyIdJadwalDoctor/", [ScheduleDoctorController::class, "getScheduleDoctorbyIdJadwalDoctor"]);  
+        Route::post("getScheduleDoctorbyIdDoctorUnit/", [ScheduleDoctorController::class, "getScheduleDoctorbyIdDoctorUnit"]);  
         
         // JAMINAN
         Route::get("jaminan/view/{idgroupjaminan}", [MasterJaminanController::class, "getJaminanAllAktif"]);

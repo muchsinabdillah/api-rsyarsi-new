@@ -195,4 +195,20 @@ class BarangController extends Controller
         $addBarang =  $aBarangService->getHistoryHargaJual($id);
         return $addBarang;
     }
+    public function getDataPaketbyNameLike(Request $request)
+    {
+      $aBarangRepository = new aBarangRepositoryImpl();
+        $aSupplierRepository = new aSupplierRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $addBarang =  $aBarangService->getDataPaketbyNameLike($request);
+        return $addBarang;
+    }
+    public function getDataPaketDetailbyIDHdr(Request $request)
+    {
+      $aBarangRepository = new aBarangRepositoryImpl();
+        $aSupplierRepository = new aSupplierRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $addBarang =  $aBarangService->getDataPaketDetailbyIDHdr($request);
+        return $addBarang;
+    }
 }

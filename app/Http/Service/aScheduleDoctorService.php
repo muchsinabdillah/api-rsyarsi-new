@@ -235,4 +235,20 @@ class aScheduleDoctorService extends Controller
             return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
         }
     }
+    public function getScheduleDoctorbyIdDoctorUnit($request)
+    {
+        try {   
+            $datadokter = [];
+            $dataschedule = $this->Repository->getScheduleDoctorbyIdDoctorUnit($request);
+            $datadokter = $this->doctorRepository->getDoctorNonIGDbyIdDokterUnit($request)->first();
+            $response = [
+                'dokter' => $datadokter, 
+                'schedule' => $dataschedule , 
+            ];
+            return $this->sendResponse($response, "Data Schedule ditemukan.");
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+    }
 }

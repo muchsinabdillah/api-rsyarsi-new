@@ -69,4 +69,11 @@ class ScheduleDoctorController extends Controller
        $getScheduleDoctorbyUnitDay =  $Service->getScheduleDoctorbyIdJadwalDoctor($request);
        return $getScheduleDoctorbyUnitDay;
    }
+   public function getScheduleDoctorbyIdDoctorUnit(Request $request){
+    $Repository = new aScheduleDoctorRepositoryImpl();
+   $doctorRepository = new aDoctorRepositoryImpl();
+   $Service = new aScheduleDoctorService($Repository,$doctorRepository);
+   $getScheduleDoctorbyUnitDay =  $Service->getScheduleDoctorbyIdDoctorUnit($request);
+   return $getScheduleDoctorbyUnitDay;
+}
 }

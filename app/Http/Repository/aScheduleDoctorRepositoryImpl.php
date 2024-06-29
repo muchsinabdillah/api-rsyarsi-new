@@ -264,7 +264,25 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
         ->orderByDesc('GroupJadwal')
         ->get();
     }
-  
+    public function getScheduleDoctorbyIdDoctorUnit($request)
+    {
+        return  DB::connection('sqlsrv2')->table("View_ScheduleDokter")
+        ->select('IdDokter','IdJadwalDokter','GroupJadwal','First_Name','Poli'
+        ,'Senin_Awal','Senin_Akhir' ,'Senin_Sesion'
+        ,'Selasa_Awal','Selasa_Akhir' ,'Selasa_Sesion'
+        ,'Rabu_Awal','Rabu_Akhir' ,'Rabu_Sesion'
+        ,'Kamis_Awal','Kamis_akhir' ,'Kamis_Sesion'
+        ,'Jumat_Awal','Jumat_Akhir' ,'Jumat_Sesion'
+        ,'Sabtu_Awal','Sabtu_Akhir' ,'Sabtu_Sesion'
+        ,'Minggu_Awal','Minggu_Akhir' ,'Minggu_Sesion')
+        ->where('IdDokter',$request->IdDokter)  
+        ->where('IDUnit',$request->IdUnit)  
+        ->where('Poli','<>','IGD (Emergency)')  
+        ->where('Poli','<>','Laboratorium')  
+        ->orderByDesc('IdDokter')
+        ->orderByDesc('GroupJadwal')
+        ->get();
+    }
   
     public function getScheduleDoctorbyIdDoctor($id)
     {

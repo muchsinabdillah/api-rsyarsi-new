@@ -42,6 +42,7 @@ class bHasilMCURepositoryImpl implements bHasilMCURepositoryInterface
         return  DB::connection('sqlsrv6')->table("T_HASIL_MCU_PDF_HDR")->insert([
             'NoRegistrasi' => $request->NoRegistrasi,
             'URL_PDF' =>  $request->Url_Pdf_Local,
+            'UUID' =>  $request->uuid
         ]);
     }
     public function ResetuploaPdfHasilMCUFinish($request)
@@ -188,7 +189,7 @@ class bHasilMCURepositoryImpl implements bHasilMCURepositoryInterface
         ->where('IdUnit','53');
 
         $query3 = DB::connection('sqlsrv6')->table("dataRWJ")
-        ->select(DB::raw("'29 Hari sd 18 tahun' as 'label'"),DB::raw("count( isnull(datediff(dd,DateOfBirth,getdate()),0) ) as 'dataset'"))
+        ->select(DB::raw("'18 tahun ke atas' as 'label'"),DB::raw("count( isnull(datediff(dd,DateOfBirth,getdate()),0) ) as 'dataset'"))
         ->where('TipePasien',$request->TipePenjamin)
         ->where('KodeJaminan',$request->NamaPenjamin)
         ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), [Visit Date], 111), '/','-')"),
@@ -225,14 +226,14 @@ class bHasilMCURepositoryImpl implements bHasilMCURepositoryInterface
     {
         return  DB::connection('sqlsrv5')->table("View_DiagnosaKerjaMCU")
         ->where('NoRegistrasi',$reg)
-        ->select(
-        'NoMR',
-        'NoEpisode',
-        'NoRegistrasi',
-        'NamaDiagnosaKerja',
-        'ICD_CODE',
-        'KATEGORI',
-        )
+        // ->select(
+        // 'NoMR',
+        // 'NoEpisode',
+        // 'NoRegistrasi',
+        // 'NamaDiagnosaKerja',
+        // 'ICD_CODE',
+        // 'KATEGORI',
+        // )
         ->get();
     }
     

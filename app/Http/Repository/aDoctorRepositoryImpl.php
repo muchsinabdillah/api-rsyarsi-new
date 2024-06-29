@@ -32,7 +32,15 @@ class aDoctorRepositoryImpl implements aDoctorRepositoryInterface
         ->select('ID','NamaDokter','NamaUnit','CodeAntrian','foto','Pendidikan','Description','Pelatihan','IdLayanan','namaunit_spesialis','ID_Dokter_BPJS','NAMA_Dokter_BPJS')
         ->get();
     }
-  
+    public function getDoctorNonIGDbyIdDokterUnit($request) // akan dirubah
+    {
+        return  DB::connection('sqlsrv2')->table("View_Dokter")
+        ->where('ID', $request->IdDokter)
+        ->where('IdLayanan', $request->IdUnit)
+        ->where('NamaUnit','<>','IGD (Emergency)')  
+        ->select('ID','NamaDokter','NamaUnit','CodeAntrian','foto','Pendidikan','Description','Pelatihan','IdLayanan','namaunit_spesialis','ID_Dokter_BPJS','NAMA_Dokter_BPJS')
+        ->get();
+    }
     public function getDoctorbyUnit($id)
     {
         return  DB::connection('sqlsrv2')->table("View_Dokter")

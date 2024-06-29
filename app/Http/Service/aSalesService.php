@@ -103,7 +103,12 @@ class aSalesService extends Controller
             //         return $this->sendError('No Resep Not Found !', []);
             //     }
             // }
-
+            //cek iter
+            if($request->Group_Transaksi == "RESEP"){
+                if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($request->NoResep)->first()->Iter >= $this->aSalesRepository->getSalesbyNoResep($request)->count()){
+                    return $this->sendError('Resep sudah pernah dibuat dan berada batas iter resep ! Cek di [List Penjualan] !', []);
+                }
+            }
             $getmax = $this->aSalesRepository->getMaxCode($request);
             if ($getmax->count() > 0) {
                 foreach ($getmax as $datanumber) {

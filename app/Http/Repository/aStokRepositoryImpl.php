@@ -4,6 +4,7 @@ namespace App\Http\Repository;
 
 use App\Models\gallery;
 use App\Models\Kategori;
+use Brick\Math\BigInteger;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 class aStokRepositoryImpl implements aStokRepositoryInterface
@@ -233,12 +234,18 @@ class aStokRepositoryImpl implements aStokRepositoryInterface
     }
     public function getBukuStokBarangbyUnit($request)
     {
-        return  DB::connection('sqlsrv')
-            ->table("v_buku_stok") 
-            ->where('Unit',$request->unit)
-            ->where('ProductCode',$request->ProductCode) 
-            ->whereBetween('TransactionDate', [$request->PeriodeAwal, $request->PeriodeAkhir])
-            ->get();
+
+        // return DB::connection('sqlsrv')->select( "EXEC infobuku @PeriodeAwal ='?',@PeriodeAkhir='?',@Unit='?',@KodeBarang='?'" , array('2024-06-01','2024-06-27','65','105' ));
+        // DB::select('exec my_stored_procedure(?,?,..)',array($Param1,$param2));
+        // return DB::connection('sqlsrv') 
+        //     // ->select('call infobuku (?,?,?,?)',array($request->PeriodeAwal,$request->PeriodeAkhir,$request->unit,$request->ProductCode));
+        //     ->select(DB::raw("
+        //                     EXEC infobuku @PeriodeAwal ='2024-06-01',
+        //                     @PeriodeAkhir='2024-06-27',
+        //                     @Unit='65'
+        //                     ,@KodeBarang='105' ") );
+        return DB::connection('sqlsrv')->select("EXEC infobuku @PeriodeAwal =?,@PeriodeAkhir=?,@Unit=?,@KodeBarang=? ",[$request->PeriodeAwal,$request->PeriodeAkhir,(int)$request->unit,(int)$request->ProductCode]);
+ 
     }
     public function getBukuStokBarangBeforebyUnit($request)
     {

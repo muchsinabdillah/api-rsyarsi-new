@@ -69,11 +69,9 @@ class aStokService extends Controller
         ]);
         try {
             $count = $this->aStokRepository->getBukuStokBarangbyUnit($request);
-            if($count->count() > 0){ 
+   
                 return $this->sendResponse($count, "Data Product ditemukan.");
-            }else{
-                return $this->sendError("Data Product Found.", [], 400);
-            }
+            
         } catch (Exception $e) { 
             Log::info($e->getMessage());
             return $this->sendError('Data Transaction Gagal ditambahkan !', $e->getMessage());
