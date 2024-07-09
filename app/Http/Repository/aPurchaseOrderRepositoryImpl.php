@@ -46,6 +46,9 @@ class aPurchaseOrderRepositoryImpl implements aPurchaseOrderRepositoryInterface
             'TotalPurchase' => $key['TotalPurchase'],
             'QtyStok' => $key['QtyStok'], 
             'QtyPurchaseRemain' => $key['QtyPR'],
+            'KonversiQty' => $key['KonversiQty'],
+            'Satuan_Konversi' => $key['Satuan_Konversi'],
+            'KonversiQty_Total' => $key['KonversiQty_Total'],
             'DateEntry' => Carbon::now(),
             'UserEntry' =>  $key['UserEntry']
         ]);

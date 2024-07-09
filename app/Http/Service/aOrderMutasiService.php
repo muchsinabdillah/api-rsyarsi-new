@@ -177,6 +177,9 @@ class aOrderMutasiService extends Controller
             }else{
                 $request['Approved'] = '1';
             }
+            if ($this->aOrderMutasiRepository->getMutasibyOrderMutasiId2($request->TransasctionCode)->count() > 0) {
+                return $this->sendError('No. Tranasksi Order Mutasi Sudah Mutasikan, Transaksi tidak dapat di Batalkan !', []);
+            }
             $this->aOrderMutasiRepository->editOrderMutasi($request);
 
             DB::commit();
@@ -210,6 +213,9 @@ class aOrderMutasiService extends Controller
             // cek sudah di approved belum 
             if ($this->aOrderMutasiRepository->getOrderMutasiApprovedbyID($request->TransactionCode)->count() > 0) {
                 return $this->sendError('No. Tranasksi Order Mutasi sudah di Approve !', []);
+            }
+            if ($this->aOrderMutasiRepository->getMutasibyOrderMutasiId($request->TransactionCode)->count() > 0) {
+                return $this->sendError('No. Tranasksi Order Mutasi Sudah Mutasikan, Transaksi tidak dapat di Batalkan !', []);
             }
             $this->aOrderMutasiRepository->voidOrderMutasiDetailAll($request);
             $this->aOrderMutasiRepository->voidOrderMutasi($request);
@@ -245,7 +251,9 @@ class aOrderMutasiService extends Controller
             if ($this->aOrderMutasiRepository->getOrderMutasiApprovedbyID($request->TransasctionCode)->count() > 0) {
                 return $this->sendError('No. Tranasksi Order Mutasi sudah di Approve !', []);
             }
-
+            if ($this->aOrderMutasiRepository->getMutasibyOrderMutasiId($request->TransactionCode)->count() > 0) {
+                return $this->sendError('No. Tranasksi Order Mutasi Sudah Mutasikan, Transaksi tidak dapat di Batalkan !', []);
+            }
             $this->aOrderMutasiRepository->voidOrderMutasiDetailbyItem($request);
 
             DB::commit();
@@ -368,16 +376,7 @@ class aOrderMutasiService extends Controller
             // Db Transaction
             DB::beginTransaction(); 
             $request->validate([
-                "TransactionCode" => "required",
-                // "ProductCode" => "required",
-                // "ProductName" => "required",
-                // "Satuan" => "required",
-                // "Satuan_Konversi" => "required",
-                // "KonversiQty" => "required",
-                // "Konversi_QtyTotal" => "required",
-                // "QtyStok" => "required",
-                // "QtyOrderMutasi" => "required",
-                // "QtySisaMutasi" => "required",
+                "TransactionCode" => "required", 
                  "UserAdd" => "required" ,
                 "UnitOrder" => "required",
                 "IdPaket" => "required" 

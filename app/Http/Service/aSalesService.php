@@ -106,7 +106,7 @@ class aSalesService extends Controller
             // }
             //cek iter
             if($request->Group_Transaksi == "RESEP"){
-                if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($request->NoResep)->first()->Iter >= $this->aSalesRepository->getSalesbyNoResep($request)->count()){
+                if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($request->NoResep)->first()->Iter <= $this->aSalesRepository->getSalesbyNoResep($request)->count()){
                     return $this->sendError('Resep sudah pernah dibuat dan berada batas iter resep ! Cek di [List Penjualan] !', []);
                 }
             }
@@ -129,6 +129,85 @@ class aSalesService extends Controller
             Log::info($e->getMessage());
             return $this->sendError('Data Transaction Gagal ditambahkan !', $e->getMessage());
         }
+    }
+    public function addSalesDetailV2(Request $request)
+    {
+        $request->validate([
+           'TransactionCode' => "required",
+            'ProductCode' => "required",
+            'ProductName' => "required",
+            'Qty' => "required",
+            'QtyResep' => "required",
+            'Satuan' => "required",
+            'Harga' => "required",
+            'Discount' => "required",  
+            'Subtotal' => "required",
+            'Tax' => "required",
+            'Grandtotal' => "required", 
+            'Konversi_QtyTotal' => "required"
+        ]);  
+            // // cek ada gak datanya
+            if ($this->aSalesRepository->getSalesbyID($request->TransactionCode)->count() < 1) {
+                return $this->sendError('Sales Number Not Found !', []);
+            }
+
+         // validasi Kode
+        
+            # code...
+            // // cek kode barangnya ada ga
+            if ($this->aBarangRepository->getBarangbyId($request->ProductCode)->count() < 1) {
+                return $this->sendError('Product Not Found !', []);
+            }
+           
+            # code...
+            // cek kode barangnya ada ga
+            $cekstok = $this->sStokRepository->cekStokbyIDBarangV2($request->ProductCode, $request->UnitTujuan)->count();
+            if ($request->Qty <> 0){ 
+                if ( $cekstok < 1) {
+                    return  $this->sendError('Qty Stok Tidak ada diLayanan Tujuan Ini ! ' , []);
+                }
+            }
+
+            // validasi stok cukup engga
+        
+            # code...
+             //  KHUSUS PAKAI BARANG CUKUP SATUAN TERKECIL LANGSUNG AJA.
+            $cekstok = $this->sStokRepository->cekStokbyIDBarangV2($request->ProductCode, $request->UnitTujuan)->first();
+            $getdatadetilmutasi = $this->aSalesRepository->getSalesDetailbyIDBarangv2($request, $request->ProductCode);
+            $vGetMutasiDetil =  $getdatadetilmutasi->first();
+            if ($request->Qty <> 0){ 
+                if($getdatadetilmutasi->count() < 1 ){
+                    $stokCurrent = (float)$cekstok->Qty;
+                    if ($stokCurrent < $request->Qty) {
+                        return $this->sendError('Qty Stok ' . $request->ProductName . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Pakai ' . $request->Qty . ' ! ', []);
+                    }
+                }else{
+                    $stokCurrent = (float)$cekstok->Qty;
+                    $getStokPlus = $vGetMutasiDetil->Qty + $stokCurrent;
+                    $stokminus = $getStokPlus - $request->Qty;
+                    if ($stokminus < 0) {
+                        return $this->sendError('Qty Stok ' . $request->ProductName . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Pakai ' . $request->Qty . ' ! ', []);
+                    } 
+                }
+            }
+            try {
+                // Db Transaction
+                DB::beginTransaction();
+                $getHppBarang = $this->aHnaRepository->getHppAverageV2($request->ProductCode)->first();
+                $xhpp = $getHppBarang[0]->NominalHpp;
+                // get Hpp Average
+             
+                $this->aSalesRepository->addSalesDetailV2($request,$xhpp); 
+                     
+            
+                DB::commit();
+                return $this->sendResponse([], 'Data Pemakaian barang berhasil ditambahkan !');
+            }catch (Exception $e) {
+                DB::rollBack();
+                Log::info($e->getMessage());
+                return $this->sendError('Data Transaction Gagal ditambahkan !', $e->getMessage());
+            }
+        
     }
     public function addSalesDetail(Request $request)
     {

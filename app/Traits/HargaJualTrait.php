@@ -9,6 +9,8 @@ use Ramsey\Uuid\Uuid as Generator;
 trait HargaJualTrait
 {
     public function HargaJual($GroupJaminan,$noregistrasi,$Hna,$Category,$kelas){
+
+ 
         if($GroupJaminan == "UM"){
             if(substr($noregistrasi,1,2) == "RJ"  ) {
                  $hargadasar = $Hna;

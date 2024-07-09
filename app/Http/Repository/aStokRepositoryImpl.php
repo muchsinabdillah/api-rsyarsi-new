@@ -219,6 +219,13 @@ class aStokRepositoryImpl implements aStokRepositoryInterface
         ->where('Layanan', $unit)
         ->get();
     }
+    public function cekStokbyIDBarangV2($id, $unit)
+    {
+        return  DB::connection('sqlsrv')->table("v_stok")
+        ->where('ProductCode', $id)
+        ->where('Layanan', $unit)
+        ->get();
+    }
     public function getStokBarangbyUnitNameLike($request)
     {
         return  DB::connection('sqlsrv')

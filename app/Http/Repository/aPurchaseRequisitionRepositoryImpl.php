@@ -218,4 +218,17 @@ class aPurchaseRequisitionRepositoryImpl implements aPurchaseRequisitionReposito
         ->select(DB::raw('count(QtyRemainPR) as totalQtyRemainPR'))
         ->get();
     }
+    public function updateDetailKonversiPoPR($request)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('PurchaseRequisitionDetails')
+            ->where('ID', $request->Kon_Detailid)
+            ->update([
+                'Satuan' => $request->Kon_DataSatBesar,
+                'Satuan_Konversi' => $request->Kon_DataSatKecil,
+                'KonversiQty' => $request->Kon_KonversiDatasatuan,
+                'QtyRemainPR' => $request->Kon_EntriQty,
+                'Konversi_QtyTotal' => $request->Kon_EntriQtyTotal 
+            ]);
+        return $updatesatuan;
+    }
 }

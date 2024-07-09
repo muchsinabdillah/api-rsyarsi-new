@@ -91,4 +91,11 @@ class PurchaseRequisitionController extends Controller
         $addGroup =  $aPurchaseRequisitionService->approval($request);
         return $addGroup;
     }
+    public function updateDetailKonversiPoPR(Request $request){
+        $aPurchaseRequisitionRepository = new aPurchaseRequisitionRepositoryImpl();
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $aPurchaseRequisitionService = new aPurchaseRequisitionService($aPurchaseRequisitionRepository, $aBarangRepository);
+        $addGroup =  $aPurchaseRequisitionService->updateDetailKonversiPoPR($request);
+        return $addGroup;
+    }
 }

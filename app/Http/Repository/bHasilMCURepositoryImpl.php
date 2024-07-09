@@ -214,6 +214,8 @@ class bHasilMCURepositoryImpl implements bHasilMCURepositoryInterface
     {
         return  DB::connection('sqlsrv5')->table("MR_TEMPLEAT_MCU_DETAIL")
         ->where('NoRegistrasi',$reg)
+        ->select(DB::raw("case when GroupSaran = 'LIFESTYLE' then 1 when GroupSaran='KONSULTASI' then 2 else 3 end as urut"),'*')
+        ->orderBy('urut','asc')
         ->get();
     }
     public function hasilMCUSaranSpesialis($reg)
@@ -226,6 +228,7 @@ class bHasilMCURepositoryImpl implements bHasilMCURepositoryInterface
     {
         return  DB::connection('sqlsrv5')->table("View_DiagnosaKerjaMCU")
         ->where('NoRegistrasi',$reg)
+        ->orderBy('urut','asc')
         // ->select(
         // 'NoMR',
         // 'NoEpisode',

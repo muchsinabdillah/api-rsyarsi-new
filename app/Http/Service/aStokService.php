@@ -15,7 +15,7 @@ class aStokService extends Controller
 {
     private $aStokRepository;
     public function __construct( 
-        aStokRepositoryImpl $aStokRepository 
+        aStokRepositoryImpl $aStokRepository
     ) { 
         $this->aStokRepository = $aStokRepository;
     }
@@ -100,4 +100,5 @@ class aStokService extends Controller
             return $this->sendError('Data Transaction Gagal ditambahkan !', $e->getMessage());
         }
     }
+    
 }

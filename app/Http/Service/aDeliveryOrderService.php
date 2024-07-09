@@ -162,13 +162,15 @@ class aDeliveryOrderService extends Controller
                     // cek hpp dulu ada gak
                     $hpp = $this->aHna->getHpp($key,$request);
                     //$nilaiHppBaru = ($key['Price']-$key['DiscountRp'])/$key['Konversi_QtyTotal']; 
-                    $nilaiHppBaru = ($key['Price']/$konversiqtytotal-$key['DiscountRp']); 
+                    
                  
                    
                     if($hpp->count() > 0 ){   
+                        $nilaiHppBaru = ($key['Price']/$konversiqtytotal-$key['DiscountRp']); 
                         $NilaiHppTerakhir = $hpp->first()->first()->NominalHpp; 
                         $nilaiHppFix = ($NilaiHppTerakhir+$nilaiHppBaru)/2;
                     }else{ 
+                        $nilaiHppBaru = ($key['Price']/$konversiqtytotal-$key['DiscountRp']); 
                         $NilaiHppTerakhir = 0;
                         $nilaiHppFix = $nilaiHppBaru;
                     }
@@ -239,14 +241,18 @@ class aDeliveryOrderService extends Controller
                         // cek hpp dulu ada gak
                         
                         $hpp = $this->aHna->getHpp($key,$request);
+                     
                         
                         //$nilaiHppBaru = ($key['Price']-$key['DiscountRp'])/$key['Konversi_QtyTotal']; 
-                        $nilaiHppBaru = ($key['Price']/$konversiqtytotal-$key['DiscountRp']); 
+                        //return $this->sendResponse($hpp, 'Barang Delivery Order berhasil ditambahkan !');
                         if($hpp->count() > 0  ){ 
+                            $nilaiHppBaru = ($key['Price']/$konversiqtytotal-$key['DiscountRp']); 
                             $NilaiHppTerakhir = $hpp->first()->first()->NominalHpp; 
                             $nilaiHppFix = ($NilaiHppTerakhir+$nilaiHppBaru)/2;
                         
                         }else{
+
+                            $nilaiHppBaru = ($key['Price']/$konversiqtytotal-$key['DiscountRp']); 
                             $NilaiHppTerakhir = 0;
                             $nilaiHppFix = $nilaiHppBaru;
                         }

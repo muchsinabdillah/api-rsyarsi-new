@@ -105,7 +105,7 @@ class aDeliveryOrderRepositoryImpl implements aDeliveryOrderRepositoryInterface
         ->where('ProductCode', $key['ProductCode'])
             ->update([
                 'ProductSatuan' => $key['ProductSatuan'],
-                'ProductName' => $key['ProductName'],
+                //'ProductName' => $key['ProductName'],
                 'LastPrice' => $key['LastPrice'],
                 'Price' => $key['Price'],
                 'DiscountProsen' => $key['DiscountProsen'],

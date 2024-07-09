@@ -82,6 +82,14 @@ class aHnaRepositoryImpl implements aHnaRepositoryInterface
         ->orderBy('id','desc')
         ->get()->chunk(1);
     }
+    public function getHppAverageV2($product){
+        return  DB::connection('sqlsrv')->table("hpps") 
+        ->select('NominalHpp')
+        ->where('Batal','0')
+        ->where('ProductCode', $product)
+        ->orderBy('id','desc')
+        ->get()->chunk(1);
+    }
     public function getHppAveragebyCode($ProductCode){
         return  DB::connection('sqlsrv')->table("hpps") 
         ->select('NominalHpp')

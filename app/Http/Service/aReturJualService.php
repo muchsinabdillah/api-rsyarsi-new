@@ -84,7 +84,12 @@ class aReturJualService extends Controller
             DB::beginTransaction(); 
 
             //cek reg nya udah close belom
-            $getReg = $this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi)->first();
+            if(substr($request->NoRegistrasi,0,2) == "RJ"  ) {
+                $getReg = $this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi)->first();
+            }else{
+                $getReg = $this->visitRepository->getRegistrationRanapbyNoreg($request->NoRegistrasi)->first();
+            }
+
             if ($getReg->StatusID == '4') {
                 return $this->sendError('Registrasi Sudah Close. TIdak bisa Input Data Retur Jual !', []);
             }
@@ -153,7 +158,11 @@ class aReturJualService extends Controller
             }
 
             //cek reg nya udah close belom
-            $getReg = $this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi)->first();
+            if(substr($request->NoRegistrasi,0,2) == "RJ"  ) {
+                $getReg = $this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi)->first();
+            }else{
+                $getReg = $this->visitRepository->getRegistrationRanapbyNoreg($request->NoRegistrasi)->first();
+            }
             if ($getReg->StatusID == '4') {
                 return $this->sendError('Registrasi Sudah Close. TIdak bisa Input Data Retur Jual !', []);
             }
@@ -311,7 +320,11 @@ class aReturJualService extends Controller
             }
 
             //cek reg nya udah close belom
-            $getReg = $this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi)->first();
+            if(substr($request->NoRegistrasi,0,2) == "RJ"  ) {
+                $getReg = $this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi)->first();
+            }else{
+                $getReg = $this->visitRepository->getRegistrationRanapbyNoreg($request->NoRegistrasi)->first();
+            }
             if ($getReg->StatusID == '4') {
                 return $this->sendError('Registrasi Sudah Close. TIdak bisa Input Data Retur Jual !', []);
             }
@@ -420,7 +433,11 @@ class aReturJualService extends Controller
             }
 
             //cek reg nya udah close belom
-            $getReg = $this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi)->first();
+            if(substr($request->NoRegistrasi,0,2) == "RJ"  ) {
+                $getReg = $this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi)->first();
+            }else{
+                $getReg = $this->visitRepository->getRegistrationRanapbyNoreg($request->NoRegistrasi)->first();
+            }
             if ($getReg->StatusID == '4') {
                 return $this->sendError('Registrasi Sudah Close. TIdak bisa Input Data Retur Jual !', []);
             }

@@ -407,8 +407,8 @@ class aMutasiService extends Controller
                 foreach ($cekBuku as $data) {
                     $asd = $data;
                 } 
-                $this->aStokRepository->addBukuStokInVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal, $request->UnitTujuan);
-                $this->aStokRepository->addDataStoksInVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal, $request->UnitTujuan);
+                $this->aStokRepository->addBukuStokInVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal, $request->UnitOrder);
+                $this->aStokRepository->addDataStoksInVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal, $request->UnitOrder);
                 // UPDATE STOK PLUS KE LOKASI STOK TUJUAN
 
                 if($request->JenisStok == "STOK"){ 
@@ -423,8 +423,8 @@ class aMutasiService extends Controller
                         foreach ($cekBuku as $data) {
                             $asd = $data;
                         } 
-                        $this->aStokRepository->addBukuStokOutVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitOrder);
-                        $this->aStokRepository->addDataStoksOutVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitOrder);
+                        $this->aStokRepository->addBukuStokOutVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitTujuan);
+                        $this->aStokRepository->addDataStoksOutVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitTujuan); 
                     // UPDATE STOK MINUS KE LOKASI STOK ORDER
                 } 
                     $dataorderMutasidetail = $this->aOrderMutasiRepository->getOrderMutasiDetailbyIDBarangMutasi($request->TransactionOrderCode,$key2->ProductCode)->first();
@@ -514,9 +514,10 @@ class aMutasiService extends Controller
                 $cekBuku = $this->aStokRepository->cekBukuByTransactionandCodeProduct($request->ProductCode,$request,'MT');
                 foreach ($cekBuku as $data) {
                     $asd = $data;
+                    
                 } 
-                $this->aStokRepository->addBukuStokInVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitTujuan);
-                $this->aStokRepository->addDataStoksInVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitTujuan);
+                $this->aStokRepository->addBukuStokInVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitOrder);
+                $this->aStokRepository->addDataStoksInVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitOrder); 
             // UPDATE STOK PLUS KE LOKASI STOK TUJUAN
 
             if($request->JenisStok == "STOK"){ 
@@ -530,9 +531,9 @@ class aMutasiService extends Controller
                 $cekBuku = $this->aStokRepository->cekBukuByTransactionandCodeProduct($request->ProductCode,$request,'MT');
                 foreach ($cekBuku as $data) {
                     $asd = $data;
-                } 
-                $this->aStokRepository->addBukuStokOutVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitOrder);
-                $this->aStokRepository->addDataStoksOutVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitOrder);
+                }  
+                $this->aStokRepository->addBukuStokOutVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitTujuan);
+                $this->aStokRepository->addDataStoksOutVoidFromSelectMutasi($asd,'MT_V',$request,$Konversi_QtyTotal,$request->UnitTujuan);
                 // UPDATE STOK MINUS KE LOKASI STOK ORDER
             }
             

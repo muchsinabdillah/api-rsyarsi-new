@@ -61,7 +61,14 @@ class aConsumableRepositoryImpl implements aConsumableRepositoryInterface
             ->where('Void', '0')
             ->get();
     }
- 
+    public function getConsumableDetailbyIDBarangV2($request, $id)
+    {
+        return  DB::connection('sqlsrv')->table("ConsumableDetails")
+        ->where('TransactionCode', $request->TransactionCode)
+            ->where('ProductCode', $id)
+            ->where('Void', '0')
+            ->get();
+    }
     public function getConsumableDetailbyIDandProductCode($key)
     {
         return  DB::connection('sqlsrv')->table("v_transaksi_consumable_dtl")
@@ -88,6 +95,24 @@ class aConsumableRepositoryImpl implements aConsumableRepositoryInterface
             'UserAdd' =>  $request->UserCreate
         ]);
     }
+    public function addConsumableDetailV2($request)
+    {
+        return  DB::connection('sqlsrv')->table("ConsumableDetails")->insert([
+            'TransactionCode' => $request->TransactionCode,
+            'ProductCode' => $request->ProductCode,
+            'ProductName' => $request->ProductName,
+            'Qty' => $request->Qty,  
+            'Konversi_QtyTotal' => $request->Konversi_QtyTotal,  
+            'Satuan_Konversi' =>  $request->Satuan_Konversi,
+            'KonversiQty ' =>  $request->KonversiQty,
+            'Hpp' => '0',//ini emang nol atau gimana
+            'Total' => '0',//ini emang nol atau gimana
+            'Satuan ' =>  $request->ProductSatuan,
+            'UserVoid' => '',
+            'DateAdd' => Carbon::now(),
+            'UserAdd' =>  $request->UserCreate 
+        ]);
+    }
     public function editConsumableDetailbyIdBarang($request, $key)
     {
         $updatesatuan =  DB::connection('sqlsrv')->table('ConsumableDetails')
@@ -111,7 +136,21 @@ class aConsumableRepositoryImpl implements aConsumableRepositoryInterface
             'TotalQtyOrder' => $request->TotalQtyOrder,
             'TotalRow' => $request->TotalRow, 
             'UserCreateLast' => $request->UserCreate,
-            'TransactionDateLast' => Carbon::now() 
+            'TransactionDateLast' => Carbon::now() ,
+            'TransactionStatus' => 'Finish', 
+            'UserLastFinish' => $request->UserCreate,
+            'DateLastFinish' => Carbon::now() 
+            ]);
+        return $updatesatuan;
+    }
+    public function editOutstandingConsumable($request,$TransasctionCode)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('Consumables')
+        ->where('TransactionCode', $TransasctionCode)
+            ->update([ 
+                'TransactionStatus' => 'Outstanding', 
+                'UserLastOutstanding' => $request->UserCreate,
+                'DateLastOutstanding' => Carbon::now() 
             ]);
         return $updatesatuan;
     }

@@ -9,6 +9,7 @@ use App\Http\Repository\aBarangRepositoryImpl;
 use App\Http\Repository\aSupplierRepositoryImpl;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class aBarangService extends Controller
 {
@@ -540,6 +541,184 @@ class aBarangService extends Controller
             return $this->sendResponse($data, "Data Product ditemukan.");
         } else {
             return $this->sendError("Data Product Found.", [], 400);
+        }
+    }
+    public function getBarangKonversibyIddetail($id)
+    {
+        // validator 
+    
+        $count = $this->aBarangRepository->getBarangKonversibyIddetail($id)->count();
+   
+        if ($count > 0) {
+            $data = $this->aBarangRepository->getBarangKonversibyIddetail($id)->first(); 
+            return $this->sendResponse($data, "Data Product ditemukan.");
+        } else {
+            return $this->sendError("Data Product Found.", [], 400);
+        }
+    }
+    public function getPaketInventoryAll()
+    {
+        // validator 
+        $count = $this->aBarangRepository->getPaketInventoryAll()->count();
+        if ($count > 0) {
+            $data = $this->aBarangRepository->getPaketInventoryAll();
+            return $this->sendResponse($data, "Data Barang ditemukan.");
+        } else {
+            return $this->sendError("Data Product Not Found.", [], 400);
+        }
+    }
+
+    public function getPaketInventorybyId($id)
+    {
+        // validator 
+        $count = $this->aBarangRepository->getPaketInventorybyId($id)->count();
+        
+        if ($count > 0) {
+            $data = $this->aBarangRepository->getPaketInventorybyId($id);
+            return $this->sendResponse($data->first(), "Data Product ditemukan.");
+        } else {
+            return $this->sendError("Data Product Found.", [], 400);
+        }
+    }
+
+    public function addPaketInventory(Request $request)
+    {
+        $request->validate([
+            "nama_paket" => "required",
+            "user_create" => "required",
+        ]);
+
+        $count = $this->aBarangRepository->getPaketInventorybyName($request->nama_paket)->count();
+        if ($count > 0) {
+            return $this->sendError('Nama paket sudah pernah digunakan ! Silahkan cari nama lain !', []);
+        }
+        
+        try {
+            $createBarang = $this->aBarangRepository->addPaketInventory($request);
+            return $this->sendResponse($createBarang, 'Paket Berhasil Dibuat !');
+        } catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Not Found !', $e->getMessage());
+        }
+    } 
+
+    public function editPaketInventory(Request $request)
+    {
+        $request->validate([
+            "ID" => "required",
+            "nama_paket" => "required",
+            "user_update" => "required",
+            "status" => "required",
+        ]);
+        
+        try {
+            // Db Transaction
+            $data = $this->aBarangRepository->getPaketInventorybyId($request->ID);
+            // // cek ada gak datanya
+            if ($data->count() < 1) {
+                return $this->sendError('Data Not Found !', []);
+            }
+
+            if ($data->first()->nama_paket != $request->nama_paket){
+                $count = $this->aBarangRepository->getPaketInventorybyName($request->nama_paket)->count();
+                if ($count > 0) {
+                    return $this->sendError('Nama paket sudah pernah digunakan ! Silahkan cari nama lain !', []);
+                }
+            }
+            $updateBarang = $this->aBarangRepository->editPaketInventory($request);
+            return $this->sendResponse($updateBarang, 'Paket Berhasil Diperbarui !');
+        } catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Not Found !', $e->getMessage());
+        }
+    } 
+
+    public function addDetailPaketInventory(Request $request){
+        // validate 
+        $request->validate([
+            "IDHeader" => "required",
+            "ProductCode" => "required",
+            "ProductName" => "required",
+            "QtyStok" => "required",
+            "QtyPR" => "required",
+            "Satuan" => "required",
+            "Satuan_Konversi" => "required",
+            "KonversiQty" => "required",
+            "Konversi_QtyTotal" => "required",
+            "UserAdd" => "required"
+        ]);
+        try {
+            // Db Transaction
+            DB::beginTransaction(); 
+
+            // cek ada gak datanya
+            if($this->aBarangRepository->getPaketInventorybyId($request->IDHeader)->count() < 1 ){
+                return $this->sendError('ID Number Not Found !',[]);
+            }
+            // cek kode barangnya ada ga
+            if($this->aBarangRepository->getBarangbyId($request->ProductCode)->count() < 1){
+                return $this->sendError('Product Not Found !', []);
+            }
+            // cek Konversi nya udah belom
+            $konversi = $this->aBarangRepository->getBarangbyId($request->ProductCode)->first();
+            if ($konversi->Konversi_satuan  < 1) {
+                return $this->sendError('Konversi Satuan Invalid, Silahkan Masukan Konversi Satuan !', []);
+            }
+            //cek barang dobel gak 
+            if($this->aBarangRepository->getItemsDoublePaket($request)->count() > 0 ){
+                return $this->sendError('Product Code Double !', []);
+            }
+
+            $this->aBarangRepository->addPaketDetil($request);
+            
+            DB::commit();
+            return $this->sendResponse([], 'Items Paket Add Successfully !');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e->getMessage());
+            return $this->sendError('Data Transaction Gagal ditambahkan !', $e->getMessage());
+        }
+    }
+
+    public function getDetailPaketInventory($id)
+    {
+        // validator 
+        $count = $this->aBarangRepository->getDetailPaketInventorybyIDHdr($id)->count();
+        if ($count > 0) {
+            $data = $this->aBarangRepository->getDetailPaketInventorybyIDHdr($id);
+            return $this->sendResponse($data, "Data Barang ditemukan.");
+        } else {
+            return $this->sendError("Data Product Not Found.", [], 400);
+        }
+    }
+
+    public function deleteDetailPaketInventory(Request $request)
+    {
+        // validate 
+        $request->validate([
+            "IDHeader" => "required",
+            "ProductCode" => "required",
+            // "DateVoid" => "required",
+            // "UserVoid" => "required",
+        ]);
+
+        try {
+            // Db Transaction
+            DB::beginTransaction();
+
+            // cek ada gak datanya
+            if($this->aBarangRepository->getPaketInventorybyId($request->IDHeader)->count() < 1 ){
+                return $this->sendError('ID Number Not Found !',[]);
+            }
+            
+            $this->aBarangRepository->deleteDetailPaketInventory($request);
+
+            DB::commit();
+            return $this->sendResponse([], 'Data Berhasil Dihapus !');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e->getMessage());
+            return $this->sendError('Transaction Void Failed !', $e->getMessage());
         }
     }
 }

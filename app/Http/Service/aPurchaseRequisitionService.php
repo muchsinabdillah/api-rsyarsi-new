@@ -338,4 +338,30 @@ class aPurchaseRequisitionService extends Controller
         } 
         
     }
+    public function updateDetailKonversiPoPR(Request $request)
+    {
+        // validate 
+
+        $request->validate([
+            "Kon_Detailid" => "required",
+            "PilihKonversikode" => "required",
+            "Kon_DataSatBesar" => "required",
+            "Kon_DataSatKecil" => "required",
+            "Kon_KonversiDatasatuan" => "required",
+            "Kon_EntriQty" => "required",
+            "Kon_EntriQtyTotal" => "required" 
+        ]);
+        try {
+            // Db Transaction
+            DB::beginTransaction();
+              
+            $this->aPurchaseRequisitionRepository->updateDetailKonversiPoPR($request); 
+            DB::commit();  
+            return $this->sendResponse([], 'Update Data Berhasil dilakukan !');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e->getMessage());
+            return $this->sendError('Data Transaction Gagal ditambahkan !', $e->getMessage());
+        }
+    }
 }

@@ -112,6 +112,79 @@ class aConsumableService extends Controller
         }
          
     } 
+    public function addConsumableDetailv2(Request $request){
+        // validate 
+        $request->validate([
+            "TransactionCode" => "required", 
+            "ProductCode" => "required",  
+            "ProductSatuan" => "required",
+            "KonversiQty" => "required",
+            "UnitTujuan" => "required", 
+            "Satuan_Konversi" => "required", 
+            "Konversi_QtyTotal" => "required", 
+            "ProductName" => "required",
+            "Qty" => "required",
+            "Hpp" => "required",
+            "Persediaan" => "required",
+            "UserCreate" => "required", 
+            "Total" => "required"
+        ]); 
+        // // cek ada gak datanya
+        if ($this->aConsumableRepository->getConsumablebyID($request->TransactionCode)->count() < 1) {
+            return $this->sendError('No. Transaksi Pemakaian Barang tidak ditemukan !', []);
+        }
+
+        // // cek kode barangnya ada ga
+        if ($this->aBarangRepository->getBarangbyId($request->ProductCode)->count() < 1) {
+            return $this->sendError('Kode Barang tidak ditemukan !', []);
+        }
+
+        // // cek sudah pernah di entri
+        if ($this->aConsumableRepository->getConsumableDetailbyIDBarangV2($request,$request->ProductCode)->count() > 0) {
+            return $this->sendError('Kode Barang Sudah pernah diinput !', []);
+        }
+
+        // Validasi Stok ada gak
+            $cekstok = $this->aStok->cekStokbyIDBarangV2($request->ProductCode, $request->UnitTujuan)->count();
+            if ( $cekstok < 1) {
+                return  $this->sendError('Qty Stok Tidak ada diLayanan Tujuan Ini ! ' , []);
+            }
+
+        // validasi stok cukup engga 
+            # code...
+            //  KHUSUS PAKAI BARANG CUKUP SATUAN TERKECIL LANGSUNG AJA.
+            $cekstok = $this->aStok->cekStokbyIDBarangV2($request->ProductCode, $request->UnitTujuan)->first();
+            $getdatadetilmutasi = $this->aConsumableRepository->getConsumableDetailbyIDBarangV2($request, $request->ProductCode);
+            $vGetMutasiDetil =  $getdatadetilmutasi->first();
+            
+            if($getdatadetilmutasi->count() < 1 ){
+                $stokCurrent = (float)$cekstok->Qty;
+                if ($stokCurrent < $request->Qty) {
+                    return $this->sendError('Qty Stok ' . $request->ProductName . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Pakai ' . $request->Qty . ' ! ', []);
+                }
+            }else{
+                $stokCurrent = (float)$cekstok->Qty;
+                $getStokPlus = $vGetMutasiDetil->Qty + $stokCurrent;
+                $stokminus = $getStokPlus - $request->Konversi_QtyTotal;
+                if ($stokminus < 0) {
+                    return $this->sendError('Qty Stok ' . $request->ProductName . ' Tidak Cukup, Qty Stok ' . $stokCurrent . ', Qty Pakai ' . $request->Qty . ' ! ', []);
+                } 
+            }
+            try {
+                // Db Transaction
+                DB::beginTransaction();
+                
+                $this->aConsumableRepository->addConsumableDetailV2($request); 
+                $this->aConsumableRepository->editOutstandingConsumable($request,$request->TransactionCode);
+
+                DB::commit();
+                return $this->sendResponse([], 'Data Pemakaian barang berhasil ditambahkan !');
+            }catch (Exception $e) {
+                DB::rollBack();
+                Log::info($e->getMessage());
+                return $this->sendError('Data Transaction Gagal ditambahkan !', $e->getMessage());
+            }
+    }
     public function addConsumableDetail(Request $request)
     {
         // validate 

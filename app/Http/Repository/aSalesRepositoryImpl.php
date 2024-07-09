@@ -66,6 +66,14 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
             ->where('Void', '0')
             ->get();
     }
+    public function getSalesDetailbyIDBarangv2($request, $ProductCode)
+    {
+        return  DB::connection('sqlsrv')->table("SalesDetails")
+        ->where('TransactionCode', $request->TransactionCode)
+            ->where('ProductCode', $ProductCode)
+            ->where('Void', '0')
+            ->get();
+    }
     public function getSalesDetailbyIDBarangFix($idTrs, $kodeBarang)
     {
         return  DB::connection('sqlsrv')->table("SalesDetails")
@@ -112,6 +120,31 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
             'Konversi_QtyTotal' => $key['Konversi_QtyTotal'],//tambahan
             'AturanPakai' => $key['AturanPakai'],  //tambahan
             'QtySalesRemain' => $key['QtyResep']  //tambahan
+        ]);
+    }
+    public function addSalesDetailV2($request,$xhpp)
+    {
+        return  DB::connection('sqlsrv')->table("SalesDetails")->insert([
+            'TransactionCode' => $request->TransactionCode,
+            'ProductCode' => $request->ProductCode,
+            'ProductName' => $request->ProductName,
+            'Qty' => $request->Qty,  
+            'QtyResep' => $request->QtyResep,  
+            'Satuan' => $request->ProductSatuan,  
+            'Harga' => $request->Harga,  
+            'Discount' => $request->Discount,  
+            'Subtotal' => $request->Subtotal,  
+            'Tax' => $request->Tax,  
+            'Grandtotal' => $request->Grandtotal,  
+            'UangR' => '0',  
+            'Embalase' => '0',  
+            'Hpp' =>  $xhpp,   
+            'UserVoid' => '',
+            'DateAdd' => Carbon::now(),
+            'UserAdd' =>  $request->UserCreate,
+            'Konversi_QtyTotal' => $request->Konversi_QtyTotal,
+            'AturanPakai' => $request->AturanPakai,
+            'QtySalesRemain' => $request->QtyResep
         ]);
     }
     public function editSalesDetailbyIdBarang($request, $key,$xhpp)

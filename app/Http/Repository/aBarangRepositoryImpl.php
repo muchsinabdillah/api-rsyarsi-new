@@ -102,6 +102,16 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
             ->where('ID', $id)
             ->get();
     }
+    public function getBarangbyIdandgolongan($id)
+    {
+        return  DB::connection('sqlsrv')
+            ->table("Products")
+            ->select( 
+            'Category'
+            )
+            ->where('ID', $id)
+            ->get();
+    }
     public function getBarangbyIdAndIDSupplier($request)
     {
         return  DB::connection('sqlsrv')
@@ -447,5 +457,96 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
             )
             ->where('idBarang', $id)
             ->get();
+    }
+    public function getBarangKonversibyIddetail($id)
+    {
+        return  DB::connection('sqlsrv')
+            ->table("ProductKonversis")
+            ->select(
+            'id',
+            'IdBarang',
+            'SatuanBeli', 
+            'SatuanJual',
+            'NilaiKonversi' 
+            )
+            ->where('Id', $id)
+            ->get();
+    }
+    public function getPaketInventoryAll()
+    {
+        return  DB::connection('sqlsrv')
+            ->table("PaketItems")
+            ->get();
+    }
+    public function getPaketInventorybyId($id)
+    {
+        return  DB::connection('sqlsrv')
+            ->table("PaketItems")
+            ->where('ID', $id)
+            ->get();
+    }
+    public function addPaketInventory($request)
+    {
+        return  DB::connection('sqlsrv')->table("PaketItems")->insertGetId([
+                'nama_paket' => $request->nama_paket,
+                'user_create' => $request->user_create,
+                'date_create' => Carbon::now(),
+                'status' => '1',
+        ]);
+    }
+
+    public function editPaketInventory($request)
+    {
+        return  DB::connection('sqlsrv')->table("PaketItems")
+        ->where('ID', $request->ID)
+        ->update([
+            'nama_paket' => $request->nama_paket,
+            'user_update' => $request->user_update,
+            'date_update' => Carbon::now(),
+            'status' => $request->status,
+        ]);
+    }
+    public function getPaketInventorybyName($nama_paket)
+    {
+        return  DB::connection('sqlsrv')
+            ->table("PaketItems")
+            ->where('nama_paket', $nama_paket)
+            ->get();
+    }
+    public function getItemsDoublePaket($request)
+    {
+        return  DB::connection('sqlsrv')->table("PaketItemDetails")
+        ->where('id_header', $request->IDHeader)
+            ->where('status', '1')
+            ->where('product_id', $request->ProductCode)
+            ->get();
+    } 
+    public function addPaketDetil($request)
+    {
+        return  DB::connection('sqlsrv')->table("PaketItemDetails")->insert([
+            'id_header' => $request->IDHeader,
+            'product_id' => $request->ProductCode,
+            'nama_product' => $request->ProductName,
+            'quantity' => $request->QtyPR,
+            'status' => '1',
+        ]);
+    }
+    public function getDetailPaketInventorybyIDHdr($id)
+    {
+        return  DB::connection('sqlsrv')
+            ->table("PaketItemDetails")
+            ->where('id_header', $id)
+            ->where('status', '1')
+            ->get();
+    }
+    public function deleteDetailPaketInventory($request)
+    {
+        return  DB::connection('sqlsrv')->table("PaketItemDetails")
+        ->where('product_id', $request->ProductCode)
+        ->where('id_header', $request->IDHeader)
+        ->where('status', '1')
+        ->update([
+            'status' => '0',
+        ]);
     }
 }

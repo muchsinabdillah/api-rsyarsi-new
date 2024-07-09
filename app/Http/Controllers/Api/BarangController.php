@@ -220,4 +220,70 @@ class BarangController extends Controller
         $getAllBarang =  $aBarangService->getBarangKonversibyId($id);
         return $getAllBarang;
     }
+    public function getBarangKonversibyIddetail($id)
+    {
+        //
+      $aBarangRepository = new aBarangRepositoryImpl();
+        $aSupplierRepository = new aSupplierRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $getAllBarang =  $aBarangService->getBarangKonversibyIddetail($id);
+        return $getAllBarang;
+    }
+    public function addPaketInventory(Request $request)
+    {
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $aSupplierRepository = new aSupplierRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $addBarang =  $aBarangService->addPaketInventory($request);
+        return $addBarang;
+    }
+    
+    public function editPaketInventory(Request $request)
+    {
+      $aBarangRepository = new aBarangRepositoryImpl();
+        $aSupplierRepository = new aSupplierRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $addBarang =  $aBarangService->editPaketInventory($request);
+        return $addBarang;
+    }
+    public function getPaketInventoryAll()
+    {
+      $aBarangRepository = new aBarangRepositoryImpl();
+        $aSupplierRepository = new aSupplierRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $getAllBarang =  $aBarangService->getPaketInventoryAll();
+        return $getAllBarang;
+    }
+    public function getPaketInventorybyId($id)
+    {
+      $aBarangRepository = new aBarangRepositoryImpl();
+        $aSupplierRepository = new aSupplierRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $getAllBarang =  $aBarangService->getPaketInventorybyId($id);
+        return $getAllBarang;
+    }
+    public function addDetailPaketInventory(Request $request)
+    {
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $aSupplierRepository = new aSupplierRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $addBarang =  $aBarangService->addDetailPaketInventory($request);
+        return $addBarang;
+    }
+    public function getDetailPaketInventory($id)
+    {
+      $aBarangRepository = new aBarangRepositoryImpl();
+        $aSupplierRepository = new aSupplierRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $getAllBarang =  $aBarangService->getDetailPaketInventory($id);
+        return $getAllBarang;
+    }
+    public function deleteDetailPaketInventory(Request $request)
+    {
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $aSupplierRepository = new aSupplierRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $addBarang =  $aBarangService->deleteDetailPaketInventory($request);
+        return $addBarang;
+    }
 }

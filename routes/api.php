@@ -147,6 +147,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::get("getBarangAll", [BarangController::class, "getBarangAll"]);
         Route::get("getBarangbyId/{id}", [BarangController::class, "getBarangbyId"]);
         Route::get("getBarangKonversibyId/{id}", [BarangController::class, "getBarangKonversibyId"]);
+        Route::get("getBarangKonversibyIddetail/{id}", [BarangController::class, "getBarangKonversibyIddetail"]);
 
         Route::post("addBarangSupplier", [BarangController::class, "addBarangSupplier"]); 
         Route::delete("deleteBarangSupplier", [BarangController::class, "deleteBarangSupplier"]);
@@ -173,6 +174,16 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::get("getHistoryHargaJual/{id}", [BarangController::class, "getHistoryHargaJual"]);
         Route::post("getDataPaketbyNameLike", [BarangController::class, "getDataPaketbyNameLike"]);
         Route::post("getDataPaketDetailbyIDHdr", [BarangController::class, "getDataPaketDetailbyIDHdr"]);
+
+        // Paket Inventory
+        Route::post("addPaketInventory", [BarangController::class, "addPaketInventory"]);
+        Route::post("addDetailPaketInventory", [BarangController::class, "addDetailPaketInventory"]);
+        Route::post("editPaketInventory", [BarangController::class, "editPaketInventory"]);
+        Route::get("getPaketInventoryAll", [BarangController::class, "getPaketInventoryAll"]);
+        Route::get("getPaketInventorybyId/{id}", [BarangController::class, "getPaketInventorybyId"]);
+        Route::get("getDetailPaketInventory/{id}", [BarangController::class, "getDetailPaketInventory"]);
+        Route::post("deleteDetailPaketInventory", [BarangController::class, "deleteDetailPaketInventory"]);
+        
     });
 
     //inventory
@@ -187,6 +198,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("getPurchaseRequisitionbyDateUser/", [PurchaseRequisitionController::class, "getPurchaseRequisitionbyDateUser"]);
         Route::post("getPurchaseRequisitionbyPeriode/", [PurchaseRequisitionController::class, "getPurchaseRequisitionbyPeriode"]);
         Route::post("approval/", [PurchaseRequisitionController::class, "approval"]);
+        Route::post("updateDetailKonversiPoPR", [PurchaseRequisitionController::class, "updateDetailKonversiPoPR"]);
        
     });
 
@@ -264,6 +276,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
     Route::group(['prefix' => 'transaction/consumable'], function () {
         Route::post("addConsumableHeader", [ConsumableController::class, "addConsumableHeader"]);
         Route::post("addConsumableDetail", [ConsumableController::class, "addConsumableDetail"]); 
+        Route::post("addConsumableDetailv2", [ConsumableController::class, "addConsumableDetailv2"]); 
         Route::post("voidConsumable", [ConsumableController::class, "voidConsumable"]);
         Route::post("voidConsumableDetailbyItem", [ConsumableController::class, "voidConsumableDetailbyItem"]);
         Route::post("getConsumablebyID", [ConsumableController::class, "getConsumablebyID"]);
@@ -277,6 +290,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
     Route::group(['prefix' => 'transaction/sales'], function () {
         Route::post("addSalesHeader", [SalesController::class, "addSalesHeader"]);
         Route::post("addSalesDetail", [SalesController::class, "addSalesDetail"]);
+        Route::post("addSalesDetailv2", [SalesController::class, "addSalesDetailv2"]);
         Route::post("voidSales", [SalesController::class, "voidSales"]);
         Route::post("voidSalesDetailbyItem", [SalesController::class, "voidSalesDetailbyItem"]);
         Route::post("finishSalesTransaction", [SalesController::class, "finishSalesTransaction"]);
@@ -325,6 +339,10 @@ Route::group(["middleware"=>["auth:api"]], function(){
             Route::post("getBukuStokBarangbyUnit", [StokController::class, "getBukuStokBarangbyUnit"]);  
             Route::post("getBukuStokBarangBeforebyUnit", [StokController::class, "getBukuStokBarangBeforebyUnit"]);  
         });
+        Route::group(['prefix' => 'hna/'], function () { 
+            Route::post("getHnabyKodeBarang", [StokController::class, "getHnabyKodeBarang"]);  
+        });
+
     });
     // REGIS
     Route::group(['prefix' => 'masterdata/reg/'], function () {
@@ -426,7 +444,9 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("{noregistrasi}/viewAssesmentRajal", [AssesmentController::class, "viewAssesmentRajal"]);
         Route::post("{noregistrasi}/viewAssesmentRajalPerawat", [AssesmentController::class, "viewAssesmentRajalPerawat"]);
     });
-
+    Route::group(['prefix' => 'Operasi/'], function () {
+        Route::post("total/harian", [AssesmentController::class, "dataoperasiharian"]);
+    });
     // For Tarif
     Route::group(['prefix' => 'Tarif/'], function () {
         // get tarif pake like  

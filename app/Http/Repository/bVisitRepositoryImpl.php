@@ -96,15 +96,9 @@ class bVisitRepositoryImpl implements bVisitRepositoryInterface
     public function getRegistrationRajalbyNoreg($NoRegistrasi)
     {
         //a
-        return  DB::connection('sqlsrv6')->table("dataRWJ")
-        ->select( 'NoAntrianAll', 'NamaJaminan','PatientName',DB::raw("CASE WHEN Sex='L' then 'M' ELSE 'F' END AS Gander") ,
-        DB::raw("replace(CONVERT(VARCHAR(11), DateOfBirth, 111), '/','-') as Date_of_birth") , 
-        'Address',   'IdUnit',  DB::raw("[Visit Date] AS Visit_Date"), 'NamaUnit',   'IdDokter', 'NamaDokter','NoMR','NoEpisode','NoRegistrasi',
-        DB::raw("case when TipePasien='1' THEN 'PRIBADI' WHEN TipePasien='2' THEN 'ASURANSI' WHEN TipePasien='5' THEN 'PERUSAHAAN' END 
-        AS  PatientType"),'StatusID','MobilePhone','NoAntrianAll'
-        ,'Kelurahan','Kecamatan','kabupatenNama','ProvinsiNama','pekerjaan',DB::raw("datediff(year, DateOfBirth, getdate()) AS Usia"),'Education','Etnis','TipePasien','KodeJaminan')
+        return  DB::connection('sqlsrv6')->table("viewRegistrasiPasienbyNoreg")
         ->where('NoRegistrasi', $NoRegistrasi) 
-        ->orderBy('Visit Date', 'desc')
+        ->orderBy('Visit_Date', 'desc')
         ->get();
     }
     public function getAppointmentNumber($NoBooking)

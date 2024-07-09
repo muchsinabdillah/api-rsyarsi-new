@@ -133,8 +133,7 @@ class aOrderMutasiRepositoryImpl implements aOrderMutasiRepositoryInterface
     {
         return  DB::connection('sqlsrv')->table("OrderMutasiDetails")
             ->where('TransactionCode', $id)
-            ->where('Void', '0')
-            ->where('QtySisaMutasi','<>', '0')
+            ->where('Void', '0') 
             ->get();
     }
     public function getOrderMutasiDetailbyIDBarang($request, $key)
@@ -210,5 +209,17 @@ class aOrderMutasiRepositoryImpl implements aOrderMutasiRepositoryInterface
                 'DateApproved' => $request->DateApprove
             ]);
         return $updatesatuan;
+    }
+    public function getMutasibyOrderMutasiId($id)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_mutasi_hdr")
+            ->where('TransactionOrderCode', $id) 
+            ->get();
+    }
+    public function getMutasibyOrderMutasiId2($id)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_mutasi_hdr")
+            ->where('TransactionOrderCode', $id) 
+            ->get();
     }
 }

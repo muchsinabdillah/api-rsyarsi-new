@@ -88,6 +88,40 @@ class ConsumableController extends Controller
         $addHeader =  $aConsumableService->addConsumableDetail($request);
         return $addHeader;
     }
+    public function addConsumableDetailv2(Request $request)
+    {
+        $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $asupplierRepository = new aSupplierRepositoryImpl();
+        $aPurchaseOrderRepository = new aPurchaseOrderRepositoryImpl();
+        $sStok = new aStokRepositoryImpl();
+        $aHna = new aHnaRepositoryImpl();
+        $aJurnal = new aJurnalRepositoryImpl();
+        $aConsumableRepository = new aConsumableRepositoryImpl();
+        $aMasterUnitRepository = new aMasterUnitRepositoryImpl();
+        $aHnaRepository = new aHnaRepositoryImpl();
+        $billingRepository = new bBillingRepositoryImpl();
+        $visitRepository = new bVisitRepositoryImpl;
+        $jaminanRepository = new aJaminanRepositoryImpl;
+        $aConsumableService = new aConsumableService(
+            $aDeliveryOrderRepository,
+            $aBarangRepository,
+            $asupplierRepository,
+            $aPurchaseOrderRepository,
+            $sStok,
+            $aHna,
+            $aJurnal,
+            $aConsumableRepository,
+            $aMasterUnitRepository,
+            $aHnaRepository,
+            $billingRepository,
+            $visitRepository,
+            $jaminanRepository
+        );
+        $addHeader =  $aConsumableService->addConsumableDetailv2($request);
+        return $addHeader;
+    }
+    
     public function voidConsumable(Request $request)
     {
         $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
