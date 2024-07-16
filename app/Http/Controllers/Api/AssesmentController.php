@@ -55,4 +55,11 @@ class AssesmentController extends Controller
         $user =  $userService->ViewCpptPeriode($request);
         return $user; 
     }
+    public function dataoperasiharian(Request $request){
+        $assesmentRajal = new bAssesmentRajalRepositoryImpl();
+        $registrationRajal = new bVisitRepositoryImpl();
+        $userService = new bAssesmentRajalService($assesmentRajal, $registrationRajal);
+        $user =  $userService->dataoperasiharian($request);
+        return $user; 
+    }
 }

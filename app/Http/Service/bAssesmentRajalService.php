@@ -262,6 +262,7 @@ class bAssesmentRajalService extends Controller {
                 return $this->sendError("Data Cppt Not Found.", [], 400);
             }
     }
+    
     public function ViewCpptPeriode(Request $request){
         if ($request->NoMR === "" || $request->NoMR === null) {
             $metadata = array(
@@ -291,5 +292,19 @@ class bAssesmentRajalService extends Controller {
             } else {
                 return $this->sendError("Data Cppt Not Found.", [], 400);
             }
+    }
+    public function dataoperasiharian(Request $request)
+    {
+        try {   
+            $count = $this->assesmentRajal->dataoperasiharian($request)->count();
+            if ($count < 3 ) {  
+                return $this->sendResponse($count, "Order Operasi Bisa Di Tambahkan.");
+            } else {
+                return $this->sendError("Order Operasi Sudah mencapai Limit Batas Tanggal dan Jam yang disepakati yaitu 3 Pasien. Silahkan Ganti tanggal dan Jam. Atau hapus Order Operasi jika tidak jadi. ", []);
+            }
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
     }
 }

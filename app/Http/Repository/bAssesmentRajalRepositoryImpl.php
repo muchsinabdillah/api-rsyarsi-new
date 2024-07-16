@@ -258,4 +258,11 @@ class bAssesmentRajalRepositoryImpl implements bAssesmentRepositoryInterface
         ->orderBy('ID','desc')
         ->get();
     }
+    public function dataoperasiharian($request)
+    {
+        return  DB::connection('sqlsrv5')->table("EMR_OrderOperasi")   
+        ->where(DB::raw("replace(CONVERT(VARCHAR(11),TglOperasi, 111), '/','-')"), $request->tanggal)
+        ->where(DB::raw("SUBSTRING( convert(char(5), JamPelaksanaan, 108),1,2)"), $request->jam)  
+        ->get();
+    }
 }
