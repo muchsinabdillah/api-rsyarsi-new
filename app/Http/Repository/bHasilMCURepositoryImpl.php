@@ -5,6 +5,7 @@ namespace App\Http\Repository;
 use App\Models\gallery;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class bHasilMCURepositoryImpl implements bHasilMCURepositoryInterface
 { 
@@ -239,5 +240,33 @@ class bHasilMCURepositoryImpl implements bHasilMCURepositoryInterface
         // )
         ->get();
     }
-    
+    public function updateNonActiveHasilMCU($request)
+    {
+        return  DB::connection('sqlsrv6')->table("TDocumentHasilMCU")
+        ->where('NoRegistrasi',$request->NoRegistrasi)
+        ->where('Active','1')
+        ->update([
+            'Active' =>  '0',
+        ]);
+    }
+
+    public function uploaPdfMedicalCheckupGenerate($request)
+    {
+        return  DB::connection('sqlsrv6')->table("TDocumentHasilMCU")->insertGetId([
+            'UUID' => $request->uuid,
+            'JenisDocument' =>  $request->jenisdocument,
+            'NoRegistrasi' =>  $request->NoRegistrasi,
+            'Active' =>  '1',
+            'AwsUrlDocument' =>  $request->Url_Pdf_Local,
+            'UserCreate' =>  $request->UserCreate,
+            'DateCreate' => Carbon::now(),
+        ]);
+    }
+
+    public function getGenerateHasilMCUbyID($id)
+    {
+        return  DB::connection('sqlsrv6')->table("TDocumentHasilMCU")
+        ->where('ID',$id)
+        ->get();
+    }
 }

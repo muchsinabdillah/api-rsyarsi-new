@@ -311,4 +311,36 @@ class bHasilMCUService extends Controller {
             return  $this->sendError($e->getMessage());
         }
     }
+    public function uploaPdfMedicalCheckupGenerate(Request $request)
+    {
+        if ($request->jenisdocument == "") {  
+            return $this->sendError("Masukan Jenis Document.", []);
+        }
+        if ($request->Url_Pdf_Local == "") {  
+            return $this->sendError("Masukan Url PDF Local.", []);
+        }
+        if ($request->NoRegistrasi == "") {  
+            return $this->sendError("Masukan No. Register.", []);
+        }
+        if ($request->UserCreate == "") {  
+            return $this->sendError("Masukan User Create.", []);
+        }
+
+
+        try{
+
+            DB::connection('sqlsrv6')->beginTransaction();
+
+            $this->hasilmcu->updateNonActiveHasilMCU($request);
+            $lastid = $this->hasilmcu->uploaPdfMedicalCheckupGenerate($request);
+            $getdata = $this->hasilmcu->getGenerateHasilMCUbyID($lastid)->first();
+            DB::connection('sqlsrv6')->commit();
+            return $this->sendResponse($getdata ,"Pdf Hasil MCU Berhasil di Simpan.");  
+            
+        }catch (Exception $e) { 
+            DB::connection('sqlsrv6')->rollBack(); 
+            Log::info($e->getMessage());
+            return  $this->sendError($e->getMessage());
+        }
+    }
 }

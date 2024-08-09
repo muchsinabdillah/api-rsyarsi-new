@@ -29,6 +29,7 @@ class aUnitRepositoryImpl implements aUnitRepositoryInterface
     {
         return  DB::connection('sqlsrv2')->table("MstrUnitPerwatan")
         ->where('grup_instalasi', 'RAWAT JALAN')
+        ->where('active', '1')
         ->select('ID','NamaUnit','Foto')
         ->get();
     }

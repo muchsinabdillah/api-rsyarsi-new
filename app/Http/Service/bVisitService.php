@@ -467,6 +467,15 @@ class bVisitService extends Controller {
             return $this->sendError("Data SEP tidak ditemukan.", []);
         }
     }
+    public function viewsepBefore(Request $request){
+       
+        $data = $this->visitRepository->viewsepBefore($request->NoRegistrasi);
+        if ($data->count() > 0) { 
+            return $this->sendResponse($data, "Data Registrasi ditemukan.");
+        } else {
+            return $this->sendError("Data Registrasi tidak ditemukan.", []);
+        }
+    }
     public function addTaskBPJS(Request $request){
        
         try{
@@ -511,6 +520,14 @@ class bVisitService extends Controller {
     public function getRegistrationRajalHistoryCoas(Request $request){
         $data = $this->visitRepository->getRegistrationRajalHistoryCoas($request);
         
+        if ($data->count() > 0) { 
+            return $this->sendResponse($data, "Data ditemukan.");
+        } else {
+            return $this->sendError("Data Not Found.", []);
+        }
+    }
+    public function viewByNoregistrasiRanap(Request $request){
+        $data = $this->visitRepository->getRegistrationRanapbyNoreg($request->NoRegistrasi);
         if ($data->count() > 0) { 
             return $this->sendResponse($data, "Data ditemukan.");
         } else {

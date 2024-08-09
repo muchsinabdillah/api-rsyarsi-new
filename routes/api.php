@@ -49,6 +49,7 @@ use App\Http\Controllers\Api\ScheduleDoctorController;
 use App\Http\Controllers\Api\AntrianAdmissionController;
 use App\Http\Controllers\Api\AntrianPoliklinikController;
 use App\Http\Controllers\Api\PurchaseRequisitionController;
+use App\Http\Controllers\Api\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -160,6 +161,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
         // Printer
         Route::post("addPrinterLabel", [BarangController::class, "addPrinterLabel"]);
         Route::post("editPrinterLabel", [BarangController::class, "editPrinterLabel"]);
+        Route::post("getPrinterbyIp", [BarangController::class, "getPrinterbyIp"]);
         Route::get("getPrinterLabelAll", [BarangController::class, "getPrinterLabelAll"]);
         Route::get("getPrinterLabelbyId/{id}", [BarangController::class, "getPrinterLabelbyId"]);
         
@@ -299,6 +301,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("getSalesbyDateUser", [SalesController::class, "getSalesbyDateUser"]);
         Route::post("getConsumableChargedPeriode", [SalesController::class, "getConsumableChargedPeriode"]);
         Route::post("getSalesbyPeriode", [SalesController::class, "getSalesbyPeriode"]);
+        Route::post("getSalesDetailbyNoReg", [SalesController::class, "getSalesDetailbyNoReg"]);
     });
 
     Route::group(['prefix' => 'transaction/returbeli'], function () {
@@ -330,6 +333,8 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("getAdjusmentDetailbyID", [AdjusmentController::class, "getAdjusmentDetailbyID"]);
         Route::post("getAdjusmentbyDateUser", [AdjusmentController::class, "getAdjusmentbyDateUser"]);
         Route::post("getAdjusmentbyPeriode", [AdjusmentController::class, "getAdjusmentbyPeriode"]);
+        Route::post("addReturJualHeaderbyNoReg", [ReturJualController::class, "addReturJualHeaderbyNoReg"]);
+        Route::post("addReturJualFinishbyReg", [ReturJualController::class, "addReturJualFinishbyReg"]);
     });
 
     Route::group(['prefix' => 'information/inventory'], function () {
@@ -415,9 +420,11 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("create/onsite", [VisitController::class, "createRegistrasiOnsite"]);
         Route::post("viewByNoBooking", [VisitController::class, "viewByNoBooking"]); 
         Route::post("viewsep", [VisitController::class, "viewsep"]); 
+        Route::post("viewsepBefore", [VisitController::class, "viewsepBefore"]); 
         Route::post("updateNoSepbyNoRegistrasi", [VisitController::class, "updateNoSepbyNoRegistrasi"]); 
         Route::post("create/sep", [VisitController::class, "insertSEP"]);
         Route::post("create/TaskBPJS", [VisitController::class, "addTaskBPJS"]);
+        Route::post("viewByNoregistrasiRanap", [VisitController::class, "viewByNoregistrasiRanap"]);
 
         //coas
         Route::post("getRegistrationRajalActiveCoas", [VisitController::class, "getRegistrationRajalActiveCoas"]); 
@@ -542,6 +549,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
 
         Route::group(['prefix' => 'Admission/'], function () {
             Route::post("CreateAntrian", [AntrianAdmissionController::class, "CreateAntrianAdmission"]);
+            Route::post("CreateAntrianAPM", [AntrianAdmissionController::class, "CreateAntrianAdmissionAPM"]);
             Route::post("PanggilAntrian", [AntrianAdmissionController::class, "PanggilAntrian"]);
             Route::post("ListAntrianAdmission", [AntrianAdmissionController::class, "ListAntrianAdmission"]);
             Route::post("HoldAntrian", [AntrianAdmissionController::class, "HoldAntrian"]);
@@ -549,6 +557,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
             Route::post("ClosedAntrian", [AntrianAdmissionController::class, "ClosedAntrian"]); 
             Route::post("ViewbyIdTrsAntrianAdmission", [AntrianAdmissionController::class, "ViewbyIdTrsAntrianAdmission"]); 
             Route::post("ViewbyDateTrsAntrianAdmission", [AntrianAdmissionController::class, "ViewbyDateTrsAntrianAdmission"]); 
+            Route::post("ViewbyFloorTrsAntrianAdmission", [AntrianAdmissionController::class, "ViewbyFloorTrsAntrianAdmission"]); 
             Route::post("ViewbyDateTrsJaminanAntrianAdmission", [AntrianAdmissionController::class, "ViewbyDateTrsJaminanAntrianAdmission"]); 
         });
 
@@ -581,6 +590,8 @@ Route::group(["middleware"=>["auth:api"]], function(){
     
     Route::group(['prefix' => 'Payments/'], function () {
         // unit  
+          // Insert by QRCode 
+          Route::post("createTrs", [PaymentController::class, "createTrs"]);
     });
 
     Route::group(['prefix' => 'RajalBillings/'], function () {
@@ -598,6 +609,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("hasilMCUBebasNarkoba", [HasilMcuPDFController::class, "hasilMCUBebasNarkoba"]);
         Route::post("getRekapSDSbyPeriode", [HasilMcuPDFController::class, "getRekapSDSbyPeriode"]); 
         Route::post("getRekapMCU", [HasilMcuPDFController::class, "getRekapMCU"]); 
+        Route::post("uploaPdfMedicalCheckupGenerate", [HasilMcuPDFController::class, "uploaPdfMedicalCheckupGenerate"]);
     });
 
     // edocument

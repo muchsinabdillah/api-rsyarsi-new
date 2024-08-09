@@ -183,6 +183,21 @@ class VisitController extends Controller
         $user =  $userService->viewsep($request);
         return $user; 
     }
+    public function viewsepBefore(Request $request){
+        $userRepository = new bKamarOperasiRepositoryImpl();
+        $medrecRepository = new bMedicalRecordRepositoryImpl();
+        $doctorRepository = new aDoctorRepositoryImpl();
+        $unitRepository = new aMasterUnitRepositoryImpl();
+        $appointmenRepository = new bAppointmentRepositoryImpl();
+        $scheduleRepository = new aScheduleDoctorRepositoryImpl();
+        $antrianRepository = new bAntrianRepositoryImpl();
+        $visitRepository = new bVisitRepositoryImpl();
+        $userService = new bVisitService($userRepository,$medrecRepository,
+        $doctorRepository,$unitRepository, $appointmenRepository,$scheduleRepository,
+        $antrianRepository,$visitRepository);
+        $user =  $userService->viewsepBefore($request);
+        return $user; 
+    }
     public function addTaskBPJS(Request $request){
         $userRepository = new bKamarOperasiRepositoryImpl();
         $medrecRepository = new bMedicalRecordRepositoryImpl();
@@ -242,6 +257,21 @@ class VisitController extends Controller
         $doctorRepository,$unitRepository, $appointmenRepository,$scheduleRepository,
         $antrianRepository,$visitRepository);
         $user =  $userService->getRegistrationRajalHistoryCoas($request);
+        return $user; 
+    }
+    public function viewByNoregistrasiRanap(Request $request){
+        $userRepository = new bKamarOperasiRepositoryImpl();
+        $medrecRepository = new bMedicalRecordRepositoryImpl();
+        $doctorRepository = new aDoctorRepositoryImpl();
+        $unitRepository = new aMasterUnitRepositoryImpl();
+        $appointmenRepository = new bAppointmentRepositoryImpl();
+        $scheduleRepository = new aScheduleDoctorRepositoryImpl();
+        $antrianRepository = new bAntrianRepositoryImpl();
+        $visitRepository = new bVisitRepositoryImpl();
+        $userService = new bVisitService($userRepository,$medrecRepository,
+        $doctorRepository,$unitRepository, $appointmenRepository,$scheduleRepository,
+        $antrianRepository,$visitRepository);
+        $user =  $userService->viewByNoregistrasiRanap($request);
         return $user; 
     }
 }

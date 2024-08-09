@@ -305,6 +305,12 @@ class bVisitRepositoryImpl implements bVisitRepositoryInterface
         ->where('NO_REGISTRASI', $NoRegistrasi)  
         ->get();
     }
+    public function viewsepBefore($NoRegistrasi)
+    { 
+        return  DB::connection('sqlsrv3')->table("View_SEP_Before") 
+        ->where('NO_REGISTRASI', $NoRegistrasi)  
+        ->get();
+    }
     public function addTaskBPJS($request)
     {
         return  DB::connection('sqlsrv3')->table("BPJS_TASKID_LOG")->insert([

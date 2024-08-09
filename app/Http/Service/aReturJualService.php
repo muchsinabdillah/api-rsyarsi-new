@@ -575,4 +575,242 @@ class aReturJualService extends Controller
             return $this->sendError('No. Transaksi tidak ditemukan !', $e->getMessage());
         }
     }
+    public function addReturJualHeaderbyNoReg(Request $request)
+    {
+         // validate 
+         $request->validate([
+            "TransactionDate" => "required",
+            "UserCreate" => "required",
+            "UnitCode" => "required", 
+            "UnitSales" => "required", 
+            //"SalesCode" => "required", 
+            //"NoResep" => "required", 
+            //"Group_Transaksi" => "required",  
+            "NoRegistrasi" => "required",  
+            "Notes" => "required" ,
+        ]);
+
+        
+        try {
+            // Db Transaction
+            DB::beginTransaction(); 
+
+            //cek reg nya udah close belom
+            if(substr($request->NoRegistrasi,0,2) == "RJ"  ) {
+                $getReg = $this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi)->first();
+            }else{
+                $getReg = $this->visitRepository->getRegistrationRanapbyNoreg($request->NoRegistrasi)->first();
+            }
+
+            if ($getReg->StatusID == '4') {
+                return $this->sendError('Registrasi Sudah Close. TIdak bisa Input Data Retur Jual !', []);
+            }
+
+            if ($this->aMasterUnitRepository->getUnitById($request->UnitCode)->count() < 1) {
+                return $this->sendError('Kode Unit Penjualan tidak ditemukan !', []);
+            }
+            
+            // //Cek Di table OrderResep
+            // if($request->Group_Transaksi == "RESEP"){
+            //     if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($request->NoResep)->count() < 1) {
+            //         return $this->sendError('No. Resep Dokter tidak ditemukan !', []);
+            //     }
+            // } 
+            
+            if ($this->aSalesRepository->getSalesDetailbyNoReg($request)->count() < 1) {
+                return $this->sendError('Kode Transaksi Penjualan tidak ditemukan !', []);
+            }
+
+            $getmax = $this->returJualRepository->getMaxCode($request);
+            if ($getmax->count() > 0) {
+                foreach ($getmax as $datanumber) {
+                    $TransactionCode = $datanumber->TransactionCode;
+                }
+            } else {
+                $TransactionCode = 0;
+            }
+
+            $autonumber = $this->ReturJual($request, $TransactionCode);
+
+            $this->returJualRepository->addReturJualHeader($request, $autonumber);
+
+            DB::commit();
+            return $this->sendResponse($autonumber, 'Transaksi Retur Jual berhasil ditambahkan !');
+            
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e->getMessage());
+            return $this->sendError('Data Transaction Gagal ditambahkan !', $e->getMessage());
+        }
+    }
+
+    public function addReturJualFinishbyReg(Request $request)
+    {
+        // validate 
+        $request->validate([
+            "TransactionDate" => "required",
+            "UserCreate" => "required",
+            "UnitCode" => "required", 
+            //"SalesCode" => "required", 
+            //"NoResep" => "required", 
+            "Group_Transaksi" => "required",  
+            "NoRegistrasi" => "required",  
+            "Notes" => "required" ,
+            "TotalQtyReturJual" => "required" ,
+            "TotalQtysales" => "required" ,
+            "TotalRow" => "required" ,
+        ]); 
+        try {
+            // Db Transaction
+            DB::beginTransaction();
+
+            // validasi 
+            // // cek ada gak datanya
+            if ($this->returJualRepository->getRejualHeaderbyId($request->TransactionCode)->count() < 1) {
+                return $this->sendError('No. Transaksi Retur Jual tidak ditemukan !', []);
+            }
+
+            //cek reg nya udah close belom
+            if(substr($request->NoRegistrasi,0,2) == "RJ"  ) {
+                $getReg = $this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi)->first();
+            }else{
+                $getReg = $this->visitRepository->getRegistrationRanapbyNoreg($request->NoRegistrasi)->first();
+            }
+            if ($getReg->StatusID == '4') {
+                return $this->sendError('Registrasi Sudah Close. Tidak bisa Input Data Retur Jual !', []);
+            }
+
+            if ($this->aMasterUnitRepository->getUnitById($request->UnitCode)->count() < 1) {
+                return $this->sendError('Kode Unit Penjualan tidak ditemukan !', []);
+            }
+            
+            // //Cek Di table OrderResep
+            // if($request->Group_Transaksi == "RESEP"){
+            //     if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($request->NoResep)->count() < 1) {
+            //         return $this->sendError('No. Resep Dokter tidak ditemukan !', []);
+            //     }
+            // } 
+
+            // if ($this->aSalesRepository->getSalesbyID($request->SalesCode)->count() < 1) {
+            //     return $this->sendError('Kode Transaksi Penjualan tidak ditemukan !', []);
+            // }
+
+
+            // validasi Kode
+            foreach ($request->Items as $key) {
+                # code...
+                // // cek kode barangnya ada ga
+                if ($this->aBarangRepository->getBarangbyId($key['ProductCode'])->count() < 1) {
+                    return $this->sendError('Kode Barang tidak ditemukan !', []);
+                }
+            }
+            
+            foreach ($request->Items as $key) {
+                
+                //get props data
+                $getdatadetailbyid = $this->aSalesRepository->getSalesDetailbyIDDetail($key['IDDetail'])->first();
+                $request['SalesCode'] = $getdatadetailbyid->TransactionCode;
+
+                // Update Purchase Order Qty Remain 
+                $getDetailData = $this->returJualRepository->getReturJualDetailbyIDBarang($request, $key);
+                $datasalesDetails = $this->aSalesRepository->getSalesDetailbyIDBarangFix($request->SalesCode,$key['ProductCode'])->first();
+
+                
+              
+                if($getDetailData->count() < 1){ 
+                    if ($key['QtyReturJual'] > 0) {
+                        $this->returJualRepository->addReturJualDetail($request,$key);
+                        $QtyRemain = $datasalesDetails->QtySalesRemain; 
+                        $QtyAfter = $QtyRemain - $key['QtyReturJual'];
+                        $this->aSalesRepository->updateQtRemainSalesDetail($request->SalesCode,$key['ProductCode'], $QtyAfter);
+                        
+                        $this->fifoReturJual($request,$key,'TRJ');
+                    }
+                }else{
+                    // jika sudah ada
+                    $showData = $getDetailData->first();
+                    $mtKonversi_QtyTotal = $showData->QtyReturJual;
+                    $QtyReturNew = $showData->QtyReturJual;
+                    if($mtKonversi_QtyTotal <> $key['Konversi_QtyTotal']){ // Dirubah jika Qty nya ada Perubahan Aja
+
+                        // update qty Jual untuk qty remain
+                        $SalesRemain = $datasalesDetails->QtySalesRemain;  
+                        $QtyRemain = $SalesRemain+$QtyReturNew;
+                        $doqtyAfter = $QtyRemain - $key['QtyReturJual'];
+                        $this->aSalesRepository->updateQtRemainSalesDetail($request->SalesCode,$key['ProductCode'], $doqtyAfter);
+                        $this->aStok->deleteBukuStok($request,$key,"TRJ",$request->UnitCode);  
+                        $this->aStok->deleteDataStoks($request,$key,"TRJ",$request->UnitCode); 
+                        $this->fifoReturJual($request,$key,'TRJ');
+
+                    }
+                } 
+
+                $this->returJualRepository->editReturJualDetailbyIdBarang($request,$key);
+            }
+
+            // update tabel header
+            $this->returJualRepository->editReturJualHeader($request);
+
+            // BILLING
+            $tipereg = substr($request->NoRegistrasi, 0, 2);
+                if ($tipereg == 'RJ'){
+                    $getdataregpasien = $this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi)->first();
+                }elseif($tipereg == 'RI'){
+                    $getdataregpasien = $this->visitRepository->getRegistrationRanapbyNoreg($request->NoRegistrasi)->first();
+                    $request['KodeKelas'] = $getdataregpasien->KelasID_Akhir;
+                }else{
+                    return  $this->sendError('Nomor Registrasi Tidak Valid ! ' , []);
+                }
+                $getdatasaleshdr = $this->aSalesRepository->getSalesbyID($request->SalesCode)->first();
+                $request['TotalSales'] = $request->TotalReturJualRp*-1;
+                $request['SubtotalQtyPrice'] = $request->TotalQtyReturJual*-1;
+                $request['Discount_Prosen'] = $getdatasaleshdr->Discount;
+                $request['Discount'] = 0;
+                $request['Subtotal'] = $request->TotalReturJualRp*-1; 
+                $request['Grandtotal'] = $getdatasaleshdr->Grandtotal*-1;
+                $request['NoMr'] = $getdataregpasien->NoMR;
+                $request['NoEpisode'] = $getdataregpasien->NoEpisode;
+                $request['GroupJaminan'] = $getdataregpasien->TipePasien;
+                $request['KodeJaminan'] = $getdataregpasien->KodeJaminan;
+                $request['IdUnit'] = $getdataregpasien->IdUnit;
+                $request['UnitTujuan'] = $request->UnitSales;
+                $request['TotalQtyOrder'] = $request->TotalQtysales*-1;
+                
+            // // insert ke billing header
+            $cekbill = $this->billingRepository->getBillingFo($request)->count(); 
+            //cek jika sudah ada di table
+            if ( $cekbill > 0) {
+                //update
+            }else{
+                //insert
+                $this->billingRepository->insertHeader($request,$request->TransactionCode);
+            }
+
+            foreach ($request->Items as $key) {
+                $qtyretur = $key['QtyReturJual']*-1;
+                $hargaretur = $key['ReturPrice']*-1;
+                $totalretur = $key['TotalReturJual']*-1;
+                 // insert billing detail
+                $this->billingRepository->insertDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
+                $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
+                $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
+                'Farmasi',$request->KodeKelas,$qtyretur,$hargaretur,$totalretur,
+                0,0,$totalretur,$totalretur,'','','','FARMASI');
+            }
+
+            //inser billing pdp
+            $dataBilling1 = $this->billingRepository->getBillingFo1($request);
+            foreach ($dataBilling1 as $dataBilling1) {
+                $this->billingRepository->insertDetailPdp($dataBilling1);
+            } 
+            //#END BILLING
+
+            DB::commit();
+            return $this->sendResponse([], 'Retur Jual berhasil di Simpan !');
+         } catch (Exception $e) {
+             DB::rollBack();
+             Log::info($e->getMessage());
+             return $this->sendError('Data Transaction Gagal ditambahkan !', $e->getMessage());
+         }
+    }
 }

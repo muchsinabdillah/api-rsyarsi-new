@@ -882,6 +882,8 @@ class bAppointmenNonBPJSService extends Controller {
                 'NoRujukanBPJS' => $datafirst->NoRujukanBPJS, // Set array status dengan success     
                 'NoKartuBPJS' => $datafirst->NoKartuBPJS, // Set array status dengan success     
                 'NoSuratKontrolBPJS' => $datafirst->NoSuratKontrolBPJS, // Set array status dengan success     
+                'ID_Penjamin' => $datafirst->ID_Penjamin, // Set array status dengan success     
+                'JenisPembayaran' => $datafirst->JenisPembayaran, // Set array status dengan success     
                 'NoSEP'  => $datafirst->NoSEP, // Set array status dengan success     
             ); 
             return $this->sendResponse( $response,"Data ditemukan.");  

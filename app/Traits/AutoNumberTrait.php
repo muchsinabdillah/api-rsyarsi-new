@@ -388,6 +388,27 @@ trait AutoNumberTrait
  
         return $nourutfixMR;
     }
+    public function AntrianAdmissionAPM($datenow)
+    {
+        $maxnumberantrian = $this->trsAntrianAdmissionRepository->getMaxAntrianAdmissionAPM($datenow);
+        if($maxnumberantrian){
+            $idno_urutantrian = $maxnumberantrian->NoAntrianAll;
+            $idno_urutantrian++;
+         }else{
+            $idno_urutantrian=1;
+         }
+
+        
+        if (strlen($idno_urutantrian) == 1) {
+            $nourutfixMR = "000" . $idno_urutantrian;
+        } else if (strlen($idno_urutantrian) == 2) {
+            $nourutfixMR = "00" . $idno_urutantrian;
+        } else if (strlen($idno_urutantrian) == 3) {
+            $nourutfixMR = "0" . $idno_urutantrian;
+        }
+ 
+        return $nourutfixMR;
+    }
     public function AntrianKasir($datenow)
     {
         $maxnumberantrian = $this->trsAntrianKasirRepository->getMaxAntrianKasir($datenow);

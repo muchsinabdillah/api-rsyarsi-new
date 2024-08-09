@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Repository\aBarangRepositoryImpl;
 use App\Http\Repository\aSupplierRepositoryImpl;
 use Exception;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -332,7 +333,8 @@ class aBarangService extends Controller
         // validator 
         $count = $this->aBarangRepository->getPrinterLabelAll()->count();
         if ($count > 0) {
-            $data = $this->aBarangRepository->getPrinterLabelAll();
+            $data = $this->aBarangRepository->getPrinterLabelAll()->first;
+            
             return $this->sendResponse($data, "Data Barang ditemukan.");
         } else {
             return $this->sendError("Data Product Not Found.", [], 400);
@@ -351,6 +353,18 @@ class aBarangService extends Controller
             return $this->sendError("Data Product Found.", [], 400);
         }
     }
+    public function getPrinterbyIp(Request $request)
+    {
+        // validator 
+        $count = $this->aBarangRepository->getPrinterbyIp($request)->count();
+        
+        if ($count > 0) {
+            $data = $this->aBarangRepository->getPrinterbyIp($request);
+            return $this->sendResponse($data, "Data Product ditemukan.");
+        } else {
+            return $this->sendError("Data Product Found.", [], 400);
+        }
+    }
 
     public function addPrinterLabel(Request $request)
     {
@@ -359,6 +373,9 @@ class aBarangService extends Controller
             "Jenis" => "required",
             "IPPrinterSharing" => "required",
             "NamaPrinterSharing" => "required",
+            "Hostname" => "required",
+            "UserAccount" => "required",
+            "PasswordAccount" => "required"
         ]);
         
         try {
@@ -384,6 +401,9 @@ class aBarangService extends Controller
             "Jenis" => "required",
             "IPPrinterSharing" => "required",
             "NamaPrinterSharing" => "required",
+            "Hostname" => "required",
+            "UserAccount" => "required",
+             "PasswordAccount" => "required"
         ]);
         
         try {

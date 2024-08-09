@@ -2,10 +2,11 @@
 
 namespace App\Http\Repository;
 
+use Carbon\Carbon;
 use App\Models\gallery;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Crypt;
 
 class aBarangRepositoryImpl implements aBarangRepositoryInterface
 {
@@ -296,7 +297,10 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
             'IP_Komputer',
             'Jenis',
             'IPPrinterSharing',
-            'NamaPrinterSharing'
+            'NamaPrinterSharing',
+            'Hostname',
+            'UserAccount',
+            'PasswordAccount'
             )
             ->get();
     }
@@ -309,9 +313,30 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
                 'IP_Komputer',
                 'Jenis',
                 'IPPrinterSharing',
-                'NamaPrinterSharing'
+                'NamaPrinterSharing',
+                'Hostname',
+                'UserAccount',
+                'PasswordAccount'
             )
             ->where('ID', $id)
+            ->get();
+    }
+    public function getPrinterbyIp($request)
+    {
+        return  DB::connection('sqlsrv2')
+            ->table("SharingPrinter")
+            ->select(
+                'ID',
+                'IP_Komputer',
+                'Jenis',
+                'IPPrinterSharing',
+                'NamaPrinterSharing',
+                'Hostname',
+                'UserAccount',
+                'PasswordAccount'
+            )
+            ->where('IP_Komputer', $request->IP_Komputer)
+            ->where('Jenis', $request->Jenis)
             ->get();
     }
     public function addPrinterLabel($request)
@@ -321,6 +346,11 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
                 'Jenis' => $request->Jenis,
                 'IPPrinterSharing' => $request->IPPrinterSharing,
                 'NamaPrinterSharing' => $request->NamaPrinterSharing,
+                'Hostname' => $request->Hostname,
+                'UserAccount' => $request->UserAccount,
+                'PasswordAccount' => base64_encode($request->PasswordAccount)
+
+                
         ]);
     }
 
@@ -333,6 +363,9 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
                 'Jenis' => $request->Jenis,
                 'IPPrinterSharing' => $request->IPPrinterSharing,
                 'NamaPrinterSharing' => $request->NamaPrinterSharing,
+                'Hostname' => $request->Hostname,
+                'UserAccount' => $request->UserAccount,
+                'PasswordAccount' => base64_encode($request->PasswordAccount)
         ]);
     }
 

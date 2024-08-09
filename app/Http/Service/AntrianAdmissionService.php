@@ -73,6 +73,42 @@ class AntrianAdmissionService extends Controller
             return $this->sendError($e->getMessage(), []);  
         }
     } 
+    public function CreateAntrianAdmissionAPM(Request $request)
+    {
+     
+        if ($request->FloorID == "") {
+            return $this->sendError("Silahkan Masukan Lantai Pendaftarn.", []);
+        } 
+        if ($request->Jenis_Jaminan == "UM") {
+           $namaJenisJaminan = "UMUM";
+        }elseif ($request->Jenis_Jaminan == "BP") {
+            $namaJenisJaminan = "BPJS";
+        }else{
+            $namaJenisJaminan = "ASURANSI/PERUSAHAAN";
+        }
+        try{
+            DB::connection('sqlsrv3')->beginTransaction();
+            DB::connection('sqlsrv2')->beginTransaction();
+            // cari max antrian
+            $datenow = Carbon::now();  
+            $autonumber = $this->AntrianAdmissionAPM($datenow);
+ 
+            $this->trsAntrianAdmissionRepository->CreateAntrianAdmissionAPM($request,$autonumber,$datenow,$autonumber);
+          
+            DB::connection('sqlsrv3')->commit();
+            DB::connection('sqlsrv2')->commit();
+
+            $response = array(    
+                'NoAntrian' => $autonumber, // Set array status dengan success      
+            );
+            return $this->sendResponse($response, "Antrian Admission Berhasil Di tambahkan. No. Antrian : ".$request->Jenis_Jaminan.$autonumber);   
+        }catch (Exception $e) { 
+            DB::connection('sqlsrv3')->rollBack();
+            DB::connection('sqlsrv2')->rollBack();
+            Log::info($e->getMessage()); 
+            return $this->sendError($e->getMessage(), []);  
+        }
+    } 
     public function PanggilAntrian(Request $request)
     {
         if ($request->IDTrsAntrian == "") {
@@ -95,7 +131,7 @@ class AntrianAdmissionService extends Controller
             DB::connection('sqlsrv3')->beginTransaction();
             DB::connection('sqlsrv2')->beginTransaction();
             // cari max antrian
-            $datenow = Carbon::now()->toDateString();  
+            $datenow = Carbon::now();  
 
             $verifyAntrianAmdisionbyID = $this->trsAntrianAdmissionRepository->getAntrianAdmissionbyID($request->IDTrsAntrian);
             if ($verifyAntrianAmdisionbyID->count() < 1 ) {
@@ -144,7 +180,7 @@ class AntrianAdmissionService extends Controller
             DB::connection('sqlsrv3')->beginTransaction();
             DB::connection('sqlsrv2')->beginTransaction();
             // cari max antrian
-            $datenow = Carbon::now()->toDateString();  
+            $datenow = Carbon::now();  
 
             $verifyAntrianAmdisionbyID = $this->trsAntrianAdmissionRepository->getAntrianAdmissionbyID($request->IDTrsAntrian);
             if ($verifyAntrianAmdisionbyID->count() < 1 ) {
@@ -193,7 +229,7 @@ class AntrianAdmissionService extends Controller
             DB::connection('sqlsrv3')->beginTransaction();
             DB::connection('sqlsrv2')->beginTransaction();
             // cari max antrian
-            $datenow = Carbon::now()->toDateString();  
+            $datenow = Carbon::now();  
 
             $verifyAntrianAmdisionbyID = $this->trsAntrianAdmissionRepository->getAntrianAdmissionbyID($request->IDTrsAntrian);
             if ($verifyAntrianAmdisionbyID->count() < 1 ) {
@@ -242,7 +278,7 @@ class AntrianAdmissionService extends Controller
             DB::connection('sqlsrv3')->beginTransaction();
             DB::connection('sqlsrv2')->beginTransaction();
             // cari max antrian
-            $datenow = Carbon::now()->toDateString();  
+            $datenow = Carbon::now();  
 
             $verifyAntrianAmdisionbyID = $this->trsAntrianAdmissionRepository->getAntrianAdmissionbyID($request->IDTrsAntrian);
             if ($verifyAntrianAmdisionbyID->count() < 1 ) {
@@ -291,6 +327,15 @@ class AntrianAdmissionService extends Controller
     public function ViewbyDateTrsJaminanAntrianAdmission(Request $request){
         try {    
             $response = $this->trsAntrianAdmissionRepository->ViewbyDateTrsJaminanAntrianAdmission($request);
+            return $this->sendResponse($response, "Data Antrian Ditemukan.");
+        }catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());
+        }
+    }
+    public function ViewbyFloorTrsAntrianAdmission(Request $request){
+        try {    
+            $response = $this->trsAntrianAdmissionRepository->ViewbyFloorTrsAntrianAdmission($request);
             return $this->sendResponse($response, "Data Antrian Ditemukan.");
         }catch (Exception $e) { 
             Log::info($e->getMessage());

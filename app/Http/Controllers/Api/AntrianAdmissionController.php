@@ -20,6 +20,14 @@ class AntrianAdmissionController extends Controller
         $antraiAdmisioService = new AntrianAdmissionService($masterAntrian,$trsAntrianAdmission,$userLoginRepository);
         return  $antraiAdmisioService->CreateAntrian($request);
     }
+    public function CreateAntrianAdmissionAPM(Request $request)
+    {
+        $masterAntrian = new cMasterDataAntrianRepositoryImpl();
+        $trsAntrianAdmission = new bAntrianAdmissionRepositoryImpl();
+        $userLoginRepository = new UserRepositoryImpl();
+        $antraiAdmisioService = new AntrianAdmissionService($masterAntrian,$trsAntrianAdmission,$userLoginRepository);
+        return  $antraiAdmisioService->CreateAntrianAdmissionAPM($request);
+    }
     public function ListAntrianAdmission(Request $request)
     {
        $masterAntrian = new cMasterDataAntrianRepositoryImpl();
@@ -84,5 +92,13 @@ class AntrianAdmissionController extends Controller
         $userLoginRepository = new UserRepositoryImpl();
         $antraiAdmisioService = new AntrianAdmissionService($masterAntrian,$trsAntrianAdmission,$userLoginRepository);
         return  $antraiAdmisioService->ViewbyDateTrsJaminanAntrianAdmission($request);
+    } 
+    public function ViewbyFloorTrsAntrianAdmission(Request $request)
+    {
+       $masterAntrian = new cMasterDataAntrianRepositoryImpl();
+        $trsAntrianAdmission = new bAntrianAdmissionRepositoryImpl();
+        $userLoginRepository = new UserRepositoryImpl();
+        $antraiAdmisioService = new AntrianAdmissionService($masterAntrian,$trsAntrianAdmission,$userLoginRepository);
+        return  $antraiAdmisioService->ViewbyFloorTrsAntrianAdmission($request);
     } 
 }

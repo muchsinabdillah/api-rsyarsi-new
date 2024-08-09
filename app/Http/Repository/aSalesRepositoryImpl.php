@@ -259,4 +259,29 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
             ->whereBetween('TglPeriode', [$request->tglPeriodeAwal, $request->tglPeriodeAkhir])
             ->get();
     }
+    public function getSalesDetailbyNoReg($request)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_sales_dtl")
+        ->join('v_transaksi_sales_hdr','v_transaksi_sales_hdr.TransactionCode','=','v_transaksi_sales_dtl.TransactionCode')
+        ->select('v_transaksi_sales_dtl.*')
+            ->where('NoRegistrasi', $request->NoRegistrasi)
+             ->where('Group_Transaksi', 'RESEP')
+             ->where('UnitOrder', $request->UnitSales)
+             ->where('UnitSales', $request->UnitCode)
+            ->get();
+    }
+
+    public function getSalesHeaderbyNoReg($id)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_sales_hdr")
+            ->where('NoRegistrasi', $id)
+            ->get();
+    }
+
+    public function getSalesDetailbyIDDetail($id)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_sales_dtl")
+            ->where('ID', $id)
+            ->get();
+    }
 }

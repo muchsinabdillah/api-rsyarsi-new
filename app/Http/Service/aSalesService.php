@@ -699,4 +699,28 @@ class aSalesService extends Controller
             return $this->sendError('Sales Transaction Data Not Found !', $e->getMessage());
         }
     }
+    public function getSalesDetailbyNoReg($request)
+    {
+        // validate 
+        $request->validate([
+            "NoRegistrasi" => "required",
+            "UnitCode" => "required",
+            "UnitSales" => "required",
+        ]);
+        // // cek ada gak datanya
+        if ($this->aSalesRepository->getSalesDetailbyNoReg($request)->count() < 1) {
+            return $this->sendError('Sales Transaction Number Detil Not Found !', []);
+        }
+        try {
+            // Db Transaction
+            $data = $this->aSalesRepository->getSalesDetailbyNoReg($request);
+            if ($data->count() < 1) {
+                return $this->sendError('Sales Transaction Number Detil Not Found !', []);
+            }
+            return $this->sendResponse($data, 'Sales Transaction Data Found !');
+        } catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Sales Transaction Data Not Found !', $e->getMessage());
+        }
+    }
 }

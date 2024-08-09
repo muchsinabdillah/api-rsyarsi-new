@@ -18,6 +18,24 @@ class bAntrianAdmissionRepositoryImpl implements bAntrianAdmissionRepositoryInte
             'JenisJaminan' =>  $request->Jenis_Jaminan 
         ]);
     }
+    public function CreateAntrianAdmissionAPM($request,$noAntrian,$datenow,$autonumber)
+    {
+        return  DB::connection('sqlsrv3')->table("AntrianListAdmissionAPM")->insert([
+            'NoAntrian' =>  $noAntrian, 
+            'NoAntrianAll' =>  $autonumber,     
+            'DateCreated' => $datenow,  
+            'FloorId' =>  $request->FloorID, 
+            'Status' =>  "CREATED",
+            'JenisJaminan' =>  $request->Jenis_Jaminan 
+        ]);
+    }
+    public function getMaxAntrianAdmissionAPM($tglAntrian){
+        return  DB::connection('sqlsrv3')->table("AntrianListAdmissionAPM")
+        ->select('NoAntrianAll')
+        ->where(DB::raw("replace(CONVERT(VARCHAR(11), DateCreated, 111), '/','-')"),$tglAntrian)   
+        ->where('Batal', '0')
+        ->orderBy('NoAntrianAll', 'desc')->first();
+    } 
     public function getMaxAntrianAdmission($tglAntrian,$jenisJaminan){
         return  DB::connection('sqlsrv3')->table("AntrianListAdmission")
         ->select('NoAntrianAll')
@@ -98,7 +116,19 @@ class bAntrianAdmissionRepositoryImpl implements bAntrianAdmissionRepositoryInte
     {
         return  DB::connection('sqlsrv3')->table("AntrianListAdmission") 
         ->select('Id','NoAntrian','Status','FloorId') 
+        ->where('Status', '<>','CLOSED')
         ->whereBetween('DateCreated', [$request->StartPeriode, $request->EndPeriode])
+        ->orderBy('Id', 'asc')
+        ->get();
+    }
+    public function ViewbyFloorTrsAntrianAdmission($request)
+    {
+        return  DB::connection('sqlsrv3')->table("AntrianListAdmission") 
+        ->select('Id','NoAntrian','Status','FloorId') 
+        ->where('FloorId', $request->FloorId)
+        ->where('Batal', '0')
+        ->where('Status', '<>','CLOSED')
+        ->where(DB::raw("replace(CONVERT(VARCHAR(11), DateCreated, 111), '/','-')"),$request->DateCreated)    
         ->orderBy('Id', 'asc')
         ->get();
     }
@@ -108,6 +138,7 @@ class bAntrianAdmissionRepositoryImpl implements bAntrianAdmissionRepositoryInte
         ->select('Id','NoAntrian','Status','FloorId')  
         ->whereBetween('DateCreated', [$request->StartPeriode, $request->EndPeriode])
         ->where('JenisJaminan', $request->JenisJaminan) 
+        ->where('Status', '<>','CLOSED') 
         ->orderBy('Id', 'asc')
         ->get();
     }

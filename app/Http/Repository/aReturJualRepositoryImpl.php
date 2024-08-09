@@ -73,7 +73,8 @@ class aReturJualRepositoryImpl implements aReturJualRepositoryInterface
             'SatuanBeli ' =>  $key['SatuanBeli'],
             'UserVoid' => '',
             'DateEntry' => Carbon::now(),
-            'UserEntry' =>  $request->UserCreate
+            'UserEntry' =>  $request->UserCreate,
+            'SalesCode ' =>  $request->SalesCode
         ]);
     }
     public function editReturJualDetailbyIdBarang($request, $key)

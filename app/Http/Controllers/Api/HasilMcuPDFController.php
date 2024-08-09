@@ -82,6 +82,13 @@ class HasilMcuPDFController extends Controller
         $user =  $userService->getRekapMCU($request);
         return $user; 
     }
+    public function uploaPdfMedicalCheckupGenerate(Request $request){
+        $hasilmcu = new bHasilMCURepositoryImpl();  
+        $visit = new bVisitRepositoryImpl();  
+        $userService = new bHasilMCUService($hasilmcu,$visit);
+        $user =  $userService->uploaPdfMedicalCheckupGenerate($request);
+        return $user; 
+    }
 }
 
 

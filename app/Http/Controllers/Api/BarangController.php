@@ -136,7 +136,14 @@ class BarangController extends Controller
         $getAllBarang =  $aBarangService->getPrinterLabelbyId($id);
         return $getAllBarang;
     }
-
+    public function getPrinterbyIp(Request $request)
+    {
+      $aBarangRepository = new aBarangRepositoryImpl();
+        $aSupplierRepository = new aSupplierRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $getAllBarang =  $aBarangService->getPrinterbyIp($request);
+        return $getAllBarang;
+    }
     //Unit Farmasi
     public function addIPUnitFarmasi(Request $request)
     {
