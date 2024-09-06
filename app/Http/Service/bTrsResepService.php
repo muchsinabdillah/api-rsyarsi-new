@@ -134,9 +134,13 @@ class bTrsResepService extends Controller {
                     $datahna = $hna->first()->first();
                     $harga = $this->HargaJual($request->GroupJaminan,$request->NoRegistrasi,$datahna->NominalHna,$key2->Category,$request->Kelas);
                 }
+                $hnatax = ($datahna->NominalHna*11)/100;
+                $hnataxfix = $datahna->NominalHna+$hnatax;
                 $pasing['Harga'] = round($harga);
                 $pasing['UangR'] = 400;
                 $pasing['Embalase'] = 400;
+                $pasing['HnaReal'] = $datahna->NominalHna;
+                $pasing['TaxReal'] = $hnataxfix;
                 $pasing['ID'] = $key2->ID;
                 $pasing['IdOrderResep'] = $key2->IdOrderResep;
                 $pasing['KodeBarang'] = $key2->KodeBarang;

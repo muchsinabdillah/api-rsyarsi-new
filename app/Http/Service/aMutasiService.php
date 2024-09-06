@@ -124,7 +124,7 @@ class aMutasiService extends Controller
             "TransactionDate" => "required",
             "UserCreate" => "required"
         ]);
-       
+  
 
             // // cek ada gak datanya
             if ($this->aMutasiRepository->getMutasibyID($request->TransactionCode)->count() < 1) {
@@ -262,24 +262,36 @@ class aMutasiService extends Controller
                         $key['Konversi_QtyTotal'],$xhpp,
                         $key['ProductCode'],$key['ProductName'],$request->UnitOrder
                     );  
+                    // $this->aJurnal->addJurnalDetailKreditPersediaanGlobal(
+                    //     $note, $cekrek->first()->RekHpp,
+                    //     $request->TransactionCode,
+                    //     $key['Konversi_QtyTotal'],$xhpp,
+                    //     $key['ProductCode'],$key['ProductName'],$request->UnitOrder
+                    // );  
 
                     $this->aJurnal->addJurnalDetailKreditPersediaanGlobal(
                         $note, $cekrek->first()->RekPersediaan,
                         $request->TransactionCode,
                         $key['Konversi_QtyTotal'],$xhpp,
                         $key['ProductCode'],$key['ProductName'],$request->UnitTujuan
-                    );  
+                    );   
+                    // $this->aJurnal->addJurnalDetailDebetHppGlobal(
+                    //     $note, $cekrek->first()->RekHpp,
+                    //     $request->TransactionCode,
+                    //     $key['Konversi_QtyTotal'],$xhpp,
+                    //     $key['ProductCode'],$key['ProductName'],$request->UnitTujuan
+                    // ); 
+
                     $this->aJurnal->addJurnalDetailKreditPersediaanGlobal(
                         $note, $cekrek->first()->RekPersediaan,
                         $request->TransactionCode,
                         $key['Konversi_QtyTotal'],$xhpp,
                         $key['ProductCode'],$key['ProductName'],$request->UnitOrder
-                    );  
-                       
+                    );   
                     $this->aJurnal->addJurnalDetailDebetHppGlobal(
-                        $note, $cekrek->first()->RekHpp,
+                        $noteHpp, $cekrek->first()->RekHpp,
                         $request->TransactionCode,
-                        $key['Konversi_QtyTotal'],$noteHpp,
+                        $key['Konversi_QtyTotal'],$xhpp,
                         $key['ProductCode'],$key['ProductName'],$request->UnitOrder
                     ); 
                 }
@@ -287,6 +299,8 @@ class aMutasiService extends Controller
             }
 
               // edit mutasi
+              $notex = 'Mutasi Barang , No. Mutasi : ' . $request->TransactionCode;
+              $this->aJurnal->addJurnalHeaderMutasi($request, $notex);
               $this->aMutasiRepository->editMutasi($request);
 
             DB::commit();

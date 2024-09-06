@@ -362,6 +362,9 @@ class aConsumableService extends Controller
             }
 
             // update tabel header
+            $notex = 'Pemakaian Barang , No. Pemakaian : ' . $request->TransactionCode;
+                    
+            $this->aJurnal->addJurnalHeaderConsumable($request, $notex);
             $this->aConsumableRepository->editConsumable($request);
             DB::commit();
             return $this->sendResponse([], 'Data Pemakaian barang berhasil ditambahkan !');

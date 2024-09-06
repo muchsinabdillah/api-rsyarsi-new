@@ -149,7 +149,7 @@ class aDeliveryOrderService extends Controller
             foreach ($request->Items as $key) {
 
                     if ($key['KonversiQty'] > 1){
-                        $konversiqtytotal = $key['Konversi_QtyTotal'];
+                        $konversiqtytotal = $key['KonversiQty'];
                     }else{
                         $konversiqtytotal = 1;
                     }
@@ -166,11 +166,11 @@ class aDeliveryOrderService extends Controller
                  
                    
                     if($hpp->count() > 0 ){   
-                        $nilaiHppBaru = ($key['Price']/$konversiqtytotal-$key['DiscountRp']); 
+                        $nilaiHppBaru = ($key['Price']-$key['DiscountRp'])/$konversiqtytotal; 
                         $NilaiHppTerakhir = $hpp->first()->first()->NominalHpp; 
                         $nilaiHppFix = ($NilaiHppTerakhir+$nilaiHppBaru)/2;
                     }else{ 
-                        $nilaiHppBaru = ($key['Price']/$konversiqtytotal-$key['DiscountRp']); 
+                        $nilaiHppBaru = ($key['Price']-$key['DiscountRp'])/$konversiqtytotal; 
                         $NilaiHppTerakhir = 0;
                         $nilaiHppFix = $nilaiHppBaru;
                     }
@@ -218,10 +218,10 @@ class aDeliveryOrderService extends Controller
                             // $taxconert = $key['TaxRp']/$key['Konversi_QtyTotal'];
                             $hna = ($key['Price'] / $konversiqtytotal);
                             $taxconert = $key['TaxRp']/$konversiqtytotal;
-                            $nilaiHnaBaru = $hna + $taxconert;
+                            $nilaiHnaBaru = $hna;
                             //$discountConvert =  $key['DiscountRp']/$key['Konversi_QtyTotal'];
                             $discountConvert =  $key['DiscountRp']/$konversiqtytotal;
-                            $hnaTaxDiskon = (($hna - $discountConvert) + $taxconert );
+                            $hnaTaxDiskon = ($hna - $discountConvert);
                             if($hnaHigh->count() < 1 ){ 
                                 $nilaiHnaFix = $nilaiHnaBaru;
                             }else{
@@ -246,13 +246,13 @@ class aDeliveryOrderService extends Controller
                         //$nilaiHppBaru = ($key['Price']-$key['DiscountRp'])/$key['Konversi_QtyTotal']; 
                         //return $this->sendResponse($hpp, 'Barang Delivery Order berhasil ditambahkan !');
                         if($hpp->count() > 0  ){ 
-                            $nilaiHppBaru = ($key['Price']/$konversiqtytotal-$key['DiscountRp']); 
+                            $nilaiHppBaru = ($key['Price']-$key['DiscountRp'])/$konversiqtytotal;
                             $NilaiHppTerakhir = $hpp->first()->first()->NominalHpp; 
                             $nilaiHppFix = ($NilaiHppTerakhir+$nilaiHppBaru)/2;
                         
                         }else{
 
-                            $nilaiHppBaru = ($key['Price']/$konversiqtytotal-$key['DiscountRp']); 
+                            $nilaiHppBaru = ($key['Price']-$key['DiscountRp'])/$konversiqtytotal;
                             $NilaiHppTerakhir = 0;
                             $nilaiHppFix = $nilaiHppBaru;
                         }
@@ -312,10 +312,10 @@ class aDeliveryOrderService extends Controller
                             // $taxconert = $key['TaxRp']/$key['Konversi_QtyTotal'];
                             $hna = ($key['Price'] / $konversiqtytotal);
                             $taxconert = $key['TaxRp']/$konversiqtytotal;
-                            $nilaiHnaBaru = $hna + $taxconert;
+                            $nilaiHnaBaru = $hna;
                             //$discountConvert =  $key['DiscountRp']/$key['Konversi_QtyTotal'];
                             $discountConvert =  $key['DiscountRp']/$konversiqtytotal;
-                            $hnaTaxDiskon = (($hna - $discountConvert) + $taxconert);
+                            $hnaTaxDiskon = ($hna - $discountConvert);
                             
                             if($hnaHigh->count() < 1 ){
                                 $nilaiHnaFix = $nilaiHnaBaru;

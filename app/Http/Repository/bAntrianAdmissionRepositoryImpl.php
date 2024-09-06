@@ -12,7 +12,7 @@ class bAntrianAdmissionRepositoryImpl implements bAntrianAdmissionRepositoryInte
         return  DB::connection('sqlsrv3')->table("AntrianListAdmission")->insert([
             'NoAntrian' =>  $noAntrian, 
             'NoAntrianAll' =>  $autonumber,     
-            'DateCreated' => $datenow,  
+            'DateCreated' => Carbon::now(),  
             'FloorId' =>  $request->FloorID, 
             'Status' =>  "CREATED",
             'JenisJaminan' =>  $request->Jenis_Jaminan 
@@ -117,7 +117,7 @@ class bAntrianAdmissionRepositoryImpl implements bAntrianAdmissionRepositoryInte
         return  DB::connection('sqlsrv3')->table("AntrianListAdmission") 
         ->select('Id','NoAntrian','Status','FloorId') 
         ->where('Status', '<>','CLOSED')
-        ->whereBetween('DateCreated', [$request->StartPeriode, $request->EndPeriode])
+        ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), DateCreated, 111), '/','-')"), [$request->StartPeriode, $request->EndPeriode])
         ->orderBy('Id', 'asc')
         ->get();
     }
@@ -136,7 +136,7 @@ class bAntrianAdmissionRepositoryImpl implements bAntrianAdmissionRepositoryInte
     {
         return  DB::connection('sqlsrv3')->table("AntrianListAdmission") 
         ->select('Id','NoAntrian','Status','FloorId')  
-        ->whereBetween('DateCreated', [$request->StartPeriode, $request->EndPeriode])
+        ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), DateCreated, 111), '/','-')"), [$request->StartPeriode, $request->EndPeriode])    
         ->where('JenisJaminan', $request->JenisJaminan) 
         ->where('Status', '<>','CLOSED') 
         ->orderBy('Id', 'asc')

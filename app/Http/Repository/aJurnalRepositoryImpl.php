@@ -25,6 +25,38 @@ class aJurnalRepositoryImpl implements aJurnalRepositoryInterface
             'FB_SELESAI' => '1'
         ]);
     } 
+    public function addJurnalHeaderMutasi($request,$notes)
+    {
+        return  DB::connection('sqlsrv4')->table("TA_JURNAL_HDR")->insert([
+            'FS_KD_JURNAL' => $request->TransactionCode,
+            'FD_TGL_JURNAL' => $request->TransactionDate,
+            'FN_DEBET' => $request->TotalRow,
+            'FN_KREDIT' => $request->TotalRow,
+            'FN_JURNAL' => $request->TotalRow,
+            'FS_KD_PETUGAS' => $request->UserCreate, 
+            'FS_KET_REFF' => $request->TransactionOrderCode,
+            'FS_KET' => $notes,
+            'FS_KET2' => '',
+            'FS_KET3' => '',
+            'FB_SELESAI' => '1'
+        ]);
+    } 
+    public function addJurnalHeaderConsumable($request,$notes)
+    {
+        return  DB::connection('sqlsrv4')->table("TA_JURNAL_HDR")->insert([
+            'FS_KD_JURNAL' => $request->TransactionCode,
+            'FD_TGL_JURNAL' => $request->TransactionDate,
+            'FN_DEBET' => $request->TotalQtyOrder,
+            'FN_KREDIT' => $request->TotalQtyOrder,
+            'FN_JURNAL' => $request->TotalQtyOrder,
+            'FS_KD_PETUGAS' => $request->UserCreate, 
+            'FS_KET_REFF' => $request->TransactionCode,
+            'FS_KET' => $notes,
+            'FS_KET2' => '',
+            'FS_KET3' => '',
+            'FB_SELESAI' => '1'
+        ]);
+    } 
     public function addJurnalDetailDebetPersediaan($request,$rekPersediaan)
     {
         return  DB::connection('sqlsrv4')->table("TA_JURNAL_DTL")->insert([

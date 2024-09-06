@@ -101,9 +101,9 @@ class aHnaRepositoryImpl implements aHnaRepositoryInterface
     public function addHpp($request,$key,$nilaiHppFix){
         return  DB::connection('sqlsrv')->table("hpps")->insert([
             'DeliveryCode' =>  $request->TransactionCode,  
-            'NominalHargabeli' =>  $key['Price'],
+            'NominalHargabeli' =>  $key['Price']/$key['KonversiQty'],
             'ProductCode' =>  $key['ProductCode'],
-            'NominalDiskon' =>  $key['DiscountRp'],
+            'NominalDiskon' =>  $key['DiscountRp']/$key['KonversiQty'],
             'DeliveryDate' => $request->TransactionDate,
             'NominalHpp' => $nilaiHppFix,
             'UserCreate' =>  $request->UserCreate, 

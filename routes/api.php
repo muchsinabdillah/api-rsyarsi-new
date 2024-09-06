@@ -302,6 +302,9 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("getConsumableChargedPeriode", [SalesController::class, "getConsumableChargedPeriode"]);
         Route::post("getSalesbyPeriode", [SalesController::class, "getSalesbyPeriode"]);
         Route::post("getSalesDetailbyNoReg", [SalesController::class, "getSalesDetailbyNoReg"]);
+        Route::post("getSalesbyPeriodeResep", [SalesController::class, "getSalesbyPeriodeResep"]);
+        Route::post("getSalesbyIDandNoResep", [SalesController::class, "getSalesbyIDandNoResep"]);
+        Route::post("getSalesDetailbyIDandNoResep", [SalesController::class, "getSalesDetailbyIDandNoResep"]);
     });
 
     Route::group(['prefix' => 'transaction/returbeli'], function () {

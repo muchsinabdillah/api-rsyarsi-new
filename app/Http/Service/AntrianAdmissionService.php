@@ -90,7 +90,7 @@ class AntrianAdmissionService extends Controller
             DB::connection('sqlsrv3')->beginTransaction();
             DB::connection('sqlsrv2')->beginTransaction();
             // cari max antrian
-            $datenow = Carbon::now();  
+            $datenow = Carbon::now()->toDateString();  
             $autonumber = $this->AntrianAdmissionAPM($datenow);
  
             $this->trsAntrianAdmissionRepository->CreateAntrianAdmissionAPM($request,$autonumber,$datenow,$autonumber);

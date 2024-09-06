@@ -104,9 +104,10 @@ class aSalesService extends Controller
             //         return $this->sendError('No Resep Not Found !', []);
             //     }
             // }
+            
             //cek iter
             if($request->Group_Transaksi == "RESEP"){
-                if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($request->NoResep)->first()->Iter <= $this->aSalesRepository->getSalesbyNoResep($request)->count()){
+                if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($request->NoResep)->first()->Iter < $this->aSalesRepository->getSalesbyNoResep($request)->count()){
                     return $this->sendError('Resep sudah pernah dibuat dan berada batas iter resep ! Cek di [List Penjualan] !', []);
                 }
             }
@@ -227,6 +228,10 @@ class aSalesService extends Controller
             return $this->sendError('Sales Number Not Found !', []);
         }
 
+        if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($request->IdOrderResep)->first()->StatusResep >= 1 ){
+            return $this->sendError('Order Sudah Diapprove ! Silahkan Konfirmasi Ke Bagian Kasir !', []);
+        }
+
          // validasi Kode
          foreach ($request->Items as $key) {
             # code...
@@ -242,7 +247,7 @@ class aSalesService extends Controller
             $cekstok = $this->sStokRepository->cekStokbyIDBarang($key, $request->UnitTujuan)->count();
             if ($key['Qty'] <> 0){ 
                 if ( $cekstok < 1) {
-                    return  $this->sendError('Qty Stok Tidak ada diLayanan Tujuan Ini ! ' , []);
+                    return  $this->sendError('Qty Stok '.$key['ProductName'].' Tidak ada diLayanan Tujuan Ini ! ' , []);
                 }
             }
         }
@@ -277,14 +282,15 @@ class aSalesService extends Controller
             DB::beginTransaction(); 
 
             // // billinga
-            $cekbill = $this->billingRepository->getBillingFo($request)->count(); 
-            //cek jika sudah ada di table
-            if ( $cekbill > 0) {
-                //update
-            }else{
-                //insert
-                $this->billingRepository->insertHeader($request,$request->TransactionCode);
-            }
+            // $cekbill = $this->billingRepository->getBillingFo($request)->count(); 
+            // //cek jika sudah ada di table
+            // if ( $cekbill > 0) {
+            //     //update
+            //     $this->billingRepository->updateHeader($request,$request->TransactionCode);
+            // }else{
+            //     //insert
+            //     $this->billingRepository->insertHeader($request,$request->TransactionCode);
+            // }
 
             foreach ($request->Items as $key) {
                 $getdatadetilmutasi = $this->aSalesRepository->getSalesDetailbyIDBarang($request,$key);
@@ -297,6 +303,24 @@ class aSalesService extends Controller
                         $this->aSalesRepository->addSalesDetail($request, $key,$xhpp); 
                          // fifo
                          $this->fifoSales($request,$key,$xhpp);
+
+                        // // insert billing detail
+                        // $this->billingRepository->insertDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
+                        // $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
+                        // $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
+                        // 'Farmasi',$request->KodeKelas,$key['Qty'],$key['Harga'],$key['SubtotalHarga'],
+                        // $key['DiscountProsen'],$key['Discount'],$key['Subtotal'],$key['Grandtotal'],'','','','FARMASI');
+
+                        // //insert billing pdp
+                        // $this->billingRepository->insertDetailPdpPerItem($request);
+
+                        // // insert billing pdp
+                        // $dataBilling1 = $this->billingRepository->getBillingFo1($request);
+                        // foreach ($dataBilling1 as $dataBilling1) {
+                        //     $this->billingRepository->insertDetailPdp($dataBilling1);
+                        // } 
+                        
+                        $this->trsResepRepository->editQtyRealbyIDResepandProductCode($request->IdOrderResep,$key['ProductCode'],$key['Qty']);
                     }
                 }else{
                     // jika sudah ada
@@ -323,8 +347,22 @@ class aSalesService extends Controller
 
                          // fifo
                          $this->fifoSales($request,$key,$xhpp);
+
+                        //  //update billing detail
+                        // $this->billingRepository->updateDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
+                        // $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
+                        // $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
+                        // 'Farmasi',$request->KodeKelas,$key['Qty'],$key['Harga'],$key['SubtotalHarga'],
+                        // $key['DiscountProsen'],$key['Discount'],$key['Subtotal'],$key['Grandtotal'],'','','','FARMASI');
+                        
+                        $this->trsResepRepository->editQtyRealbyIDResepandProductCode($request->IdOrderResep,$key['ProductCode'],$key['Qty']);
                    }  
+
+                   
+
+                    
                 }
+
 
                         //UPDATE SIGNA TERJEMAHAN
                         if ($key['Racik'] <> 0 ){
@@ -339,23 +377,91 @@ class aSalesService extends Controller
                             }
                         }
                 
-                    // insert billing detail
-                    $this->billingRepository->insertDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
-                                            $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
-                                            $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
-                                            'Farmasi',$request->KodeKelas,$key['Qty'],$key['Harga'],$key['SubtotalHarga'],
-                                            $key['DiscountProsen'],$key['Discount'],$key['Subtotal'],$key['Grandtotal'],'','','','FARMASI');
+                        // if ( $cekbill > 0) {
+                        //     //update
+                        //      // insert billing detail
+                        //      $this->billingRepository->updateDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
+                        //      $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
+                        //      $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
+                        //      'Farmasi',$request->KodeKelas,$key['Qty'],$key['Harga'],$key['SubtotalHarga'],
+                        //      $key['DiscountProsen'],$key['Discount'],$key['Subtotal'],$key['Grandtotal'],'','','','FARMASI');
+                        // }else{
+                                            //   // insert billing detail
+                                            // $this->billingRepository->insertDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
+                                            // $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
+                                            // $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
+                                            // 'Farmasi',$request->KodeKelas,$key['Qty'],$key['Harga'],$key['SubtotalHarga'],
+                                            // $key['DiscountProsen'],$key['Discount'],$key['Subtotal'],$key['Grandtotal'],'','','','FARMASI');
+                        //}
+  
             }
+
+            //jika didelete dari resep (untuk diupdate ke table orderresepdetail)
+            if ($request->Group_Transaksi == 'RESEP'){
+                $orderdtl = $this->trsResepRepository->viewOrderResepDetailbyOrderIDV2($request->IdOrderResep);
+                foreach ($orderdtl as $key_orderdtl) {
+                $isdeleted = true;
+                foreach ($request->Items as $key) {
+                    if ($key['ProductCode'] == $key_orderdtl->KodeBarang){
+                        $isdeleted = false;
+                    }
+                }
+                if ($isdeleted){
+                        $this->trsResepRepository->editQtyRealbyIDResepandProductCode($request->IdOrderResep,$key_orderdtl->KodeBarang,0);
+                    }
+                }
+            }
+
+            //jika sudah ada trs dan ada yang didelete
+            $salesdtl = $this->aSalesRepository->getSalesDetailbyID($request->TransactionCode);
+             foreach ($salesdtl as $key_salesdtl) {
+                $isdeleted = true;
+                foreach ($request->Items as $key) {
+                    if ($key['ProductCode'] == $key_salesdtl->ProductCode){
+                        $isdeleted = false;
+                    }
+                }
+
+                if ($isdeleted){
+                    $cekBuku = $this->sStokRepository->cekBukuByTransactionandCodeProduct($key_salesdtl->ProductCode,$request,'TPR');
+                        foreach ($cekBuku as $data) {
+                            $asd = $data;
+                        } 
+                        $request['Void'] = '1';
+                        $request['UserVoid'] = $request->UserCreate;
+                        $request['ReasonVoid'] = '';
+                        $request['ProductCode'] = $key_salesdtl->ProductCode;
+                        $this->sStokRepository->addBukuStokInVoidFromSelect($asd,'TPR_V',$request);
+                        $this->sStokRepository->addDataStoksInVoidFromSelect($asd,'TPR_V',$request);
+                        $this->aSalesRepository->voidSalesbyItem($request);
+                        // $this->billingRepository->voidBillingPasienOneByProductCode($request);
+                        // $this->billingRepository->voidBillingPasienTwoByProductCode($request);
+                        $this->trsResepRepository->editQtyRealbyIDResepandProductCode($request->IdOrderResep,$key_salesdtl->ProductCode,0);
+                    }
+             }
+
+             
                 // // update tabel header
                 // $this->aSalesRepository->editSales($request);
+                // if ( $cekbill > 0) {
+                //     //update
+                //     $dataBilling1 = $this->billingRepository->getBillingFo1($request);
+                //     foreach ($dataBilling1 as $dataBilling1) {
+                //         $this->billingRepository->updateDetailPdp($dataBilling1);
+                //     } 
+                // }else{
+                    // $request['Void'] = '1';
+                    // $request['UserVoid'] = $request->UserCreate;
+                    // $this->billingRepository->voidBillingPasienTwo($request);
+                    // $dataBilling1 = $this->billingRepository->getBillingFo1($request);
+                    // foreach ($dataBilling1 as $dataBilling1) {
+                    //     $this->billingRepository->insertDetailPdp($dataBilling1);
+                    // } 
+                // }
 
-                $dataBilling1 = $this->billingRepository->getBillingFo1($request);
-                foreach ($dataBilling1 as $dataBilling1) {
-                    $this->billingRepository->insertDetailPdp($dataBilling1);
-                } 
 
                  //UPDATE REVIEW ORDER RESEP DETAILS
-                 $this->trsResepRepository->editReviewbyIDResep($request->IdOrderResep);
+                  $this->trsResepRepository->editReviewbyIDResep($request->IdOrderResep);
 
                 DB::commit();
                 return $this->sendResponse([], 'Data Detail Penjualan berhasil disimpan !');
@@ -385,6 +491,11 @@ class aSalesService extends Controller
         if ($this->aMasterUnitRepository->getUnitById($request->UnitCode)->count() < 1) {
             return $this->sendError('Kode Unit Penjualan tidak ditemukan !', []);
         }
+        
+        $noresep = $this->aSalesRepository->getSalesbyID($request->TransactionCode)->first()->NoResep;
+        if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($noresep)->first()->StatusResep >= 1 ){
+            return $this->sendError('Order Sudah Diapprove ! Silahkan Konfirmasi Ke Bagian Kasir !', []);
+        }
 
 
         try {
@@ -400,7 +511,7 @@ class aSalesService extends Controller
                 $cekqtystok = $this->sStokRepository->cekStokbyIDBarangOnly($key2->ProductCode,$request);
  
                     if ( $cekqtystok->count() < 1) {
-                        return  $this->sendError('Qty Stok Tidak ada diLayanan Tujuan Ini ! ' , []);
+                        return  $this->sendError('Qty Stok '.$key2->ProductName.' Tidak ada diLayanan Tujuan Ini ! ' , []);
                     }
                     // foreach ($cekqtystok as $valueStok) {
                     //     $datastok = $valueStok->Qty;
@@ -534,6 +645,9 @@ class aSalesService extends Controller
             // Db Transaction
             DB::beginTransaction(); 
             $this->aSalesRepository->editSales($request);
+            $this->trsResepRepository->editHasilReviewbyNoTrs($request);
+            //update status resep
+            $this->trsResepRepository->updateStatusResep($request);
             DB::commit();
             return $this->sendResponse([], 'Transaksi Penjualan Selesai disimpan !');
         }catch (Exception $e) {
@@ -714,6 +828,78 @@ class aSalesService extends Controller
         try {
             // Db Transaction
             $data = $this->aSalesRepository->getSalesDetailbyNoReg($request);
+            if ($data->count() < 1) {
+                return $this->sendError('Sales Transaction Number Detil Not Found !', []);
+            }
+            return $this->sendResponse($data, 'Sales Transaction Data Found !');
+        } catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Sales Transaction Data Not Found !', $e->getMessage());
+        }
+    }
+
+    public function getSalesbyPeriodeResep($request)
+    {
+        // validate 
+        $request->validate([
+            "StartPeriode" => "required",
+            "EndPeriode" => "required"
+        ]);
+        
+        try {
+            // Db Transaction
+            $data = $this->aSalesRepository->getSalesbyPeriodeResep($request);
+
+            // // cek ada gak datanya
+            if ($this->aSalesRepository->getSalesbyPeriodeResep($request)->count() < 1) {
+                return $this->sendError('Sales Transaction Number Not Found !', []);
+            }
+
+            return $this->sendResponse($data, 'Sales Transaction Data Found !');
+        } catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Sales Transaction Data Not Found !', $e->getMessage());
+        }
+    }
+
+    public function getSalesbyIDandNoResep($request)
+    {
+        // validate 
+        $request->validate([
+            "TransactionCode" => "required",
+            "NoResep" => "required",
+        ]);
+        // // cek ada gak datanya
+        if ($this->aSalesRepository->getSalesbyIDandNoResep($request->TransactionCode,$request->NoResep)->count() < 1) {
+            return $this->sendError('Sales Transaction Number Detil Not Found !', []);
+        }
+        try {
+            // Db Transaction
+            $data = $this->aSalesRepository->getSalesbyIDandNoResep($request->TransactionCode,$request->NoResep);
+            if ($data->count() < 1) {
+                return $this->sendError('Sales Transaction Number Detil Not Found !', []);
+            }
+            return $this->sendResponse($data, 'Sales Transaction Data Found !');
+        } catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Sales Transaction Data Not Found !', $e->getMessage());
+        }
+    }
+
+    public function getSalesDetailbyIDandNoResep($request)
+    {
+        // validate 
+        $request->validate([
+            "TransactionCode" => "required",
+            "NoResep" => "required",
+        ]);
+        // // cek ada gak datanya
+        if ($this->aSalesRepository->getSalesDetailbyIDandNoResep($request->TransactionCode,$request->NoResep)->count() < 1) {
+            return $this->sendError('Sales Transaction Number Detil Not Found !', []);
+        }
+        try {
+            // Db Transaction
+            $data = $this->aSalesRepository->getSalesDetailbyIDandNoResep($request->TransactionCode,$request->NoResep);
             if ($data->count() < 1) {
                 return $this->sendError('Sales Transaction Number Detil Not Found !', []);
             }

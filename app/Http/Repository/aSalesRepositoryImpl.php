@@ -181,7 +181,8 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
                 'Tax' => $request->Tax, 
                 'Grandtotal' => $request->Grandtotal, 
                 'UserCreateLast' => $request->UserCreateLast,
-                'TransactionDateLast' => Carbon::now() 
+                'TransactionDateLast' => Carbon::now() ,
+                //'HasilReview' => $request->HasilReview,
             ]);
         return $updatesatuan;
     }
@@ -282,6 +283,39 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
     {
         return  DB::connection('sqlsrv')->table("v_transaksi_sales_dtl")
             ->where('ID', $id)
+            ->get();
+    }
+
+    public function getSalesbyPeriodeResep($request)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_sales_hdr")
+            ->whereBetween('TglPeriode', [$request->StartPeriode, $request->EndPeriode])
+            ->where('Group_Transaksi','RESEP')
+            ->get();
+    }
+
+    public function getSalesbyIDandNoResep($id,$noresep)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_sales_hdr")
+        ->join('v_transaksi_orderresep_hdr','v_transaksi_sales_hdr.NoResep','=','v_transaksi_orderresep_hdr.OrderID')
+        ->where('v_transaksi_sales_hdr.TransactionCode', $id)
+        ->where('v_transaksi_sales_hdr.NoResep', $noresep)
+            ->where('v_transaksi_sales_hdr.Void', '0')
+            ->get();
+    }
+
+    public function getSalesDetailbyIDandNoResep($id,$noresep)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_sales_dtl")
+        ->join('v_transaksi_sales_hdr','v_transaksi_sales_hdr.TransactionCode','=','v_transaksi_sales_dtl.TransactionCode')
+        ->leftJoin('v_transaksi_orderresep_dtl','v_transaksi_sales_hdr.NoResep','=','v_transaksi_orderresep_dtl.IdOrderResep')
+        ->whereColumn('v_transaksi_sales_dtl.ProductCode','v_transaksi_orderresep_dtl.KodeBarang')
+        ->where('v_transaksi_sales_hdr.TransactionCode', $id)
+        ->where('v_transaksi_sales_hdr.NoResep', $noresep)
+            ->where('v_transaksi_sales_hdr.Void', '0')
+            ->where('v_transaksi_sales_dtl.Void', '0')
+            ->where('v_transaksi_orderresep_dtl.Batal', '0')
+            ->where('v_transaksi_orderresep_dtl.QryRealisasi','<>', '0')
             ->get();
     }
 }

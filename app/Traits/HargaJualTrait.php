@@ -10,57 +10,57 @@ trait HargaJualTrait
 {
     public function HargaJual($GroupJaminan,$noregistrasi,$Hna,$Category,$kelas){
 
- 
+        $hargaPlusppn =  $Hna + (($Hna*11)/100);
         if($GroupJaminan == "UM"){
             if(substr($noregistrasi,1,2) == "RJ"  ) {
-                 $hargadasar = $Hna;
+                 $hargadasar = $hargaPlusppn;
                  $hargaprofit = $hargadasar*1.3; 
              }else{
-                 $hargadasar = $Hna;
+                 $hargadasar = $hargaPlusppn;
                  $hargaprofit = $hargadasar*1.4; 
              }
          }
 
          if($GroupJaminan == "TE"){
-             if($Hna >= 250000){
-                 $hargadiskon = ($Hna * 20) / 100;
-                 $hargaprofit =$Hna-$hargadiskon;
+             if($hargaPlusppn >= 250000){
+                 $hargadiskon = ($hargaPlusppn * 20) / 100;
+                 $hargaprofit =$hargaPlusppn-$hargadiskon;
              }else{
                  if($Category == "OBAT GENERIK"){
-                     $hargaprofit = $Hna * 1.2;
+                     $hargaprofit = $hargaPlusppn * 1.2;
                  }else if($Category == "OBAT NON GENERIK" || $Category = "NON GENERIK"  ){
-                     $hargaprofit = $Hna * 1.18;
+                     $hargaprofit = $hargaPlusppn * 1.18;
                  }else if($Category == "ALAT KESEHATAN"){
-                     $hargabefore = ($Hna * 20) / 100;
-                     $hargaprofit = $Hna - $hargabefore;
+                     $hargabefore = ($hargaPlusppn * 20) / 100;
+                     $hargaprofit = $hargaPlusppn - $hargabefore;
                  }
              }
          }
          
          if($GroupJaminan == "IH"){
-             if($Hna <= '50000' ){
-                 $hargaprofit = ($Hna  * 1.2);
-             }else if($Hna >= '50000' && $Hna <= '250000' ){
-                 $hargaprofit = ($Hna  * 1.15);
-             }else if($Hna >= '250000' && $Hna <= '500000' ){
-                 $hargaprofit = ($Hna  * 1.1);
-             }else if($Hna >= '500000'  ){
-                 $hargaprofit = ($Hna  * 1.05);
+             if($hargaPlusppn <= '50000' ){
+                 $hargaprofit = ($hargaPlusppn  * 1.2);
+             }else if($hargaPlusppn >= '50000' && $hargaPlusppn <= '250000' ){
+                 $hargaprofit = ($hargaPlusppn  * 1.15);
+             }else if($hargaPlusppn >= '250000' && $hargaPlusppn <= '500000' ){
+                 $hargaprofit = ($hargaPlusppn  * 1.1);
+             }else if($hargaPlusppn >= '500000'  ){
+                 $hargaprofit = ($hargaPlusppn  * 1.05);
              }
          }
 
          if($GroupJaminan == "BS"){
              if(substr($noregistrasi,1,2) == "RJ"  ) {
-                  $hargaprofit = $Hna; 
+                  $hargaprofit = $hargaPlusppn; 
               }else{
                  if($kelas == "3")   {
-                     $hargaprofit = $Hna; 
+                     $hargaprofit = $hargaPlusppn; 
                  }else if ($kelas == "2") {
-                     $hargaprofit = $Hna * 1.2; 
+                     $hargaprofit = $hargaPlusppn * 1.2; 
                  } else if ($kelas == "1") {
-                     $hargaprofit = $Hna * 1.4; 
+                     $hargaprofit = $hargaPlusppn * 1.4; 
                  } else  {
-                     $hargaprofit = $Hna * 1.4; 
+                     $hargaprofit = $hargaPlusppn * 1.4; 
                  }  
               }
           }

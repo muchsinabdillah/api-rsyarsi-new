@@ -5,6 +5,7 @@ namespace App\Http\Repository;
 use App\Models\gallery;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class aTrsResepRepositoryImpl implements aTrsResepRepositoryInterface
 {
@@ -32,6 +33,7 @@ class aTrsResepRepositoryImpl implements aTrsResepRepositoryInterface
         $query =  DB::connection('sqlsrv')->table("ResepV2_ViewbyPeriodeDate")
         ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), TglResep, 111), '/','-')"),
         [$request->tglPeriodeAwal,$request->tglPeriodeAkhir])  
+        ->whereNull('TransactionCode')
         ->get();
         return $query;
     }
@@ -85,6 +87,42 @@ class aTrsResepRepositoryImpl implements aTrsResepRepositoryInterface
         ->where('Batal', '0')
             ->update([
                 'Review' => '1',
+            ]);
+        return $updatesatuan;
+    }
+
+    public function editHasilReviewbyNoTrs($request)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('OrderResep')
+        ->where('ID', $request->IdOrderResep)
+            ->update([
+                'HasilReview' => $request->HasilReview,
+                'TglReview' => Carbon::now(),
+                'PetugasReview' => $request->UserCreateLast,
+                'NamaPetugasReview' => $request->UserCreateLast,
+            ]);
+        return $updatesatuan;
+    }
+
+    public function editQtyRealbyIDResepandProductCode($IdOrderResep,$ProductCode,$QtyReal)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('OrderResepDetail')
+        ->where('IdOrderResep', $IdOrderResep)
+        ->where('KodeBarang', $ProductCode)
+        ->where('Batal', '0')
+            ->update([
+                'QryRealisasi' => $QtyReal,
+            ]);
+        return $updatesatuan;
+    }
+
+    public function updateStatusResep($request)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('OrderResep')
+        ->where('ID', $request->IdOrderResep)
+        ->where('StatusResep', '0')
+            ->update([
+                'StatusResep' => '1',
             ]);
         return $updatesatuan;
     }
