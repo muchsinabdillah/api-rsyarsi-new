@@ -640,5 +640,12 @@ class aStokRepositoryImpl implements aStokRepositoryInterface
             ->orderBy('DeliveryCode','asc')
             ->get();
     }
+
+    public function cekStokbyID($id)
+    {
+        return  DB::connection('sqlsrv')->table("v_stok")
+        ->where('ProductCode', $id)
+        ->get();
+    }
     
 }

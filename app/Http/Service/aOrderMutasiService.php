@@ -429,7 +429,7 @@ class aOrderMutasiService extends Controller
                     $datagen->Konversi_QtyTotal = $key->quantity;
                     $datagen->QtyStok = $datastok->first()->Qty;
                     $datagen->QtyOrderMutasi = $key->quantity;
-                    $datagen->QtySisaMutasi = $qtysisa;
+                    $datagen->QtySisaMutasi = $key->quantity;
                     $datagen->UserAdd = $request->UserAdd;
 
                 // // //cek barang dobel gak 

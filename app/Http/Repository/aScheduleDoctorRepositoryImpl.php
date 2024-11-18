@@ -311,7 +311,8 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
                         DB::raw('Senin_Max_JKN  AS Max_JKN') ,
                         DB::raw('Senin_Max_NonJKN  AS Max_NonJKN') ,
                         DB::raw('Senin_Awal  AS JamAwal') ,
-                        DB::raw('Senin_Akhir  AS JamAkhir')  )
+                        DB::raw('Senin_Akhir  AS JamAkhir'), 
+                        DB::raw('Close_Schedule_Senin  AS Close_Schedules'),  )
             ->where('IDUnit', $IdGrupPerawatan)
             ->where('IDDokter', $IdDokter)
             ->where('Senin', '1') 
@@ -328,7 +329,8 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
                         DB::raw('Senin_Max_JKN  AS Max_JKN') ,
                         DB::raw('Senin_Max_NonJKN  AS Max_NonJKN') ,
                         DB::raw('Senin_Awal  AS JamAwal') ,
-                        DB::raw('Senin_Akhir  AS JamAkhir')  )
+                        DB::raw('Senin_Akhir  AS JamAkhir'), 
+                        DB::raw('Close_Schedule_Senin  AS Close_Schedules'),  )
             ->where('IDUnit', $IdGrupPerawatan)
             ->where('IDDokter', $IdDokter)
             ->where('Senin', '1')
@@ -351,7 +353,8 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
                         DB::raw('Minggu_Max_JKN  AS Max_JKN') ,
                         DB::raw('Minggu_Max_NonJKN  AS Max_NonJKN') ,
                         DB::raw('Minggu_Awal  AS JamAwal') ,
-                        DB::raw('Minggu_Akhir  AS JamAkhir')  )
+                        DB::raw('Minggu_Akhir  AS JamAkhir'), 
+                        DB::raw('Close_Schedule_Minggu  AS Close_Schedules'),  )
             ->where('IDUnit', $IdGrupPerawatan)
             ->where('IDDokter', $IdDokter)
             ->where('Minggu', '1') 
@@ -368,7 +371,8 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
                         DB::raw('Minggu_Max_JKN  AS Max_JKN') ,
                         DB::raw('Minggu_Max_NonJKN  AS Max_NonJKN') ,
                         DB::raw('Minggu_Awal  AS JamAwal') ,
-                        DB::raw('Minggu_Akhir  AS JamAkhir')  )
+                        DB::raw('Minggu_Akhir  AS JamAkhir'), 
+                        DB::raw('Close_Schedule_Minggu  AS Close_Schedules'),   )
             ->where('IDUnit', $IdGrupPerawatan)
             ->where('IDDokter', $IdDokter)
             ->where('Minggu', '1')
@@ -392,7 +396,8 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
                         DB::raw('Selasa_Max_JKN  AS Max_JKN') ,
                         DB::raw('Selasa_Max_NonJKN  AS Max_NonJKN') ,
                         DB::raw('Selasa_Awal  AS JamAwal') ,
-                        DB::raw('Selasa_Akhir  AS JamAkhir')  )
+                        DB::raw('Selasa_Akhir  AS JamAkhir'), 
+                        DB::raw('Close_Schedule_Selasa  AS Close_Schedules'),   )
             ->where('IDUnit', $IdGrupPerawatan)
             ->where('IDDokter', $IdDokter)
             ->where('Selasa', '1')
@@ -409,7 +414,8 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
                         DB::raw('Selasa_Max_JKN  AS Max_JKN') ,
                         DB::raw('Selasa_Max_NonJKN  AS Max_NonJKN') ,
                         DB::raw('Selasa_Awal  AS JamAwal') ,
-                        DB::raw('Selasa_Akhir  AS JamAkhir')  )
+                        DB::raw('Selasa_Akhir  AS JamAkhir'), 
+                        DB::raw('Close_Schedule_Selasa  AS Close_Schedules'),  )
             ->where('IDUnit', $IdGrupPerawatan)
             ->where('IDDokter', $IdDokter)
             ->where('Selasa', '1')
@@ -431,7 +437,8 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
                         DB::raw('Rabu_Max_JKN  AS Max_JKN') ,
                         DB::raw('Rabu_Max_NonJKN  AS Max_NonJKN') ,
                         DB::raw('Rabu_Awal  AS JamAwal') ,
-                        DB::raw('Rabu_Akhir  AS JamAkhir')  )
+                        DB::raw('Rabu_Akhir  AS JamAkhir'), 
+                        DB::raw('Close_Schedule_Rabu  AS Close_Schedules'),  )
             ->where('IDUnit', $IdGrupPerawatan)
             ->where('IDDokter', $IdDokter)
             ->where('Rabu', '1') 
@@ -448,7 +455,8 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
                         DB::raw('Rabu_Max_JKN  AS Max_JKN') ,
                         DB::raw('Rabu_Max_NonJKN  AS Max_NonJKN') ,
                         DB::raw('Rabu_Awal  AS JamAwal') ,
-                        DB::raw('Rabu_Akhir  AS JamAkhir')  )
+                        DB::raw('Rabu_Akhir  AS JamAkhir'), 
+                        DB::raw('Close_Schedule_Rabu  AS Close_Schedules'),  )
             ->where('IDUnit', $IdGrupPerawatan)
             ->where('IDDokter', $IdDokter)
             ->where('Rabu', '1')
@@ -471,7 +479,8 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
                         DB::raw('Kamis_Max_JKN  AS Max_JKN') ,
                         DB::raw('Kamis_Max_NonJKN  AS Max_NonJKN') ,
                         DB::raw('Kamis_Awal  AS JamAwal') ,
-                        DB::raw('Kamis_Akhir  AS JamAkhir')  )
+                        DB::raw('Kamis_Akhir  AS JamAkhir'), 
+                        DB::raw('Close_Schedule_Kamis  AS Close_Schedules'),  )
             ->where('IDUnit', $IdGrupPerawatan)
             ->where('IDDokter', $IdDokter)
             ->where('Kamis', '1') 
@@ -488,7 +497,8 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
                         DB::raw('Kamis_Max_JKN  AS Max_JKN') ,
                         DB::raw('Kamis_Max_NonJKN  AS Max_NonJKN') ,
                         DB::raw('Kamis_Awal  AS JamAwal') ,
-                        DB::raw('Kamis_Akhir  AS JamAkhir')  )
+                        DB::raw('Kamis_Akhir  AS JamAkhir'), 
+                        DB::raw('Close_Schedule_Kamis  AS Close_Schedules'),  )
             ->where('IDUnit', $IdGrupPerawatan)
             ->where('IDDokter', $IdDokter)
             ->where('Kamis', '1')
@@ -511,7 +521,8 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
                         DB::raw('Jumat_Max_JKN  AS Max_JKN') ,
                         DB::raw('Jumat_Max_NonJKN  AS Max_NonJKN') ,
                         DB::raw('Jumat_Awal  AS JamAwal') ,
-                        DB::raw('Jumat_Akhir  AS JamAkhir')  )
+                        DB::raw('Jumat_Akhir  AS JamAkhir'), 
+                        DB::raw('Close_Schedule_Jumat  AS Close_Schedules'),  )
             ->where('IDUnit', $IdGrupPerawatan)
             ->where('IDDokter', $IdDokter)
             ->where('Jumat', '1') 
@@ -528,7 +539,8 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
                         DB::raw('Jumat_Max_JKN  AS Max_JKN') ,
                         DB::raw('Jumat_Max_NonJKN  AS Max_NonJKN') ,
                         DB::raw('Jumat_Awal  AS JamAwal') ,
-                        DB::raw('Jumat_Akhir  AS JamAkhir')  )
+                        DB::raw('Jumat_Akhir  AS JamAkhir'), 
+                        DB::raw('Close_Schedule_Jumat  AS Close_Schedules'),   )
             ->where('IDUnit', $IdGrupPerawatan)
             ->where('IDDokter', $IdDokter)
             ->where('Jumat', '1')
@@ -551,7 +563,8 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
                         DB::raw('Sabtu_Max_JKN  AS Max_JKN') ,
                         DB::raw('Sabtu_Max_NonJKN  AS Max_NonJKN') ,
                         DB::raw('Sabtu_Awal  AS JamAwal') ,
-                        DB::raw('Sabtu_Akhir  AS JamAkhir')  )
+                        DB::raw('Sabtu_Akhir  AS JamAkhir'), 
+                        DB::raw('Close_Schedule_Sabtu  AS Close_Schedules'),   )
             ->where('IDUnit', $IdGrupPerawatan)
             ->where('IDDokter', $IdDokter)
             ->where('Sabtu', '1') 
@@ -568,7 +581,8 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
                         DB::raw('Sabtu_Max_JKN  AS Max_JKN') ,
                         DB::raw('Sabtu_Max_NonJKN  AS Max_NonJKN') ,
                         DB::raw('Sabtu_Awal  AS JamAwal') ,
-                        DB::raw('Sabtu_Akhir  AS JamAkhir')  )
+                        DB::raw('Sabtu_Akhir  AS JamAkhir'), 
+                        DB::raw('Close_Schedule_Sabtu  AS Close_Schedules'),   )
             ->where('IDUnit', $IdGrupPerawatan)
             ->where('IDDokter', $IdDokter)
             ->where('Sabtu', '1')
@@ -581,6 +595,7 @@ class aScheduleDoctorRepositoryImpl implements aScheduleDoctorRepositoryInterfac
         }
             
     }
+
 
     // untuk cari data dokter di hari itu . nama dokter aajaa
     public function getScheduleGroubyDoctorForTRSSenin($IdGrupPerawatan,$groupjadwal)

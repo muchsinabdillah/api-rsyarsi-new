@@ -389,15 +389,40 @@ class bVisitRepositoryImpl implements bVisitRepositoryInterface
     public function getRegistrationRanapbyNoreg($NoRegistrasi)
     {
         //a
-        return  DB::connection('sqlsrv6')->table("dataRWI")
-        ->select( DB::raw('Null as NoAntrianAll'), 'NamaJaminan','PatientName',DB::raw("CASE WHEN Sex='L' then 'M' ELSE 'F' END AS Gander") ,
-        DB::raw("replace(CONVERT(VARCHAR(11), DateOfBirth, 111), '/','-') as Date_of_birth") , 
-        'Address',  DB::raw('Null as IdUnit'),  DB::raw("[StartDate] AS Visit_Date"), DB::raw("Null AS NamaUnit"), DB::raw("0 AS IdDokter"), DB::raw("null AS NamaDokter"),'NoMR','NoEpisode','NoRegistrasi',
-        DB::raw("case when TipePasien='1' THEN 'PRIBADI' WHEN TipePasien='2' THEN 'ASURANSI' WHEN TipePasien='5' THEN 'PERUSAHAAN' END 
-        AS  PatientType"),'StatusID','MobilePhone','Kelurahan','Kecamatan','kabupatenNama','ProvinsiNama','TipePasien','KodeJaminan','KelasID_Akhir')
+        return  DB::connection('sqlsrv6')->table("viewRegistrasiPasienRanap")
+        // ->select( DB::raw('Null as NoAntrianAll'), 'NamaJaminan','PatientName',DB::raw("CASE WHEN Sex='L' then 'M' ELSE 'F' END AS Gander") ,DB::raw('DATEDIFF(year, DateOfBirth, GETDATE()) AS Usia'),
+        // DB::raw("replace(CONVERT(VARCHAR(11), DateOfBirth, 111), '/','-') as Date_of_birth") , 
+        // 'Address',  DB::raw('Null as IdUnit'),  DB::raw("[StartDate] AS Visit_Date"), DB::raw("Null AS NamaUnit"), DB::raw("0 AS IdDokter"), DB::raw("null AS NamaDokter"),'NoMR','NoEpisode','NoRegistrasi',
+        // DB::raw("case when TipePasien='1' THEN 'PRIBADI' WHEN TipePasien='2' THEN 'ASURANSI' WHEN TipePasien='5' THEN 'PERUSAHAAN' END 
+        // AS  PatientType"),'StatusID','MobilePhone','Kelurahan','Kecamatan','kabupatenNama','ProvinsiNama','TipePasien','KodeJaminan','KelasID_Akhir')
         ->where('NoRegistrasi', $NoRegistrasi) 
-        ->orderBy('StartDate', 'desc')
+        ->orderBy('Visit_Date', 'desc')
         ->get();
+    }
+
+    public function voidRegistrasivisit($request)
+    {
+        $updatesatuan =  DB::connection('sqlsrv3')->table('Visit')
+        ->where('NoRegistrasi', $request->NoRegistrasi)
+            ->update([
+                'Batal' => '1',
+                'tglBatal' =>  Carbon::now() ,
+                'PetugasBatal' => $request->UserVoid,
+                'Keterangan' => $request->ReasonVoid
+            ]);
+        return $updatesatuan;
+    }
+
+    public function voidRegistrasidashboard($request)
+    {
+        $updatesatuan =  DB::connection('sqlsrv6')->table('DataRWJ')
+        ->where('NoRegistrasi', $request->NoRegistrasi)
+            ->update([
+                'Batal' => '1',
+                'tglBatal' =>  Carbon::now() ,
+                'PetugasBatal' => $request->UserVoid,
+            ]);
+        return $updatesatuan;
     }
 }
 

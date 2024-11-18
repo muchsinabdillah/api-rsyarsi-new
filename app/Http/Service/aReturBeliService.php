@@ -138,9 +138,15 @@ class aReturBeliService extends Controller
                 foreach ($cekqtystok as $valueStok) {
                     $datastok = $valueStok->Qty;
                 }
-                $sisaStok = $datastok - $Konversi_QtyTotal;
+                $getDetailretur = $this->returbeliRepository->getReturBeliDetailbyIDBarang($request,$key);
+                if($getDetailretur->count() > 0){
+                    $sisaStok = $datastok - $Konversi_QtyTotal + $getDetailretur->first()->Konversi_Qty_Total;
+                }else{
+                    $sisaStok = $datastok - $Konversi_QtyTotal;
+                }
+
                 if($sisaStok < 0 ){
-                    return $this->sendError('Barang ' . $key['ProductName'] . ' Stok Saat ini : '. $datastok/$key['KonversiQty'] .', Nilai Retur Beli Qty : ' . $key['Konversi_QtyTotal'] . ', Void Delivery Order Dibatalkan !', []);
+                    return $this->sendError('Barang ' . $key['ProductName'] . ' Stok Saat ini : '. $datastok/$key['KonversiQty'] .', Nilai Retur Beli Qty : ' . $key['Konversi_QtyTotal'] . ', Retur Dibatalkan !', []);
                 }
             }
 
@@ -148,8 +154,15 @@ class aReturBeliService extends Controller
              foreach ($request->Items as $key) {
                 $getDetailretur = $this->returbeliRepository->getReturBeliDetailbyIDBarang($request,$key); 
                 $dataDeliveryOrdrDetail = $this->aDeliveryOrder->getDeliveryOrderDetailbyIDandProductCodeLoopRetur($request->DeliveryCode,$key['ProductCode'])->first();
+
+                $getDetailretur = $this->returbeliRepository->getReturBeliDetailbyIDBarang($request,$key);
+                if($getDetailretur->count() > 0){
+                    $qtydelivery = $dataDeliveryOrdrDetail->QtyDeliveryRemain + $getDetailretur->first()->QtyRetur;
+                }else{
+                    $qtydelivery = $dataDeliveryOrdrDetail->QtyDeliveryRemain;
+                }
                
-                if($dataDeliveryOrdrDetail->QtyDeliveryRemain < $key['QtyRetur'] ){
+                if( $qtydelivery < $key['QtyRetur'] ){
                     return $this->sendError('Barang ' . $key['ProductName'] . ' Qty Sisa Deliver Saat ini : '. $dataDeliveryOrdrDetail->QtyDeliveryRemain .', Nilai Retur Beli Qty : ' . $key['QtyRetur'] . ', Retur Dibatalkan !', []);
                 }
              }
@@ -179,13 +192,14 @@ class aReturBeliService extends Controller
                         //   $this->aStok->updateStokTrs($request,$key,$totalstok,$request->UnitCode);
                         // delete tabel buku 
                         $this->aStok->deleteBukuStok($request,$key,'RB',$request->UnitCode);
+                        $this->aStok->deleteDataStoks($request,$key,"RB",$request->UnitCode);
                         $this->fifoOut($request,$key,'RB');
                    } 
                    $doQtyRemain = $dataDeliveryOrdrDetail->QtyDeliveryRemain;
                    $doQtyBefore = $doQtyRemain + $showData->QtyRetur;
                    $doqtyAfter = $doQtyBefore - $key['QtyRetur'];
                    $this->aDeliveryOrder->updateQtyRemainDeliveryOrderRetur($request,$key,$doqtyAfter);
-                } 
+                }                
                 $this->returbeliRepository->editReturBeliDetaibyIdBarang($request,$key);    
             }
 
@@ -274,8 +288,8 @@ class aReturBeliService extends Controller
                 foreach ($cekBuku as $data) {
                     $asd = $data;
                 } 
-                $this->aStok->addBukuStokOutVoidFromSelectMutasi($asd,'RB_V',$request,$Konversi_QtyTotal,$request->UnitCode);
-                $this->aStok->addDataStoksOutVoidFromSelectMutasi($asd,'RB_V',$request,$Konversi_QtyTotal,$request->UnitCode);
+                $this->aStok->addBukuStokInVoidFromSelectMutasi($asd,'RB_V',$request,$Konversi_QtyTotal,$request->UnitCode);
+                $this->aStok->addDataStoksInVoidFromSelectMutasi($asd,'RB_V',$request,$Konversi_QtyTotal,$request->UnitCode);
             // UPDATE STOK PLUS KE LOKASI STOK TUJUAN
 
             DB::commit();
@@ -350,8 +364,8 @@ class aReturBeliService extends Controller
                     foreach ($cekBuku as $data) {
                         $asd = $data;
                     } 
-                    $this->aStok->addBukuStokOutVoidFromSelectMutasi($asd,'RB_V',$request,$Konversi_QtyTotal,$request->UnitCode);
-                    $this->aStok->addDataStoksOutVoidFromSelectMutasi($asd,'RB_V',$request,$Konversi_QtyTotal,$request->UnitCode);
+                    $this->aStok->addBukuStokInVoidFromSelectMutasi($asd,'RB_V',$request,$Konversi_QtyTotal,$request->UnitCode);
+                    $this->aStok->addDataStoksInVoidFromSelectMutasi($asd,'RB_V',$request,$Konversi_QtyTotal,$request->UnitCode);
                 // UPDATE STOK PLUS KE LOKASI STOK TUJUAN
 
             }

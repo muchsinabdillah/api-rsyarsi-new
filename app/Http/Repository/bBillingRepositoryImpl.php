@@ -71,7 +71,7 @@ class bBillingRepositoryImpl implements bBillingRepositoryInterface
         return  DB::connection('sqlsrv11')->table("v_ins_bill2_farmasi")
         ->where('NO_TRS_BILLING', $request->TransactionCode) 
         ->where('GROUP_ENTRI', 'FARMASI')
-        //->where('KD_TIPE_PDP', 'OBT1')
+        ->where('KD_TIPE_PDP', 'OBT1')
         ->get();
     }
     public function insertDetailPdp($request)
@@ -321,6 +321,18 @@ class bBillingRepositoryImpl implements bBillingRepositoryInterface
             'ID_TR_TARIF_PAKET' => $request->ID_TR_TARIF_PAKET    
         ]);
 
+    }
+
+    public function getBilling1byTrsID($TransactionCode){
+        return  DB::connection('sqlsrv11')->table("FO_T_BILLING_1")
+        ->where('NO_TRS_BILLING', $TransactionCode) 
+        ->get();
+    }
+
+    public function getBillingClose($notrs){
+        return  DB::connection('sqlsrv11')->table("CLOSING_BILL")
+        ->where('NOREG_FIRST', $notrs) 
+        ->get();
     }
 
     // public function insertDetailPdpPerItem($request)

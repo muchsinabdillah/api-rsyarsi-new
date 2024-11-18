@@ -108,7 +108,7 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
         return  DB::connection('sqlsrv')
             ->table("Products")
             ->select( 
-            'Category'
+            'Category','Konversi_satuan'
             )
             ->where('ID', $id)
             ->get();
@@ -475,6 +475,7 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
     {
         return  DB::connection('sqlsrv')->table("PaketItemDetails")
         ->where('id_header', $id_header)
+        ->where('status','1')
             ->get();
     }
     public function getBarangKonversibyId($id)

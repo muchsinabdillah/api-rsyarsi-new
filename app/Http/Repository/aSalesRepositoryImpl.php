@@ -161,7 +161,7 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
                 'Hpp' =>  $xhpp,   
                 'Subtotal' => $key['Subtotal'],  
                 'Tax' => $key['Tax'],  
-                'Grandtotal' => $key['Grandtotal'],  
+                'Grandtotal' => $key['Grandtotal'], 
             ]);
         return $updatesatuan;
     }
@@ -266,7 +266,7 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
         ->join('v_transaksi_sales_hdr','v_transaksi_sales_hdr.TransactionCode','=','v_transaksi_sales_dtl.TransactionCode')
         ->select('v_transaksi_sales_dtl.*')
             ->where('NoRegistrasi', $request->NoRegistrasi)
-             ->where('Group_Transaksi', 'RESEP')
+             //->where('Group_Transaksi', 'RESEP')
              ->where('UnitOrder', $request->UnitSales)
              ->where('UnitSales', $request->UnitCode)
             ->get();
@@ -296,11 +296,13 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
 
     public function getSalesbyIDandNoResep($id,$noresep)
     {
-        return  DB::connection('sqlsrv')->table("v_transaksi_sales_hdr")
+        //13112024
+        return  DB::connection('sqlsrv')->table("v_transaksi_sales_hdr")    
         ->join('v_transaksi_orderresep_hdr','v_transaksi_sales_hdr.NoResep','=','v_transaksi_orderresep_hdr.OrderID')
         ->where('v_transaksi_sales_hdr.TransactionCode', $id)
         ->where('v_transaksi_sales_hdr.NoResep', $noresep)
             ->where('v_transaksi_sales_hdr.Void', '0')
+            ->select('v_transaksi_sales_hdr.*','v_transaksi_orderresep_hdr.NamaDokter','v_transaksi_orderresep_hdr.TglResepRaw','v_transaksi_orderresep_hdr.KodeKelas','Iter','v_transaksi_orderresep_hdr.HasilReview')
             ->get();
     }
 
@@ -318,4 +320,72 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
             ->where('v_transaksi_orderresep_dtl.QryRealisasi','<>', '0')
             ->get();
     }
+    public function editAturanPakaibyIdBarang($request, $key)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('SalesDetails')
+        ->where('TransactionCode', $request->TransactionCode)
+        ->where('ProductCode',$key['ProductCode'])
+        ->where('Void','0')
+            ->update([
+                'AturanPakai' => $key['AturanPakai'], 
+            ]);
+        return $updatesatuan;
+    }
+
+    public function getSalesbyPeriodeTanpaResep($request)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_sales_hdr")
+            ->whereBetween('TglPeriode', [$request->StartPeriode, $request->EndPeriode])
+            ->where('Group_Transaksi','NON RESEP')
+            ->get();
+    }
+
+    public function getSalesDetailbyNoRegIDBarang($request,$ProductCode)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_sales_dtl")
+        ->join('v_transaksi_sales_hdr','v_transaksi_sales_hdr.TransactionCode','=','v_transaksi_sales_dtl.TransactionCode')
+        ->select('v_transaksi_sales_dtl.*')
+            ->where('NoRegistrasi', $request->NoRegistrasi)
+             ->where('Group_Transaksi', 'RESEP')
+             ->where('UnitOrder', $request->UnitSales)
+             ->where('UnitSales', $request->UnitCode)
+             ->where('ProductCode', $ProductCode)
+            ->get();
+    }
+
+    public function updateQtRemainSalesDetailbyNoReg($NoRegistrasi, $ProductCode, $qtyRemain)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('SalesDetails')
+        ->join('Sales','Sales.TransactionCode','=','SalesDetail.TransactionCode')
+            ->where('SalesDetail.ProductCode', $ProductCode)
+            ->where('SalesDetail.Void', '0')
+            ->where('Sales.Void', '0')
+            ->where('Sales.NoRegistrasi', $NoRegistrasi)
+            ->update([
+                'QtySalesRemain' => $qtyRemain
+            ]);
+        return $updatesatuan;
+    }
+
+    //tambahan 30-10-2024 code:05112024
+    public function getSalesbyPeriodeResepRajal($request)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_sales_hdr")
+             ->leftjoin('AntrianObatFarmasi','AntrianObatFarmasi.NoResep','=','v_transaksi_sales_hdr.NoResep')
+            ->whereBetween('TglPeriode', [$request->StartPeriode, $request->EndPeriode])
+            ->where('Group_Transaksi','RESEP')
+            ->where(DB::raw("LEFT(v_transaksi_sales_hdr.NoRegistrasi,2)"),'RJ')
+            ->select('v_transaksi_sales_hdr.*','AntrianObatFarmasi.StatusAntrean')
+            ->get();
+    }
+    
+    public function getSalesbyPeriodeResepRanap($request)
+    {
+        return  DB::connection('sqlsrv')->table("v_transaksi_sales_hdr")
+            ->whereBetween('TglPeriode', [$request->StartPeriode, $request->EndPeriode])
+            ->where('Group_Transaksi','RESEP')
+            ->where(DB::raw("LEFT(NoRegistrasi,2)"),'RI')
+            ->get();
+    }
+
 }

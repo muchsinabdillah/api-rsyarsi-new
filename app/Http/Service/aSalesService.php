@@ -16,10 +16,20 @@ use App\Http\Repository\aSupplierRepositoryImpl;
 use App\Http\Repository\aTrsResepRepositoryImpl;
 use App\Http\Repository\aMasterUnitRepositoryImpl;
 use App\Http\Repository\aDeliveryOrderRepositoryImpl;
+use App\Http\Repository\aReturJualRepositoryImpl;
 use App\Http\Repository\aSalesRepositoryImpl;
 use App\Http\Repository\bBillingRepositoryImpl;
 use App\Http\Repository\bVisitRepositoryImpl;
 use App\Traits\FifoTrait;
+use App\Http\Repository\bAntrianFarmasiRepositoryImpl;
+use App\Http\Repository\UserRepositoryImpl;
+use App\Http\Repository\aDoctorRepositoryImpl;
+use App\Http\Repository\aPabrikRepositoryImpl;
+use App\Http\Repository\bAntrianRepositoryImpl;
+use App\Http\Repository\bAppointmentRepositoryImpl;
+use App\Http\Repository\bKamarOperasiRepositoryImpl;
+use App\Http\Repository\bMedicalRecordRepositoryImpl;
+use App\Http\Repository\aScheduleDoctorRepositoryImpl;
 
 class aSalesService extends Controller
 {
@@ -35,6 +45,8 @@ class aSalesService extends Controller
     private $aSalesRepository; 
     private $visitRepository;
     private $billingRepository;
+    private $returJualRepository;
+    private $aAntrianFarmasiRepository;
 
     public function __construct(
         aTrsResepRepositoryImpl  $trsResepRepository,
@@ -46,7 +58,9 @@ class aSalesService extends Controller
         aMasterUnitRepositoryImpl $aMasterUnitRepository,
         aSalesRepositoryImpl $aSalesRepository,
         bVisitRepositoryImpl $visitRepository,
-        bBillingRepositoryImpl $billingRepository
+        bBillingRepositoryImpl $billingRepository,
+        aReturJualRepositoryImpl $returJualRepository,
+        bAntrianFarmasiRepositoryImpl $aAntrianFarmasiRepository
     ) {
         $this->trsResepRepository = $trsResepRepository;
         $this->aDeliveryOrderRepository = $aDeliveryOrderRepository;
@@ -58,6 +72,8 @@ class aSalesService extends Controller
         $this->aSalesRepository = $aSalesRepository;
         $this->visitRepository = $visitRepository;
         $this->billingRepository = $billingRepository;
+        $this->returJualRepository = $returJualRepository;
+        $this->aAntrianFarmasiRepository = $aAntrianFarmasiRepository;
     }
 
     public function addSalesHeader(Request $request)
@@ -110,6 +126,15 @@ class aSalesService extends Controller
                 if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($request->NoResep)->first()->Iter < $this->aSalesRepository->getSalesbyNoResep($request)->count()){
                     return $this->sendError('Resep sudah pernah dibuat dan berada batas iter resep ! Cek di [List Penjualan] !', []);
                 }
+
+                //tambahan 05-11-2024 code:05112024 dan antrian
+                $getiter = $this->trsResepRepository->viewOrderResepbyOrderIDV2($request->NoResep)->first()->IterRealisasi;
+                if ($getiter == null){
+                    $getiter = 0;
+                }else{
+                    $getiter += 1;
+                }
+                $this->trsResepRepository->updateIterReal($request->NoResep,$getiter);
             }
             $getmax = $this->aSalesRepository->getMaxCode($request);
             if ($getmax->count() > 0) {
@@ -228,8 +253,36 @@ class aSalesService extends Controller
             return $this->sendError('Sales Number Not Found !', []);
         }
 
-        if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($request->IdOrderResep)->first()->StatusResep >= 1 ){
-            return $this->sendError('Order Sudah Diapprove ! Silahkan Konfirmasi Ke Bagian Kasir !', []);
+        //cek jika sudah diapprove atau belum
+        if ($request->Group_Transaksi == 'RESEP' || $request->Group_Transaksi == 'NON RESEP'){
+            // if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($request->IdOrderResep)->first()->StatusResep >= 2 ){
+            //     return $this->sendError('Order Sudah Diapprove ! Silahkan Konfirmasi Ke Bagian Kasir !', []);
+            // }
+            if ($this->billingRepository->getBillingFo($request)->count() > 0){
+                     return $this->sendError('Order Sudah Diapprove ! Silahkan Konfirmasi Ke Bagian Kasir !', []); 
+            } 
+        }
+        
+        //cek jika billing sudah ada payment atau belum
+        $cekbill = $this->billingRepository->getBillingFo($request)->count(); 
+        if ($cekbill > 0){        
+            if ($this->billingRepository->getBilling1byTrsID($request->TransactionCode)->first()->ID_TRS_Payment != null){
+                return $this->sendError('Billing Sudah Ada Payment ! Silahkan Konfirmasi Ke Bagian Kasir !', []); 
+            } 
+        }
+
+        if ($request->NoRegistrasi != 0 || $request->NoRegistrasi != null){
+            $noregpass = $request->NoRegistrasi;
+        }else{
+            $noregpass = $request->TransactionCode;
+        }
+        //cek jika billing sudah diclose atau belum
+        if ($this->billingRepository->getBillingClose($noregpass)->count() > 0){
+            return $this->sendError('Billing Sudah Diclose ! Silahkan Konfirmasi Ke Bagian Kasir !', []); 
+        } 
+
+        if ($this->returJualRepository->getReturJualDetailbySalesCode($request->TransactionCode)->count() > 0) {
+            return $this->sendError('Sales Number Sudah Pernah Ada Riwayat Transaksi Retur ! Silahkan Dicek Kembali !', []);
         }
 
          // validasi Kode
@@ -281,16 +334,18 @@ class aSalesService extends Controller
             // Db Transaction
             DB::beginTransaction(); 
 
-            // // billinga
-            // $cekbill = $this->billingRepository->getBillingFo($request)->count(); 
-            // //cek jika sudah ada di table
-            // if ( $cekbill > 0) {
-            //     //update
-            //     $this->billingRepository->updateHeader($request,$request->TransactionCode);
-            // }else{
-            //     //insert
-            //     $this->billingRepository->insertHeader($request,$request->TransactionCode);
-            // }
+            if ($request->Group_Transaksi == 'CONSUMABLE'){
+                // billinga
+                $cekbill = $this->billingRepository->getBillingFo($request)->count(); 
+                //cek jika sudah ada di table
+                if ( $cekbill > 0) {
+                    //update
+                    $this->billingRepository->updateHeader($request,$request->TransactionCode);
+                }else{
+                    //insert
+                    $this->billingRepository->insertHeader($request,$request->TransactionCode);
+                }
+            }
 
             foreach ($request->Items as $key) {
                 $getdatadetilmutasi = $this->aSalesRepository->getSalesDetailbyIDBarang($request,$key);
@@ -304,12 +359,14 @@ class aSalesService extends Controller
                          // fifo
                          $this->fifoSales($request,$key,$xhpp);
 
-                        // // insert billing detail
-                        // $this->billingRepository->insertDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
-                        // $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
-                        // $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
-                        // 'Farmasi',$request->KodeKelas,$key['Qty'],$key['Harga'],$key['SubtotalHarga'],
-                        // $key['DiscountProsen'],$key['Discount'],$key['Subtotal'],$key['Grandtotal'],'','','','FARMASI');
+                         if ($request->Group_Transaksi == 'CONSUMABLE'){
+                            // insert billing detail
+                            $this->billingRepository->insertDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
+                            $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
+                            $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
+                            'Farmasi',$request->KodeKelas,$key['Qty'],$key['Harga'],$key['SubtotalHarga'],
+                            $key['DiscountProsen'],$key['Discount'],$key['Subtotal'],$key['Grandtotal'],'','','','FARMASI');
+                         }
 
                         // //insert billing pdp
                         // $this->billingRepository->insertDetailPdpPerItem($request);
@@ -348,18 +405,21 @@ class aSalesService extends Controller
                          // fifo
                          $this->fifoSales($request,$key,$xhpp);
 
-                        //  //update billing detail
-                        // $this->billingRepository->updateDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
-                        // $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
-                        // $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
-                        // 'Farmasi',$request->KodeKelas,$key['Qty'],$key['Harga'],$key['SubtotalHarga'],
-                        // $key['DiscountProsen'],$key['Discount'],$key['Subtotal'],$key['Grandtotal'],'','','','FARMASI');
+                         
+                        if ($request->Group_Transaksi == 'CONSUMABLE'){
+                            //update billing detail
+                            $this->billingRepository->updateDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
+                            $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
+                            $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
+                            'Farmasi',$request->KodeKelas,$key['Qty'],$key['Harga'],$key['SubtotalHarga'],
+                            $key['DiscountProsen'],$key['Discount'],$key['Subtotal'],$key['Grandtotal'],'','','','FARMASI');
+                        }
                         
                         $this->trsResepRepository->editQtyRealbyIDResepandProductCode($request->IdOrderResep,$key['ProductCode'],$key['Qty']);
                    }  
 
                    
-
+                         $this->aSalesRepository->editAturanPakaibyIdBarang($request,$key);
                     
                 }
 
@@ -434,8 +494,11 @@ class aSalesService extends Controller
                         $this->sStokRepository->addBukuStokInVoidFromSelect($asd,'TPR_V',$request);
                         $this->sStokRepository->addDataStoksInVoidFromSelect($asd,'TPR_V',$request);
                         $this->aSalesRepository->voidSalesbyItem($request);
-                        // $this->billingRepository->voidBillingPasienOneByProductCode($request);
-                        // $this->billingRepository->voidBillingPasienTwoByProductCode($request);
+                        
+                        if ($request->Group_Transaksi == 'CONSUMABLE'){
+                            $this->billingRepository->voidBillingPasienOneByProductCode($request);
+                                    //$this->billingRepository->voidBillingPasienTwoByProductCode($request);
+                        }
                         $this->trsResepRepository->editQtyRealbyIDResepandProductCode($request->IdOrderResep,$key_salesdtl->ProductCode,0);
                     }
              }
@@ -459,9 +522,44 @@ class aSalesService extends Controller
                     // } 
                 // }
 
+                if ($request->Group_Transaksi == 'CONSUMABLE'){
+                    if ( $cekbill > 0) {
+                            $request['Void'] = '1';
+                            $request['UserVoid'] = $request->UserCreate;
+                            $this->billingRepository->voidBillingPasienTwo($request);
+                        }
+                        $dataBilling1 = $this->billingRepository->getBillingFo1($request);
+                        foreach ($dataBilling1 as $dataBilling1) {
+                            $this->billingRepository->insertDetailPdp($dataBilling1);
+                        }
+                 }
 
                  //UPDATE REVIEW ORDER RESEP DETAILS
                   $this->trsResepRepository->editReviewbyIDResep($request->IdOrderResep);
+
+                //   if ($request->Group_Transaksi == 'RESEP'){
+                //         //insert ke antrian
+                //         $request['NoResep'] = $request->IdOrderResep;
+                //         $request['StatusResep'] = 'PROCESSED';
+                //         $userRepository = new bKamarOperasiRepositoryImpl();
+                //         $medrecRepository = new bMedicalRecordRepositoryImpl();
+                //         $doctorRepository = new aDoctorRepositoryImpl();
+                //         $unitRepository = new aMasterUnitRepositoryImpl();
+                //         $appointmenRepository = new bAppointmentRepositoryImpl();
+                //         $scheduleRepository = new aScheduleDoctorRepositoryImpl();
+                //         $antrianRepository = new bAntrianRepositoryImpl();
+                //         $userLoginRepository = new UserRepositoryImpl();
+                //         $visitRepository = new bVisitRepositoryImpl();
+                //         $antrianFarmasi = new bAntrianFarmasiRepositoryImpl();
+                //         $userService = new AntrianFarmasiService($userRepository,$medrecRepository,
+                //                         $doctorRepository,$unitRepository, $appointmenRepository,$scheduleRepository,
+                //                         $antrianRepository,$visitRepository,$antrianFarmasi,$userLoginRepository);
+                //         $user =  $userService->UpdateAntrianFarmasi($request);
+                //         if (!$user->getData()->status){
+                //             return $this->sendError($user->getData()->message, []);
+                //         }
+                //   }
+                    
 
                 DB::commit();
                 return $this->sendResponse([], 'Data Detail Penjualan berhasil disimpan !');
@@ -492,9 +590,40 @@ class aSalesService extends Controller
             return $this->sendError('Kode Unit Penjualan tidak ditemukan !', []);
         }
         
-        $noresep = $this->aSalesRepository->getSalesbyID($request->TransactionCode)->first()->NoResep;
-        if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($noresep)->first()->StatusResep >= 1 ){
-            return $this->sendError('Order Sudah Diapprove ! Silahkan Konfirmasi Ke Bagian Kasir !', []);
+        // $noresep = $this->aSalesRepository->getSalesbyID($request->TransactionCode)->first()->NoResep;
+        // if ($noresep != 0 && $noresep != null){
+        //     if ($this->trsResepRepository->viewOrderResepbyOrderIDV2($noresep)->first()->StatusResep >= 2){
+        //         return $this->sendError('Order Sudah Diapprove ! Silahkan Konfirmasi Ke Bagian Kasir !', []);
+        //     }
+        // }
+        //cek jika sudah diapprove atau belum
+        if ($this->aSalesRepository->getSalesbyID($request->TransactionCode)->first()->Group_Transaksi == 'RESEP' || $this->aSalesRepository->getSalesbyID($request->TransactionCode)->first()->Group_Transaksi== 'NON RESEP'){
+            if ($this->billingRepository->getBillingFo($request)->count() > 0){
+                return $this->sendError('Order Sudah Diapprove ! Silahkan Konfirmasi Ke Bagian Kasir !', []); 
+            } 
+        }
+                
+        //cek jika billing sudah ada payment atau belum
+        $cekbill = $this->billingRepository->getBillingFo($request)->count(); 
+        if ($cekbill > 0){        
+            if ($this->billingRepository->getBilling1byTrsID($request->TransactionCode)->first()->ID_TRS_Payment != null){
+                return $this->sendError('Billing Sudah Ada Payment ! Silahkan Konfirmasi Ke Bagian Kasir !', []); 
+            } 
+        }
+
+        $noreg = $this->aSalesRepository->getSalesbyID($request->TransactionCode)->first()->NoRegistrasi;
+        if ($noreg != 0 || $noreg != null){
+            $noregpass = $noreg;
+        }else{
+            $noregpass = $request->TransactionCode;
+        }
+        //cek jika billing sudah diclose atau belum
+        if ($this->billingRepository->getBillingClose($noregpass)->count() > 0){
+            return $this->sendError('Billing Sudah Diclose ! Silahkan Konfirmasi Ke Bagian Kasir !', []); 
+        } 
+
+        if ($this->returJualRepository->getReturJualDetailbySalesCode($request->TransactionCode)->count() > 0) {
+            return $this->sendError('Sales Number Sudah Pernah Ada Riwayat Transaksi Retur ! Silahkan Dicek Kembali !', []);
         }
 
 
@@ -528,9 +657,24 @@ class aSalesService extends Controller
                     $this->sStokRepository->addBukuStokInVoidFromSelect($asd,$reff_void,$request);
                     $this->sStokRepository->addDataStoksInVoidFromSelect($asd,$reff_void,$request);
             }
+
+            
+            //update qty realisasi
+            if ($this->aSalesRepository->getSalesbyID($request->TransactionCode)->first()->Group_Transaksi == 'RESEP'){
+                $noresep = $this->aSalesRepository->getSalesbyID($request->TransactionCode)->first()->NoResep;
+                $getiter = $this->trsResepRepository->viewOrderResepbyOrderIDV2($noresep)->first()->IterRealisasi;
+                //tambahan 05-11-2024 code:05112024 
+                if ($getiter == null || $getiter == 0){
+                    $getiter = 0;
+                }else{
+                    $getiter -= 1;
+                }
+                $this->trsResepRepository->updateIterReal($noresep,$getiter);
+              }
         
             $this->aSalesRepository->voidSalesDetailAllOrder($request);
             $this->aSalesRepository->voidSales($request);
+
 
             // void billing transaction
             $this->billingRepository->voidBillingPasien($request);
@@ -903,6 +1047,201 @@ class aSalesService extends Controller
             if ($data->count() < 1) {
                 return $this->sendError('Sales Transaction Number Detil Not Found !', []);
             }
+            return $this->sendResponse($data, 'Sales Transaction Data Found !');
+        } catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Sales Transaction Data Not Found !', $e->getMessage());
+        }
+    }
+
+    public function getSalesbyPeriodeTanpaResep($request)
+    {
+        // validate 
+        $request->validate([
+            "StartPeriode" => "required",
+            "EndPeriode" => "required"
+        ]);
+        
+        try {
+            // Db Transaction
+            $data = $this->aSalesRepository->getSalesbyPeriodeTanpaResep($request);
+
+            // // cek ada gak datanya
+            if ($this->aSalesRepository->getSalesbyPeriodeTanpaResep($request)->count() < 1) {
+                return $this->sendError('Sales Transaction Number Not Found !', []);
+            }
+
+            return $this->sendResponse($data, 'Sales Transaction Data Found !');
+        } catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Sales Transaction Data Not Found !', $e->getMessage());
+        }
+    }
+
+    public function voidSalesTebus(Request $request)
+    {
+        // validate 
+        $request->validate([
+            "TransactionCode" => "required", 
+            "UnitCode" => "required",  
+            "ReasonVoid" => "required",
+            "DateVoid" => "required",
+            "UserVoid" => "required",
+            "Void" => "required"
+        ]);
+          // validasi 
+        // // cek ada gak datanya
+        if ($this->aSalesRepository->getSalesbyID($request->TransactionCode)->count() < 1) {
+            return $this->sendError('Transaksi Penjualan tidak ditemukan !', []);
+        }
+        // cek kode 
+        if ($this->aMasterUnitRepository->getUnitById($request->UnitCode)->count() < 1) {
+            return $this->sendError('Kode Unit Penjualan tidak ditemukan !', []);
+        }
+
+        //cek jika sudah diapprove atau belum
+        if ($this->aSalesRepository->getSalesbyID($request->TransactionCode)->first()->Group_Transaksi == 'RESEP' || $this->aSalesRepository->getSalesbyID($request->TransactionCode)->first()->Group_Transaksi== 'NON RESEP'){
+            if ($this->billingRepository->getBillingFo($request)->count() > 0){
+                return $this->sendError('Order Sudah Diapprove ! Silahkan Konfirmasi Ke Bagian Kasir !', []); 
+            } 
+        }
+                
+        //cek jika billing sudah ada payment atau belum
+        $cekbill = $this->billingRepository->getBillingFo($request)->count(); 
+        if ($cekbill > 0){        
+            if ($this->billingRepository->getBilling1byTrsID($request->TransactionCode)->first()->ID_TRS_Payment != null){
+                return $this->sendError('Billing Sudah Ada Payment ! Silahkan Konfirmasi Ke Bagian Kasir !', []); 
+            } 
+        }
+
+        $noreg = $this->aSalesRepository->getSalesbyID($request->TransactionCode)->first()->NoRegistrasi;
+        if ($noreg != 0 || $noreg != null){
+            $noregpass = $noreg;
+        }else{
+            $noregpass = $request->TransactionCode;
+        }
+        //cek jika billing sudah diclose atau belum
+        if ($this->billingRepository->getBillingClose($noregpass)->count() > 0){
+            return $this->sendError('Billing Sudah Diclose ! Silahkan Konfirmasi Ke Bagian Kasir !', []); 
+        } 
+
+        if ($this->returJualRepository->getReturJualDetailbySalesCode($request->TransactionCode)->count() > 0) {
+            return $this->sendError('Sales Number Sudah Pernah Ada Riwayat Transaksi Retur ! Silahkan Dicek Kembali !', []);
+        }
+
+
+        try {
+            // Db Transaction
+            DB::beginTransaction(); 
+            $reff_void = 'TPR_V';
+            // Load Data All Do Detil Untuk Di Looping 
+            $dtlconsumable = $this->aSalesRepository->getSalesDetailbyID($request->TransactionCode);
+            foreach ($dtlconsumable as $key2) {
+                // $QtyPakai = $key2->Qty;
+                // $Konversi_QtyTotal = $key2->Konversi_QtyTotal;
+
+                $cekqtystok = $this->sStokRepository->cekStokbyIDBarangOnly($key2->ProductCode,$request);
+ 
+                    if ( $cekqtystok->count() < 1) {
+                        return  $this->sendError('Qty Stok '.$key2->ProductName.' Tidak ada diLayanan Tujuan Ini ! ' , []);
+                    }
+                    // foreach ($cekqtystok as $valueStok) {
+                    //     $datastok = $valueStok->Qty;
+                    // } 
+                // $sisaStok = $datastok + $Konversi_QtyTotal;
+                // $this->sStokRepository->updateStokPerItemBarang($request, $key2->ProductCode, $sisaStok);
+
+                // buku 
+                    $cekBuku = $this->sStokRepository->cekBukuByTransactionandCodeProduct($key2->ProductCode,$request,'TPR');
+                    foreach ($cekBuku as $data) {
+                       $asd = $data;
+                    }
+                    
+                    $this->sStokRepository->addBukuStokInVoidFromSelect($asd,$reff_void,$request);
+                    $this->sStokRepository->addDataStoksInVoidFromSelect($asd,$reff_void,$request);
+            }
+
+            
+            //update qty realisasi
+            //if ($this->aSalesRepository->getSalesbyID($request->TransactionCode)->first()->Group_Transaksi == 'RESEP'){
+                $noresep = $this->aSalesRepository->getSalesbyID($request->TransactionCode)->first()->NoResep;
+                $getiter = $this->trsResepRepository->viewOrderResepbyOrderIDV2($noresep)->first()->IterRealisasi;
+                //tambahan 05-11-2024 code:05112024 
+                if ($getiter == null || $getiter == 0){
+                    $getiter = 0;
+                }else{
+                    $getiter -= 1;
+                }
+                $this->trsResepRepository->updateIterReal($noresep,$getiter);
+              //}
+        
+            $this->aSalesRepository->voidSalesDetailAllOrder($request);
+            $this->aSalesRepository->voidSales($request);
+
+
+            // void billing transaction
+            $this->billingRepository->voidBillingPasien($request);
+            $this->billingRepository->voidBillingPasienOne($request);
+            $this->billingRepository->voidBillingPasienTwo($request);
+
+            $request['NoRegistrasi'] = $noregpass;
+            //void registrasi
+            $this->visitRepository->voidRegistrasivisit($request);
+            $this->visitRepository->voidRegistrasidashboard($request);
+
+            DB::commit();
+            return $this->sendResponse([], 'Transaksi Penjualan berhasil dihapus !');
+        }catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e->getMessage());
+            return $this->sendError('Data Transaction Gagal !', $e->getMessage());
+        }
+    }
+
+    //tambahan 30-10-2024 code:30102024 dan antrian
+    public function getSalesbyPeriodeResepRajal($request)
+    {
+        // validate 
+        $request->validate([
+            "StartPeriode" => "required",
+            "EndPeriode" => "required"
+        ]);
+        
+        try {
+            // Db Transaction
+            $data = $this->aSalesRepository->getSalesbyPeriodeResepRajal($request);
+
+            // // cek ada gak datanya
+            if ($this->aSalesRepository->getSalesbyPeriodeResepRajal($request)->count() < 1) {
+                return $this->sendError('Sales Transaction Number Not Found !', []);
+            }
+
+            return $this->sendResponse($data, 'Sales Transaction Data Found !');
+        } catch (Exception $e) { 
+            Log::info($e->getMessage());
+            return $this->sendError('Sales Transaction Data Not Found !', $e->getMessage());
+        }
+    }
+
+    
+    //tambahan 05-11-2024 code:05112024 dan antrian
+    public function getSalesbyPeriodeResepRanap($request)
+    {
+        // validate 
+        $request->validate([
+            "StartPeriode" => "required",
+            "EndPeriode" => "required"
+        ]);
+        
+        try {
+            // Db Transaction
+            $data = $this->aSalesRepository->getSalesbyPeriodeResepRanap($request);
+
+            // // cek ada gak datanya
+            if ($this->aSalesRepository->getSalesbyPeriodeResepRanap($request)->count() < 1) {
+                return $this->sendError('Sales Transaction Number Not Found !', []);
+            }
+
             return $this->sendResponse($data, 'Sales Transaction Data Found !');
         } catch (Exception $e) { 
             Log::info($e->getMessage());

@@ -66,8 +66,9 @@ class aDoctorRepositoryImpl implements aDoctorRepositoryInterface
         ->where('IdLayanan','<>', '10')
         ->where('IdLayanan','<>', '47')  
         ->where('IdLayanan','<>', '53')  
+        ->where('IdLayanan','<>', '55')  
         ->select('ID','NamaDokter','NamaUnit','foto','Pendidikan','Description','Pelatihan','IdLayanan','namaunit_spesialis')
-       ->whereIn('ID',array('3813','3869','3873','3865','3862','3858','3859','3861','3857','3843','3860'))
+        ->whereIn('ID',array('3813','3869','3873','3865','3862','3858','3859','3861','3857','3843','3860'))
         ->get();
     }
     public function getDoctorbyIDBPJS($id)

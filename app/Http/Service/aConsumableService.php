@@ -177,6 +177,10 @@ class aConsumableService extends Controller
                 $this->aConsumableRepository->addConsumableDetailV2($request); 
                 $this->aConsumableRepository->editOutstandingConsumable($request,$request->TransactionCode);
 
+                $getHppBarang = $this->ahnaRepository->getHppAverage($request)->first()->first();
+                $xhpp = $getHppBarang->NominalHpp;
+                $this->fifoConsumable($request,$request,$xhpp);
+
                 DB::commit();
                 return $this->sendResponse([], 'Data Pemakaian barang berhasil ditambahkan !');
             }catch (Exception $e) {
@@ -221,9 +225,32 @@ class aConsumableService extends Controller
             $cekstok = $this->aStok->cekStokbyIDBarang($key, $request->UnitTujuan)->count();
             
             if ( $cekstok < 1) {
-                return  $this->sendError('Qty Stok Tidak ada diLayanan Tujuan Ini ! ' , []);
+                return  $this->sendError('Qty Stok '.$key['ProductName'].' Tidak ada diLayanan Tujuan Ini ! ' , []);
             }
         }
+
+        //cek jika billing sudah ada payment atau belum
+        $cekbill = $this->billingRepository->getBillingFo($request)->count(); 
+        if ($cekbill > 0){        
+            if ($this->billingRepository->getBilling1byTrsID($request->TransactionCode)->first()->ID_TRS_Payment != null){
+                return $this->sendError('Billing Sudah Ada Payment ! Silahkan Konfirmasi Ke Bagian Kasir !', []); 
+            } 
+        }
+
+         $noregpass = $request->NoRegistrasi;
+        // if ($noreg != 0 || $noreg != null){
+        //     $noregpass = $noreg;
+        // }else{
+        //     $noregpass = $request->TransactionCode;
+        // }
+        //cek jika billing sudah diclose atau belum
+        if ($this->billingRepository->getBillingClose($noregpass)->count() > 0){
+            return $this->sendError('Billing Sudah Diclose ! Silahkan Konfirmasi Ke Bagian Kasir !', []); 
+        } 
+
+        // if ($this->returJualRepository->getReturJualDetailbySalesCode($request->TransactionCode)->count() > 0) {
+        //     return $this->sendError('Sales Number Sudah Pernah Ada Riwayat Transaksi Retur ! Silahkan Dicek Kembali !', []);
+        // }
 
         // validasi stok cukup engga
         foreach ($request->Items as $key) {
@@ -281,6 +308,7 @@ class aConsumableService extends Controller
                 //cek jika sudah ada di table
                 if ( $cekbill > 0) {
                     //update
+                    $this->billingRepository->updateHeader($request,$request->TransactionCode);
                 }else{
                     //insert
                     $this->billingRepository->insertHeader($request,$request->TransactionCode);
@@ -298,6 +326,15 @@ class aConsumableService extends Controller
                     if ($key['Qty'] > 0) {
                         $this->aConsumableRepository->addConsumableDetail($request, $key); 
                         $this->fifoConsumable($request,$key,$xhpp); 
+
+                        
+                if ($request->NoRegistrasi != ''){
+                                                $this->billingRepository->insertDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
+                        $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
+                        $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
+                        'Farmasi',$request->KodeKelas,$key['Qty'],0,0,
+                        0,0,0,0,'','','','FARMASI');
+                }
                     }
                 }else{
                     // jika sudah ada
@@ -319,17 +356,42 @@ class aConsumableService extends Controller
                         $this->aStok->deleteBukuStok($request,$key,"CM",$request->UnitTujuan);  
                         $this->aStok->deleteDataStoks($request,$key,"CM",$request->UnitTujuan);  
                         $this->fifoConsumable($request,$key,$xhpp);
+
+                        if ($request->NoRegistrasi != ''){
+                        //update billing detail
+                        $this->billingRepository->updateDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
+                        $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
+                        $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
+                        'Farmasi',$request->KodeKelas,$key['Qty'],0,0,
+                        0,0,0,0,'','','','FARMASI');
+                        }
                    }  
                 } 
 
-                // insert billing detail
-                if ($request->NoRegistrasi != ''){
-                    $this->billingRepository->insertDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
-                    $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
-                    $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
-                    'Farmasi',$request->KodeKelas,$key['Qty'],0,0,
-                    0,0,0,0,'','','','FARMASI');
-                }
+                // // insert billing detail
+                // if ($request->NoRegistrasi != ''){
+                //     // $this->billingRepository->insertDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
+                //     // $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
+                //     // $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
+                //     // 'Farmasi',$request->KodeKelas,$key['Qty'],0,0,
+                //     // 0,0,0,0,'','','','FARMASI');
+
+                //     if ($cekbill > 0 ){
+                //         //update billing detail
+                //         $this->billingRepository->updateDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
+                //         $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
+                //         $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
+                //         'Farmasi',$request->KodeKelas,$key['Qty'],0,0,
+                //         0,0,0,0,'','','','FARMASI');
+                //     }else{
+                //         // insert billing detail
+                //        $this->billingRepository->insertDetail($request->TransactionCode,$request->TransactionDate,$request->UserCreate,
+                //        $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
+                //        $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
+                //        'Farmasi',$request->KodeKelas,$key['Qty'],0,0,
+                //        0,0,0,0,'','','','FARMASI');
+                //     }
+                // }
 
                 // INSERT JURNAL 
                     $note = 'Persediaan Pemakaian Barang '. $key['ProductName'].' No. Pemakaian : ' . $request->TransactionCode . ' Qty : ' . $key['Qty'];
@@ -353,8 +415,40 @@ class aConsumableService extends Controller
                 // INSERT JURNAL
             }
 
+            //jika sudah ada trs dan ada yang didelete
+            //$salesdtl = $this->aSalesRepository->getSalesDetailbyID($request->TransactionCode);
+            $dtlconsumable = $this->aConsumableRepository->getConsumableDetailbyID($request->TransactionCode);
+            foreach ($dtlconsumable as $key_dtl) {
+                $isdeleted = true;
+                foreach ($request->Items as $key) {
+                    if ($key['ProductCode'] == $key_dtl->ProductCode){
+                        $isdeleted = false;
+                    }
+                }
+
+                if ($isdeleted){
+                    $cekBuku = $this->aStok->cekBukuByTransactionandCodeProduct($key_dtl->ProductCode,$request,'CM');
+                    foreach ($cekBuku as $data) {
+                       $asd = $data;
+                    } 
+                        $request['Void'] = '1';
+                        $request['UserVoid'] = $request->UserCreate;
+                        $request['ReasonVoid'] = '';
+                        $request['ProductCode'] = $key_dtl->ProductCode;
+                        $this->aStok->addBukuStokInVoidFromSelect($asd,'CM_V',$request);
+                        $this->aStok->addDataStoksInVoidFromSelect($asd,'CM_V',$request);
+
+                        $this->aConsumableRepository->voidConsumablebyItem($request);
+                        $this->billingRepository->voidBillingPasienOneByProductCode($request);
+                        //$this->billingRepository->voidBillingPasienTwoByProductCode($request);
+                    }
+            }
+
             //insert billing pdp
             if ($request->NoRegistrasi != ''){
+                $request['Void'] = '1';
+                $request['UserVoid'] = $request->UserCreate;
+                $this->billingRepository->voidBillingPasienTwo($request);
                 $dataBilling1 = $this->billingRepository->getBillingFo1($request);
                 foreach ($dataBilling1 as $dataBilling1) {
                     $this->billingRepository->insertDetailPdp($dataBilling1);
@@ -468,6 +562,25 @@ class aConsumableService extends Controller
         if ($this->aMasterUnitRepository->getUnitById($request->UnitCode)->count() < 1) {
             return $this->sendError('Kode Unit Order tidak ditemukan !', []);
         }
+
+        //cek jika billing sudah ada payment atau belum
+        $cekbill = $this->billingRepository->getBillingFo($request)->count(); 
+        if ($cekbill > 0){        
+            if ($this->billingRepository->getBilling1byTrsID($request->TransactionCode)->first()->ID_TRS_Payment != null){
+                return $this->sendError('Billing Sudah Ada Payment ! Silahkan Konfirmasi Ke Bagian Kasir !', []); 
+            } 
+        }
+
+        $noregpass = $this->aConsumableRepository->getConsumablebyID($request->TransactionCode)->first()->NoRegistrasi;
+        // if ($noreg != 0 || $noreg != null){
+        //     $noregpass = $noreg;
+        // }else{
+        //     $noregpass = $request->TransactionCode;
+        // }
+        //cek jika billing sudah diclose atau belum
+        if ($this->billingRepository->getBillingClose($noregpass)->count() > 0){
+            return $this->sendError('Billing Sudah Diclose ! Silahkan Konfirmasi Ke Bagian Kasir !', []); 
+        } 
 
 
         try {
@@ -697,6 +810,7 @@ class aConsumableService extends Controller
                 if ($this->aConsumableRepository->getConsumablebyID($request->TransactionCode)->count() < 1) {
                     return $this->sendError('No. Transaksi Pemakaian Barang tidak ditemukan !', []);
                 }
+                
 
                 
                 // // cek sudah di approved belum 
@@ -706,6 +820,7 @@ class aConsumableService extends Controller
                 $message = [];
                 //get data paket detail by id header
                 $datapaket = $this->aBarangRepository->getDataPaketDetailbyIDHdr($request->IdPaket);
+
                 foreach ($datapaket as $key) {
                     //cek kode barangnya ada ga
                     if ($this->aBarangRepository->getBarangbyId($key->product_id)->count() < 1) {
@@ -721,6 +836,7 @@ class aConsumableService extends Controller
                         //array_push($message,'Kode barang '.$key->product_id.' sudah ada sebelumnya, tidak boleh lebih dari 1 !');
                         continue;
                     }
+                    
 
                     if ($request->NoRegistrasi != ''){
                         $tipereg = substr($request->NoRegistrasi, 0, 2);
@@ -738,10 +854,13 @@ class aConsumableService extends Controller
                         $datagenform->IDBarang = $key->product_id;
                         $datagenform->IDFormularium = $datajaminan->IDFormularium;
                         $dataformularium = $this->aBarangRepository->getBarangbyIdAndIDFormularium($datagenform);
+                        
                         if ($dataformularium->count() < 1){
-                            continue;
+                            return $this->sendError('Kode Barang '.$key->product_id.' ID Formularium tidak ditemukan !', []);
+                            //continue;
                         }
                     }
+                    
 
 
                     $databarang = $this->aBarangRepository->getBarangbyId($key->product_id);
@@ -752,6 +871,7 @@ class aConsumableService extends Controller
                     $datagen['Satuan_Konversi'] = $databarang->first()->{'Unit Satuan'};
                     $datagen['KonversiQty'] = $key->quantity;
                     $datagen['Satuan'] = $databarang->first()->Satuan_Beli;
+                    
                     array_push($message,$datagen);
 
                 //     $databarang = $this->aBarangRepository->getBarangbyId($key->product_id);

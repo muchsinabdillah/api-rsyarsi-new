@@ -266,7 +266,12 @@ class bVisitService extends Controller {
                             $shift =  $JamAwal.'-'.$JamAkhir;
                             $estimasi2 = strtotime($xesti);
                             $estimasi = $estimasi2*1000;
-                    }
+                            $Close_Schedules = $single->Close_Schedules;
+                        }
+    
+                        if ($Close_Schedules == '1'){
+                            return  $this->sendError("Maaf, Jadwal Sudah Diclose !",[]);
+                        }
                 
                     // get last registration active
                     $lastreg = $this->visitRepository->getRegistrationActivebyMedrec($request->NoMR);

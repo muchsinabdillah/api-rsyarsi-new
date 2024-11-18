@@ -7,6 +7,7 @@ use App\Http\Repository\aBarangRepositoryImpl;
 use App\Http\Repository\aSupplierRepositoryImpl;
 use App\Http\Service\aBarangService;
 use Illuminate\Http\Request;
+use App\Http\Repository\aStokRepositoryImpl;
 
 class BarangController extends Controller
 {
@@ -15,7 +16,8 @@ class BarangController extends Controller
     {
         $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->addBarang($request);
         return $addBarang;
     }
@@ -24,7 +26,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->editBarang($request);
         return $addBarang;
     }
@@ -33,7 +36,8 @@ class BarangController extends Controller
         //
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getBarangAll();
         return $getAllBarang;
     }
@@ -42,7 +46,8 @@ class BarangController extends Controller
         //
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getBarangbyId($id);
         return $getAllBarang;
     }
@@ -50,7 +55,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->addBarangSupplier($request);
         return $addBarang;
     }
@@ -58,7 +64,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->deleteBarangSupplier($request);
         return $addBarang;
     }
@@ -66,7 +73,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getBarangbySuppliers($id);
         return $getAllBarang;
     }
@@ -74,7 +82,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->addBarangFormularium($request);
         return $addBarang;
     }
@@ -82,7 +91,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->deleteBarangFormularium($request);
         return $addBarang;
     }
@@ -90,7 +100,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getBarangbyFormulariums($id);
         return $getAllBarang;
     }
@@ -98,7 +109,8 @@ class BarangController extends Controller
   {
     $aBarangRepository = new aBarangRepositoryImpl();
     $aSupplierRepository = new aSupplierRepositoryImpl();
-    $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+    $aStokRepository = new aStokRepositoryImpl();
+    $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
     $addBarang =  $aBarangService->getBarangbyNameLike($request);
     return $addBarang;
   }
@@ -107,7 +119,8 @@ class BarangController extends Controller
     {
         $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->addPrinterLabel($request);
         return $addBarang;
     }
@@ -116,7 +129,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->editPrinterLabel($request);
         return $addBarang;
     }
@@ -124,7 +138,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getPrinterLabelAll();
         return $getAllBarang;
     }
@@ -132,7 +147,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getPrinterLabelbyId($id);
         return $getAllBarang;
     }
@@ -140,7 +156,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getPrinterbyIp($request);
         return $getAllBarang;
     }
@@ -149,7 +166,8 @@ class BarangController extends Controller
     {
         $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->addIPUnitFarmasi($request);
         return $addBarang;
     }
@@ -158,7 +176,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->editIPUnitFarmasi($request);
         return $addBarang;
     }
@@ -166,7 +185,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getIPUnitFarmasiAll();
         return $getAllBarang;
     }
@@ -174,7 +194,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getIPUnitFarmasibyId($id);
         return $getAllBarang;
     }
@@ -182,7 +203,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getIPUnitFarmasibyIP($ip);
         return $getAllBarang;
     }
@@ -190,7 +212,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->getHistoryHargaBeli($id);
         return $addBarang;
     }
@@ -198,7 +221,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->getHistoryHargaJual($id);
         return $addBarang;
     }
@@ -206,7 +230,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->getDataPaketbyNameLike($request);
         return $addBarang;
     }
@@ -214,7 +239,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->getDataPaketDetailbyIDHdr($request);
         return $addBarang;
     }
@@ -223,7 +249,8 @@ class BarangController extends Controller
         //
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getBarangKonversibyId($id);
         return $getAllBarang;
     }
@@ -232,7 +259,8 @@ class BarangController extends Controller
         //
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getBarangKonversibyIddetail($id);
         return $getAllBarang;
     }
@@ -240,7 +268,8 @@ class BarangController extends Controller
     {
         $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->addPaketInventory($request);
         return $addBarang;
     }
@@ -249,7 +278,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->editPaketInventory($request);
         return $addBarang;
     }
@@ -257,7 +287,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getPaketInventoryAll();
         return $getAllBarang;
     }
@@ -265,7 +296,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getPaketInventorybyId($id);
         return $getAllBarang;
     }
@@ -273,7 +305,8 @@ class BarangController extends Controller
     {
         $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->addDetailPaketInventory($request);
         return $addBarang;
     }
@@ -281,7 +314,8 @@ class BarangController extends Controller
     {
       $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $getAllBarang =  $aBarangService->getDetailPaketInventory($id);
         return $getAllBarang;
     }
@@ -289,7 +323,8 @@ class BarangController extends Controller
     {
         $aBarangRepository = new aBarangRepositoryImpl();
         $aSupplierRepository = new aSupplierRepositoryImpl();
-        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository);
+        $aStokRepository = new aStokRepositoryImpl();
+        $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
         $addBarang =  $aBarangService->deleteDetailPaketInventory($request);
         return $addBarang;
     }

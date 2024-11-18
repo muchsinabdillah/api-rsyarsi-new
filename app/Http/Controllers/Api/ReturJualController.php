@@ -273,4 +273,30 @@ class ReturJualController extends Controller
         return $add; 
 
     }
+
+    public function voidReturJualPerRegister(Request $request)
+    {
+        $trsResepRepository = new aTrsResepRepositoryImpl(); 
+        $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $asupplierRepository = new aSupplierRepositoryImpl();
+        $sStokRepository = new aStokRepositoryImpl();    
+        $aHnaRepository = new aHnaRepositoryImpl();
+        $aMasterUnitRepository = new aMasterUnitRepositoryImpl(); 
+        $aSalesRepository = new aSalesRepositoryImpl();
+        $visitRepository = new bVisitRepositoryImpl();
+        $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $userService = new aReturJualService($trsResepRepository,
+                            $aDeliveryOrderRepository,
+                            $aBarangRepository,
+                            $asupplierRepository,
+                            $sStokRepository,
+                            $aHnaRepository,
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository );
+
+        $add =  $userService->voidReturJualPerRegister($request);
+        return $add; 
+
+    }
 }

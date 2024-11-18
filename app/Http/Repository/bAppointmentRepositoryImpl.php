@@ -11,7 +11,8 @@ class bAppointmentRepositoryImpl implements bAppointmentRepositoryInterface
                                 $NamaDokter,$NamaSesion,$idno_urutantrian,
                                 $fixNoAntrian,$NamaPasien,$tglbookingfix,$nobokingreal,
                                 $xres,$MrExist,$Company,$kodejenispayment,$NoTlp,$NoHp,$Alamat,$datenowcreate,
-                                $noteall,$txEmail,$NoMrfix,$ID_Penjamin,$ID_JadwalPraktek,$Userid_Mobile,$noRujukan)
+                                $noteall,$txEmail,$NoMrfix,$ID_Penjamin,$ID_JadwalPraktek,
+                                $Userid_Mobile,$noRujukan,$estimasi_waktu_pelayanan,$lama_menit_dilayani)
     {
         return  DB::connection('sqlsrv3')->table("Apointment")->insert([
             'CodeReservasi' => $idbooking,
@@ -45,7 +46,9 @@ class bAppointmentRepositoryImpl implements bAppointmentRepositoryInterface
             'ID_JadwalPraktek' => $ID_JadwalPraktek,
             'ID_Penjamin' => $ID_Penjamin,
             'Userid_Mobile' => $Userid_Mobile,
-            'NoRujukanBPJS' => $noRujukan
+            'NoRujukanBPJS' => $noRujukan,
+            'estimasi_waktu_dilayani' => $estimasi_waktu_pelayanan,
+            'estimasi_waktu_pelayanan' => $lama_menit_dilayani
         ]);
     } 
     public function SisaStatusAntrian($request)
@@ -79,7 +82,7 @@ class bAppointmentRepositoryImpl implements bAppointmentRepositoryInterface
         return  DB::connection('sqlsrv3')->table("Apointment")
         ->select( 'DoctorID','JamPraktek','NamaDokter','IdPoli','Poli','JamPraktek','JenisPembayaran','ID_Penjamin',
                     'NoAntrianAll','Antrian','NoBooking','NamaPasien','batal', 'Datang','NoMR','Company','ID_JadwalPraktek',
-                    DB::raw("replace(CONVERT(VARCHAR(11), ApmDate, 111), '/','-') ApmDate"),"NoRegistrasi","NoRujukanBPJS","NoKartuBPJS","NoSuratKontrolBPJS","NamaPasien" ,"NoSEP")
+                    DB::raw("replace(CONVERT(VARCHAR(11), ApmDate, 111), '/','-') ApmDate"),"NoRegistrasi","NoRujukanBPJS","NoKartuBPJS","NoSuratKontrolBPJS","NamaPasien" ,"NoSEP",DB::raw("DATEDIFF(year,TglLahir,GETDATE()) umurtahun"))
         ->where('NoBooking', $nobooking)
         ->where('batal', '0')
         ->get();

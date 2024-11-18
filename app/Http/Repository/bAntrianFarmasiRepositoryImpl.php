@@ -372,4 +372,24 @@ class bAntrianFarmasiRepositoryImpl implements bAntrianFarmasiRepositoryInterfac
             ]);
         return $updatesatuan;
     }
+    public function getResepObatbyNoRegisterv2($request){
+        return  DB::connection('sqlsrv')
+            ->table("OrderResep")
+            ->select(
+                DB::raw("[ID] as OrderID"),DB::raw("[TglResep] as OrderDate")
+            )
+            ->where('NoRegistrasi', $request->NoRegistrasi) 
+            ->get();
+    }
+
+    
+    public function getResepObatbyIdV2($request){
+        return  DB::connection('sqlsrv')
+            ->table("OrderResep")
+            ->select(
+                'ID' 
+            )
+            ->where('ID', $request->NoResep) 
+            ->get();
+    }
 }

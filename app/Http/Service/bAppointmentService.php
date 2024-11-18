@@ -287,7 +287,12 @@ class bAppointmentService extends Controller {
                     date_default_timezone_set("Asia/Jakarta");
                     $estimasi2 = strtotime($xesti);
                     $estimasi = $estimasi2*1000;
-            }
+                    $Close_Schedules = $single->Close_Schedules;
+                }
+    
+                if ($Close_Schedules == '1'){
+                    return  $this->sendError("Maaf, Jadwal Poliklinik Dokter Sudah Tutup !",[]);
+                }
             $dt = Carbon::now()->toTimeString();
             $waktureal = date("H:i",strtotime($dt));
             $waktupoliakhir = date("H:i", strtotime($JamAkhir));
@@ -371,13 +376,22 @@ class bAppointmentService extends Controller {
             }
             // END - cek sisa kuota
 
+            $waktu_awal_convert = strtotime($JamAwal);
+            $waktu_akhir_convert = strtotime($JamAkhir);
+            $timediff_in_minutes = round(abs($waktu_awal_convert - $waktu_akhir_convert) / 60);
+            $lama_praktek_perpasien_in_minutes = round($timediff_in_minutes / $MaxKuota) ;
+            $lama_menit_dilayani = $lama_praktek_perpasien_in_minutes * $idno_urutantrian;
+            $estimasi_waktu_pelayanan = date("H:i", strtotime('+'.(int)$lama_menit_dilayani.' minutes', $waktu_awal_convert));
+            $waktu_sebelum_waktu_pelayanan = date("H:i", strtotime('- 60 minutes', strtotime($estimasi_waktu_pelayanan)));
+            //#END estimasi waktu pelayanan
+
              // INSERT TABEL BOOKING
              $this->appointmenRepository->AmbilAntrian($request,$JenisBoking,$idbooking,$nouruttrx,$TglLahir,$JnsKelamin,
              $StatusNikahPasien,$IdGrupPerawatan,$NamaGrupPerawatan,$IdDokter,
              $NamaDokter,$NamaSesion,$idno_urutantrian,
              $fixNoAntrian,$NamaPasien,$tglbookingfix,$nobokingreal,
              $xres,$MrExist,$Company,$kodejenispayment,$NoTlp,$NoHp,$Alamat,$datenowcreate,
-             $noteall,$txEmail,$NoMrfix,$ID_Penjamin,$ID_JadwalPraktek,'','');
+             $noteall,$txEmail,$NoMrfix,$ID_Penjamin,$ID_JadwalPraktek,'','',$estimasi_waktu_pelayanan,$lama_menit_dilayani);
 
              // INSERT TABEL ANTRIAN
              $this->antrianRepository->insertAntrian($nobokingreal,$IdDokter,$NamaSesion,$idno_urutantrian,$fixNoAntrian,$tglbookingfix,$Company);

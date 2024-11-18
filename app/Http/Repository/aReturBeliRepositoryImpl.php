@@ -48,7 +48,8 @@ class aReturBeliRepositoryImpl implements aReturBeliRepositoryInterface
             'Satuan' =>  $request['Satuan'], 
             'TotalReturBeli' =>  $request['TotalHargaRetur'], 
             'DateEntry' => Carbon::now() ,
-            'UserEntry' =>  $request['UserAdd']
+            'UserEntry' =>  $request['UserAdd'],
+            'KonversiQty' =>  $request['KonversiQty'], 
         ]);
     }
     public function gettempReturDoStok($request){
@@ -72,6 +73,7 @@ class aReturBeliRepositoryImpl implements aReturBeliRepositoryInterface
         ->where('ProductCode',$key['ProductCode'])
             ->update([
                 'QtyRetur' => $key['QtyRetur'],
+                'Konversi_Qty_Total' =>  $key['QtyRetur']*$key['KonversiQty'], 
                 'TotalReturBeli' => $key['TotalHargaRetur'],
                  'UserUpdate' => $key['UserAdd'], 
                  'DateUpdate' =>  Carbon::now() 

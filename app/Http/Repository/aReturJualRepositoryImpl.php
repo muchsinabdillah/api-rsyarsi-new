@@ -181,4 +181,12 @@ class aReturJualRepositoryImpl implements aReturJualRepositoryInterface
             ]);
         return $updatesatuan;
     }
+
+    public function getReturJualDetailbySalesCode($id)
+    {
+        return  DB::connection('sqlsrv')->table("ReturnSalesDetails")
+        ->where('SalesCode', $id)
+            ->where('Void', '0')
+            ->get();
+    }
 }

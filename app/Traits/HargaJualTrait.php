@@ -2,22 +2,21 @@
 
 namespace App\Traits;
 
-use Exception;
-use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
-use Ramsey\Uuid\Uuid as Generator;
-
 trait HargaJualTrait
 {
-    public function HargaJual($GroupJaminan,$noregistrasi,$Hna,$Category,$kelas){
+    public function HargaJual($GroupJaminan,$noregistrasi,$Hna,$Category,$kelas,$Konversi_satuan){
 
         $hargaPlusppn =  $Hna + (($Hna*11)/100);
         if($GroupJaminan == "UM"){
             if(substr($noregistrasi,1,2) == "RJ"  ) {
                  $hargadasar = $hargaPlusppn;
                  $hargaprofit = $hargadasar*1.3; 
-             }else{
+             }elseif(substr($noregistrasi,1,2) == "RI"){
                  $hargadasar = $hargaPlusppn;
                  $hargaprofit = $hargadasar*1.4; 
+             }else{
+                $hargadasar = $hargaPlusppn;
+                $hargaprofit = $hargadasar*1.3; 
              }
          }
 
@@ -52,7 +51,7 @@ trait HargaJualTrait
          if($GroupJaminan == "BS"){
              if(substr($noregistrasi,1,2) == "RJ"  ) {
                   $hargaprofit = $hargaPlusppn; 
-              }else{
+              }elseif(substr($noregistrasi,1,2) == "RI"){
                  if($kelas == "3")   {
                      $hargaprofit = $hargaPlusppn; 
                  }else if ($kelas == "2") {
@@ -62,6 +61,8 @@ trait HargaJualTrait
                  } else  {
                      $hargaprofit = $hargaPlusppn * 1.4; 
                  }  
+              }else{
+                $hargaprofit = $hargaPlusppn; 
               }
           }
 

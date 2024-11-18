@@ -685,4 +685,199 @@ class AntrianFarmasiService extends Controller
             return $this->sendError('Data Tidak Ditemukan !', $e->getMessage());
         }
     }
+
+    public function CreateAntrianFarmasiNewv2(Request $request)
+    {
+        if ($request->NoRegistrasi == "") {
+            return $this->sendError("SCAN QR CODE GAGAL.. !!! No. Registrasi Kosong. Sialhkan SCAN QR kembali.", []);
+        } 
+        if ($request->IdUnitFarmasi == "") {
+            return $this->sendError("SCAN QR CODE GAGAL.. !!! Unit Farmasi Kosong.", []);
+        } 
+        
+        try{
+            
+            DB::beginTransaction();
+        
+            if ($this->aAntrianFarmasiRepository->getAntrianFarmasibyRegistrasi($request)->count() < 1) {
+                return $this->sendError("SCAN QR CODE GAGAL.. !!! Antrian Atas No. Registrasi ini tidak ada.", []);
+            } 
+
+            //check apakah sudah checkin ?
+            if ($this->aAntrianFarmasiRepository->getAntrianFarmasibyRegistrasiCheckin($request)->count() > 0) {
+                return $this->sendError("SCAN QR CODE GAGAL.. !!! Antrian Obat Atas No. Registrasi ini sudah Check In, Silahkan menunggu Antrian Obat Anda.", []);
+            } 
+
+            // Get Resep by Noregister
+            if ($this->aAntrianFarmasiRepository->getResepObatbyNoRegisterv2($request)->count() < 1) {
+                return $this->sendError("SCAN QR CODE GAGAL.. !!! Resep tidak ada.", []);
+            } 
+            // cari max antrian
+            $datenow = Carbon::now()->toDateString();
+        
+            $registration = $this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi);
+            if ($registration->count() > 0) { 
+                $datareg = $registration->first();
+                $NoEpisode = $datareg->NoEpisode; 
+                $NoRegistrasi = $datareg->NoRegistrasi; 
+                $NoMR =  $datareg->NoMR; 
+                $NoAntrianPoli = $datareg->NoAntrianAll; 
+                $PatientName = $datareg->PatientName;
+                $StatusAntrean = 'CREATED';
+                $DateCreated = Carbon::now(); 
+                $IDPoliOrder = $datareg->IdUnit;
+                $NamaPoliOrder= $datareg->NamaUnit;
+                $IDDokter= $datareg->IdDokter;
+                $NamaDokter= $datareg->NamaDokter;
+            } else {
+                return $this->sendError("SCAN QR CODE GAGAL.. !!! Data Registrasi tidak di temukan.", []);
+            }
+                // cek dulu apakah dia sudah PROCCESS BELUM
+                // JIKA SUDAH DI PROCESS = UPDATE DATE CREATE SAJA, DAN HISTORY MASUKIN DATE CREATE DAN PROCCESSED
+                // JIKA BELUM DI PROCCES =  DATE DATE CREATE, DAN STATUS PROCESSS
+
+                $checkStatusResep = $this->aAntrianFarmasiRepository->getAntrianFarmasibyRegistrasi($request);
+                foreach ($checkStatusResep as $dataResepbyReg  ) {
+                    if ($dataResepbyReg->StatusAntrean == "PROCESSED") {
+                        // UPDATE PROCCESS JIKA SUDAH DI REVIEW
+
+                        // LOOPING KODE RESEP - INSERT PROCCESSED
+                        $dataresep = $this->aAntrianFarmasiRepository->getResepObatbyNoRegister($request);
+                        foreach ($dataresep as $key  ) {
+                            # code... 
+
+                            $this->aAntrianFarmasiRepository->CreateAntrianNewSudahReview($request->NoRegistrasi,$DateCreated,$request->IdUnitFarmasi,$key->OrderDate);
+                            $this->aAntrianFarmasiRepository->CreateHistoryAntrian($NoRegistrasi,"PROCESSED",$DateCreated,$key->OrderID);
+                        } 
+                    } else{
+    
+                          // UPDATE PROCCESS JIKA BELUM DI REVIEW
+                            $this->aAntrianFarmasiRepository->CreateAntrianNew($request->NoRegistrasi,"CREATED",$DateCreated,$request->IdUnitFarmasi);
+                            // LOOPING KODE RESEP
+                            $dataresep = $this->aAntrianFarmasiRepository->getResepObatbyNoRegister($request);
+                            foreach ($dataresep as $key  ) {
+                                # code... 
+                                $this->aAntrianFarmasiRepository->CreateAntrianNewSudahReview($request->NoRegistrasi,$DateCreated,$request->IdUnitFarmasi,$key->OrderDate);
+                                $this->aAntrianFarmasiRepository->CreateHistoryAntrian($NoRegistrasi,$StatusAntrean,$DateCreated,$key->OrderID);
+                            } 
+                    }  
+                }
+                
+                
+                DB::commit();
+                return $this->sendResponse([], "SCAN QR CODE Antrian Farmasi berhasil, Silahkan menunggu Antrian Obat Anda.");
+                
+        }catch (Exception $e) { 
+            DB::rollBack();
+            Log::info($e->getMessage()); 
+            return $this->sendError($e->getMessage(), []);  
+        }
+    } 
+
+    public function UpdateDataVerifikasiV2(Request $request)
+    {
+        if($request->NoRegistrasi == ""){
+            return $this->sendError("Silahkan Masukan No. Registrasi.", []);
+        }
+        if($request->NoResep == ""){
+            return $this->sendError("Silahkan Masukan No. Resep.", []);
+        }
+        if($request->Username == ""){
+            return $this->sendError("Silahkan Masukan No. PIN/User Login Anda.", []);
+        }
+        if($request->Nama == ""){
+            return $this->sendError("Silahkan Masukan Nama Login Anda.", []);
+        }
+        if($request->StatusVerifikasi == ""){
+            return $this->sendError("Silahkan Masukan Jenis Verifikasi.", []);
+        }
+        if($request->TanggalVerifikasi == ""){
+            return $this->sendError("Silahkan Masukan Tanggal Verifikasi.", []);
+        }
+            // cek registrasi 
+            $registration = $this->visitRepository->getRegistrationRajalbyNoreg($request->NoRegistrasi);
+            if ($registration->count() < 1) { 
+                return $this->sendError("No. Registrasi Pasien Tidak di Temukan.", []);
+            }
+
+            // no resep
+            $VerifyResep=$this->aAntrianFarmasiRepository->getResepObatbyIdV2($request)->count();
+            if ($VerifyResep < 1) {
+                //response 
+                return $this->sendError("No. Order Resep Tidak di temukan, Silahkan Cek Modul Farmasi.", []);
+            } 
+            
+            // // cek pin user 
+            // $registration = $this->userLoginRepository->getLoginSimrsPin($request->NoPIN);
+            // if ($registration->count() > 0) { 
+            //     $datareg = $registration->first();
+            //     $NamaDepan = $datareg->NamaDepan;  
+            // } else {
+            //     return $this->sendError("Data PIN User tidak di temukan.", []);
+            // }   
+        try{
+            DB::beginTransaction(); 
+
+            // cek antrian Resep
+            // if ($this->aAntrianFarmasiRepository->getAntrianFarmasibyRegistrasiCheckin($request)->count() < 1 ) {
+            //     //response 
+            //     return $this->sendError("Antrian Resep Tidak ditemukan/Belum CheckIn.", []);
+            // } 
+
+                //update Verifikasi 
+                if($request->StatusVerifikasi == "DIAMBIL"){
+                    if ($this->aAntrianFarmasiRepository->getAntrianFarmasibyRegistrasiNoresep($request)->count() < 1) {
+                        return $this->sendError("Pasien Belum melakukan Scan QR Code, Silahkan Scan QR Code terlebih Dahulu.", []);
+                    } 
+                    
+                    $checkStatusResep = $this->aAntrianFarmasiRepository->getAntrianFarmasibyRegistrasiNoresep($request)->first();
+                    //dd($checkStatusResep->StatusAntrean);
+                    if ($checkStatusResep->StatusAntrean <> 'PROCESSED') {
+                        return $this->sendError("Status Resep Belum di Review, Silahkan Review Resep terlebih Dahulu.", []);
+                    } else{
+                        if ($checkStatusResep->DateTaken <> null) {
+                            return $this->sendError("Resep sudah di Verifikasi DIAMBIL.", []);
+                        } else{
+                            $this->aAntrianFarmasiRepository->UpdateDataVerifikasiResepDiAmbil( 
+                                $request->NoResep,$request->NoRegistrasi,Carbon::now(),$request->Nama);
+                        }
+                    }
+                }elseif($request->StatusVerifikasi == "DIPERIKSA"){
+                    $checkStatusResep = $this->aAntrianFarmasiRepository->getAntrianFarmasibyRegistrasiNoresep($request)->first();
+                    if ($checkStatusResep->DateTaken == null) {
+                        return $this->sendError("Verifikasi Resep DIAMBIL belum dilakukan, silahkan verifikasi Resep DIAMBIL dahulu.", []);
+                    } else{
+                        if ($checkStatusResep->DateChecked <> null) {
+                            return $this->sendError("Resep sudah di Verifikasi DIPERIKSA.", []);
+                        } else{
+                            $this->aAntrianFarmasiRepository->UpdateDataVerifikasiResepDiPeriksa(
+                                $request->NoResep,$request->NoRegistrasi,Carbon::now(),$request->Nama);
+                        }
+                    }
+                }elseif($request->StatusVerifikasi == "DIKEMAS"){
+                    $checkStatusResep = $this->aAntrianFarmasiRepository->getAntrianFarmasibyRegistrasiNoresep($request)->first();
+                    if ($checkStatusResep->DateChecked == null) {
+                        return $this->sendError("Verifikasi Resep DIPERIKSA belum dilakukan, silahkan verifikasi Resep DIPERIKSA dahulu.", []);
+                    } else{
+                        if ($checkStatusResep->DatePacked <> null) {
+                            return $this->sendError("Resep sudah di Verifikasi DIKEMAS.", []);
+                        } else{
+                            $this->aAntrianFarmasiRepository->UpdateDataVerifikasiResepDikemas(
+                                $request->NoResep,$request->NoRegistrasi,Carbon::now(),$request->Nama);
+                        }
+                       
+                    } 
+                }else{
+                    return $this->sendError("Status Verifikasi Invalid.", []);
+                } 
+
+                DB::commit();
+                return $this->sendResponse([], "Resep Obat Pasien Berhasil di Verifikasi :  " . $request->StatusVerifikasi . ", Petugas : ".$request->Nama);
+                
+        }catch (Exception $e) { 
+            DB::rollBack();
+            Log::info($e->getMessage()); 
+            return $this->sendError($e->getMessage(), []);  
+        }
+    } 
 }

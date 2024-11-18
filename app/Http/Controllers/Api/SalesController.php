@@ -15,6 +15,8 @@ use App\Http\Repository\aTrsResepRepositoryImpl;
 use App\Http\Repository\aMasterUnitRepositoryImpl;
 use App\Http\Repository\aDeliveryOrderRepositoryImpl;
 use App\Http\Repository\bBillingRepositoryImpl;
+use App\Http\Repository\aReturJualRepositoryImpl;
+use App\Http\Repository\bAntrianFarmasiRepositoryImpl;
 
 class SalesController extends Controller
 {
@@ -31,13 +33,15 @@ class SalesController extends Controller
         $aSalesRepository = new aSalesRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
         $userService = new aSalesService($trsResepRepository,
                             $aDeliveryOrderRepository,
                             $aBarangRepository,
                             $asupplierRepository,
                             $sStokRepository,
                             $aHnaRepository,
-                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
         $add =  $userService->addSalesHeader($request);
         return $add; 
@@ -45,7 +49,7 @@ class SalesController extends Controller
     }
     public function addSalesDetail(Request $request){
       
-        $trsResepRepository = new aTrsResepRepositoryImpl(); 
+              $trsResepRepository = new aTrsResepRepositoryImpl(); 
         $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
         $aBarangRepository = new aBarangRepositoryImpl();
         $asupplierRepository = new aSupplierRepositoryImpl();
@@ -55,13 +59,15 @@ class SalesController extends Controller
         $aSalesRepository = new aSalesRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
         $userService = new aSalesService($trsResepRepository,
                             $aDeliveryOrderRepository,
                             $aBarangRepository,
                             $asupplierRepository,
                             $sStokRepository,
                             $aHnaRepository,
-                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
         $add =  $userService->addSalesDetail($request);
         return $add; 
@@ -69,7 +75,7 @@ class SalesController extends Controller
     }
     public function voidSales(Request $request){
       
-                $trsResepRepository = new aTrsResepRepositoryImpl(); 
+                      $trsResepRepository = new aTrsResepRepositoryImpl(); 
         $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
         $aBarangRepository = new aBarangRepositoryImpl();
         $asupplierRepository = new aSupplierRepositoryImpl();
@@ -79,13 +85,15 @@ class SalesController extends Controller
         $aSalesRepository = new aSalesRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
         $userService = new aSalesService($trsResepRepository,
                             $aDeliveryOrderRepository,
                             $aBarangRepository,
                             $asupplierRepository,
                             $sStokRepository,
                             $aHnaRepository,
-                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
         $add =  $userService->voidSales($request);
         return $add; 
@@ -93,7 +101,7 @@ class SalesController extends Controller
     }
     public function voidSalesDetailbyItem(Request $request){
       
-                $trsResepRepository = new aTrsResepRepositoryImpl(); 
+                      $trsResepRepository = new aTrsResepRepositoryImpl(); 
         $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
         $aBarangRepository = new aBarangRepositoryImpl();
         $asupplierRepository = new aSupplierRepositoryImpl();
@@ -103,13 +111,15 @@ class SalesController extends Controller
         $aSalesRepository = new aSalesRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
         $userService = new aSalesService($trsResepRepository,
                             $aDeliveryOrderRepository,
                             $aBarangRepository,
                             $asupplierRepository,
                             $sStokRepository,
                             $aHnaRepository,
-                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
         $add =  $userService->voidSalesDetailbyItem($request);
         return $add; 
@@ -117,7 +127,7 @@ class SalesController extends Controller
     }
     public function finishSalesTransaction(Request $request){
       
-                $trsResepRepository = new aTrsResepRepositoryImpl(); 
+                      $trsResepRepository = new aTrsResepRepositoryImpl(); 
         $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
         $aBarangRepository = new aBarangRepositoryImpl();
         $asupplierRepository = new aSupplierRepositoryImpl();
@@ -127,13 +137,15 @@ class SalesController extends Controller
         $aSalesRepository = new aSalesRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
         $userService = new aSalesService($trsResepRepository,
                             $aDeliveryOrderRepository,
                             $aBarangRepository,
                             $asupplierRepository,
                             $sStokRepository,
                             $aHnaRepository,
-                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
         $add =  $userService->finishSalesTransaction($request);
         return $add; 
@@ -141,7 +153,7 @@ class SalesController extends Controller
     }
     public function getSalesbyID(Request $request){
       
-                $trsResepRepository = new aTrsResepRepositoryImpl(); 
+                      $trsResepRepository = new aTrsResepRepositoryImpl(); 
         $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
         $aBarangRepository = new aBarangRepositoryImpl();
         $asupplierRepository = new aSupplierRepositoryImpl();
@@ -151,13 +163,15 @@ class SalesController extends Controller
         $aSalesRepository = new aSalesRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
         $userService = new aSalesService($trsResepRepository,
                             $aDeliveryOrderRepository,
                             $aBarangRepository,
                             $asupplierRepository,
                             $sStokRepository,
                             $aHnaRepository,
-                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
         $add =  $userService->getSalesbyID($request);
         return $add; 
@@ -165,7 +179,7 @@ class SalesController extends Controller
     }
     public function getSalesDetailbyID(Request $request){
       
-                $trsResepRepository = new aTrsResepRepositoryImpl(); 
+                      $trsResepRepository = new aTrsResepRepositoryImpl(); 
         $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
         $aBarangRepository = new aBarangRepositoryImpl();
         $asupplierRepository = new aSupplierRepositoryImpl();
@@ -175,13 +189,15 @@ class SalesController extends Controller
         $aSalesRepository = new aSalesRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
         $userService = new aSalesService($trsResepRepository,
                             $aDeliveryOrderRepository,
                             $aBarangRepository,
                             $asupplierRepository,
                             $sStokRepository,
                             $aHnaRepository,
-                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
         $add =  $userService->getSalesDetailbyID($request);
         return $add; 
@@ -189,7 +205,7 @@ class SalesController extends Controller
     }
     public function getSalesbyDateUser(Request $request){
       
-                $trsResepRepository = new aTrsResepRepositoryImpl(); 
+                      $trsResepRepository = new aTrsResepRepositoryImpl(); 
         $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
         $aBarangRepository = new aBarangRepositoryImpl();
         $asupplierRepository = new aSupplierRepositoryImpl();
@@ -199,13 +215,15 @@ class SalesController extends Controller
         $aSalesRepository = new aSalesRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
         $userService = new aSalesService($trsResepRepository,
                             $aDeliveryOrderRepository,
                             $aBarangRepository,
                             $asupplierRepository,
                             $sStokRepository,
                             $aHnaRepository,
-                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
         $add =  $userService->getSalesbyDateUser($request);
         return $add; 
@@ -213,7 +231,7 @@ class SalesController extends Controller
     }
     public function getSalesbyPeriode(Request $request){
       
-                $trsResepRepository = new aTrsResepRepositoryImpl(); 
+                      $trsResepRepository = new aTrsResepRepositoryImpl(); 
         $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
         $aBarangRepository = new aBarangRepositoryImpl();
         $asupplierRepository = new aSupplierRepositoryImpl();
@@ -223,13 +241,15 @@ class SalesController extends Controller
         $aSalesRepository = new aSalesRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
         $userService = new aSalesService($trsResepRepository,
                             $aDeliveryOrderRepository,
                             $aBarangRepository,
                             $asupplierRepository,
                             $sStokRepository,
                             $aHnaRepository,
-                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
         $add =  $userService->getSalesbyPeriode($request);
         return $add; 
@@ -247,13 +267,15 @@ class SalesController extends Controller
         $aSalesRepository = new aSalesRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
         $userService = new aSalesService($trsResepRepository,
-                    $aDeliveryOrderRepository,
-                    $aBarangRepository,
-                    $asupplierRepository,
-                    $sStokRepository,
-                    $aHnaRepository,
-                    $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+                            $aDeliveryOrderRepository,
+                            $aBarangRepository,
+                            $asupplierRepository,
+                            $sStokRepository,
+                            $aHnaRepository,
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
     $add =  $userService->getConsumableChargedPeriode($request);
     return $add; 
@@ -261,7 +283,7 @@ class SalesController extends Controller
     }
     public function addSalesDetailv2(Request $request){
       
-        $trsResepRepository = new aTrsResepRepositoryImpl(); 
+              $trsResepRepository = new aTrsResepRepositoryImpl(); 
         $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
         $aBarangRepository = new aBarangRepositoryImpl();
         $asupplierRepository = new aSupplierRepositoryImpl();
@@ -271,13 +293,15 @@ class SalesController extends Controller
         $aSalesRepository = new aSalesRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
         $userService = new aSalesService($trsResepRepository,
                             $aDeliveryOrderRepository,
                             $aBarangRepository,
                             $asupplierRepository,
                             $sStokRepository,
                             $aHnaRepository,
-                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
         $add =  $userService->addSalesDetailV2($request);
         return $add; 
@@ -285,7 +309,7 @@ class SalesController extends Controller
     }
     public function getSalesDetailbyNoReg(Request $request){
       
-        $trsResepRepository = new aTrsResepRepositoryImpl(); 
+              $trsResepRepository = new aTrsResepRepositoryImpl(); 
         $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
         $aBarangRepository = new aBarangRepositoryImpl();
         $asupplierRepository = new aSupplierRepositoryImpl();
@@ -295,13 +319,15 @@ class SalesController extends Controller
         $aSalesRepository = new aSalesRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
         $userService = new aSalesService($trsResepRepository,
                             $aDeliveryOrderRepository,
                             $aBarangRepository,
                             $asupplierRepository,
                             $sStokRepository,
                             $aHnaRepository,
-                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
         $add =  $userService->getSalesDetailbyNoReg($request);
         return $add; 
@@ -311,22 +337,24 @@ class SalesController extends Controller
         public function getSalesbyPeriodeResep(Request $request){
       
             $trsResepRepository = new aTrsResepRepositoryImpl(); 
-    $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
-    $aBarangRepository = new aBarangRepositoryImpl();
-    $asupplierRepository = new aSupplierRepositoryImpl();
-    $sStokRepository = new aStokRepositoryImpl();    
-    $aHnaRepository = new aHnaRepositoryImpl();
-    $aMasterUnitRepository = new aMasterUnitRepositoryImpl(); 
-    $aSalesRepository = new aSalesRepositoryImpl();
-    $visitRepository = new bVisitRepositoryImpl();
-    $billingRepository = new bBillingRepositoryImpl();
-    $userService = new aSalesService($trsResepRepository,
-                        $aDeliveryOrderRepository,
-                        $aBarangRepository,
-                        $asupplierRepository,
-                        $sStokRepository,
-                        $aHnaRepository,
-                        $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+            $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
+            $aBarangRepository = new aBarangRepositoryImpl();
+            $asupplierRepository = new aSupplierRepositoryImpl();
+            $sStokRepository = new aStokRepositoryImpl();    
+            $aHnaRepository = new aHnaRepositoryImpl();
+            $aMasterUnitRepository = new aMasterUnitRepositoryImpl(); 
+            $aSalesRepository = new aSalesRepositoryImpl();
+            $visitRepository = new bVisitRepositoryImpl();
+            $billingRepository = new bBillingRepositoryImpl();
+            $returJualRepository = new aReturJualRepositoryImpl();
+            $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
+        $userService = new aSalesService($trsResepRepository,
+                            $aDeliveryOrderRepository,
+                            $aBarangRepository,
+                            $asupplierRepository,
+                            $sStokRepository,
+                            $aHnaRepository,
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
     $add =  $userService->getSalesbyPeriodeResep($request);
     return $add; 
@@ -336,22 +364,24 @@ class SalesController extends Controller
         public function getSalesbyIDandNoResep(Request $request){
             
             $trsResepRepository = new aTrsResepRepositoryImpl(); 
-        $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
-        $aBarangRepository = new aBarangRepositoryImpl();
-        $asupplierRepository = new aSupplierRepositoryImpl();
-        $sStokRepository = new aStokRepositoryImpl();    
-        $aHnaRepository = new aHnaRepositoryImpl();
-        $aMasterUnitRepository = new aMasterUnitRepositoryImpl(); 
-        $aSalesRepository = new aSalesRepositoryImpl();
-        $visitRepository = new bVisitRepositoryImpl();
-        $billingRepository = new bBillingRepositoryImpl();
+            $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
+            $aBarangRepository = new aBarangRepositoryImpl();
+            $asupplierRepository = new aSupplierRepositoryImpl();
+            $sStokRepository = new aStokRepositoryImpl();    
+            $aHnaRepository = new aHnaRepositoryImpl();
+            $aMasterUnitRepository = new aMasterUnitRepositoryImpl(); 
+            $aSalesRepository = new aSalesRepositoryImpl();
+            $visitRepository = new bVisitRepositoryImpl();
+            $billingRepository = new bBillingRepositoryImpl();
+            $returJualRepository = new aReturJualRepositoryImpl();
+            $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
         $userService = new aSalesService($trsResepRepository,
-                        $aDeliveryOrderRepository,
-                        $aBarangRepository,
-                        $asupplierRepository,
-                        $sStokRepository,
-                        $aHnaRepository,
-                        $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+                            $aDeliveryOrderRepository,
+                            $aBarangRepository,
+                            $asupplierRepository,
+                            $sStokRepository,
+                            $aHnaRepository,
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
         $add =  $userService->getSalesbyIDandNoResep($request);
         return $add; 
@@ -361,6 +391,33 @@ class SalesController extends Controller
         public function getSalesDetailbyIDandNoResep(Request $request){
             
             $trsResepRepository = new aTrsResepRepositoryImpl(); 
+            $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
+            $aBarangRepository = new aBarangRepositoryImpl();
+            $asupplierRepository = new aSupplierRepositoryImpl();
+            $sStokRepository = new aStokRepositoryImpl();    
+            $aHnaRepository = new aHnaRepositoryImpl();
+            $aMasterUnitRepository = new aMasterUnitRepositoryImpl(); 
+            $aSalesRepository = new aSalesRepositoryImpl();
+            $visitRepository = new bVisitRepositoryImpl();
+            $billingRepository = new bBillingRepositoryImpl();
+            $returJualRepository = new aReturJualRepositoryImpl();
+            $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
+        $userService = new aSalesService($trsResepRepository,
+                            $aDeliveryOrderRepository,
+                            $aBarangRepository,
+                            $asupplierRepository,
+                            $sStokRepository,
+                            $aHnaRepository,
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
+
+        $add =  $userService->getSalesDetailbyIDandNoResep($request);
+        return $add; 
+
+        }
+
+            public function getSalesbyPeriodeTanpaResep(Request $request){
+        
+                      $trsResepRepository = new aTrsResepRepositoryImpl(); 
         $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
         $aBarangRepository = new aBarangRepositoryImpl();
         $asupplierRepository = new aSupplierRepositoryImpl();
@@ -370,16 +427,99 @@ class SalesController extends Controller
         $aSalesRepository = new aSalesRepositoryImpl();
         $visitRepository = new bVisitRepositoryImpl();
         $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
         $userService = new aSalesService($trsResepRepository,
-                        $aDeliveryOrderRepository,
-                        $aBarangRepository,
-                        $asupplierRepository,
-                        $sStokRepository,
-                        $aHnaRepository,
-                        $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository );
+                            $aDeliveryOrderRepository,
+                            $aBarangRepository,
+                            $asupplierRepository,
+                            $sStokRepository,
+                            $aHnaRepository,
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
 
-        $add =  $userService->getSalesDetailbyIDandNoResep($request);
+        $add =  $userService->getSalesbyPeriodeTanpaResep($request);
+        return $add; 
+
+    }
+
+    public function voidSalesTebus(Request $request){
+        $trsResepRepository = new aTrsResepRepositoryImpl(); 
+        $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
+        $aBarangRepository = new aBarangRepositoryImpl();
+        $asupplierRepository = new aSupplierRepositoryImpl();
+        $sStokRepository = new aStokRepositoryImpl();    
+        $aHnaRepository = new aHnaRepositoryImpl();
+        $aMasterUnitRepository = new aMasterUnitRepositoryImpl(); 
+        $aSalesRepository = new aSalesRepositoryImpl();
+        $visitRepository = new bVisitRepositoryImpl();
+        $billingRepository = new bBillingRepositoryImpl();
+        $returJualRepository = new aReturJualRepositoryImpl();
+        $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
+        $userService = new aSalesService($trsResepRepository,
+                            $aDeliveryOrderRepository,
+                            $aBarangRepository,
+                            $asupplierRepository,
+                            $sStokRepository,
+                            $aHnaRepository,
+                            $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
+
+        $add =  $userService->voidSalesTebus($request);
         return $add; 
 
         }
+
+        //tambahan 30-10-2024 code:30102024 dan antrian
+        public function getSalesbyPeriodeResepRajal(Request $request){
+            $trsResepRepository = new aTrsResepRepositoryImpl(); 
+            $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
+            $aBarangRepository = new aBarangRepositoryImpl();
+            $asupplierRepository = new aSupplierRepositoryImpl();
+            $sStokRepository = new aStokRepositoryImpl();    
+            $aHnaRepository = new aHnaRepositoryImpl();
+            $aMasterUnitRepository = new aMasterUnitRepositoryImpl(); 
+            $aSalesRepository = new aSalesRepositoryImpl();
+            $visitRepository = new bVisitRepositoryImpl();
+            $billingRepository = new bBillingRepositoryImpl();
+            $returJualRepository = new aReturJualRepositoryImpl();
+            $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
+            $userService = new aSalesService($trsResepRepository,
+                                $aDeliveryOrderRepository,
+                                $aBarangRepository,
+                                $asupplierRepository,
+                                $sStokRepository,
+                                $aHnaRepository,
+                                $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
+    
+            $add =  $userService->getSalesbyPeriodeResepRajal($request);
+            return $add; 
+    
+            }
+
+            
+        //tambahan 05-11-2024 code:05112024 dan antrian
+        public function getSalesbyPeriodeResepRanap(Request $request){
+            $trsResepRepository = new aTrsResepRepositoryImpl(); 
+            $aDeliveryOrderRepository = new aDeliveryOrderRepositoryImpl();
+            $aBarangRepository = new aBarangRepositoryImpl();
+            $asupplierRepository = new aSupplierRepositoryImpl();
+            $sStokRepository = new aStokRepositoryImpl();    
+            $aHnaRepository = new aHnaRepositoryImpl();
+            $aMasterUnitRepository = new aMasterUnitRepositoryImpl(); 
+            $aSalesRepository = new aSalesRepositoryImpl();
+            $visitRepository = new bVisitRepositoryImpl();
+            $billingRepository = new bBillingRepositoryImpl();
+            $returJualRepository = new aReturJualRepositoryImpl();
+            $aAntrianFarmasiRepository = new bAntrianFarmasiRepositoryImpl();
+            $userService = new aSalesService($trsResepRepository,
+                                $aDeliveryOrderRepository,
+                                $aBarangRepository,
+                                $asupplierRepository,
+                                $sStokRepository,
+                                $aHnaRepository,
+                                $aMasterUnitRepository,$aSalesRepository ,$visitRepository,$billingRepository,$returJualRepository,$aAntrianFarmasiRepository);
+    
+            $add =  $userService->getSalesbyPeriodeResepRanap($request);
+            return $add; 
+    
+            }
 }

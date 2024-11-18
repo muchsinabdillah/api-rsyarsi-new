@@ -305,6 +305,13 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("getSalesbyPeriodeResep", [SalesController::class, "getSalesbyPeriodeResep"]);
         Route::post("getSalesbyIDandNoResep", [SalesController::class, "getSalesbyIDandNoResep"]);
         Route::post("getSalesDetailbyIDandNoResep", [SalesController::class, "getSalesDetailbyIDandNoResep"]);
+        Route::post("getSalesbyPeriodeTanpaResep", [SalesController::class, "getSalesbyPeriodeTanpaResep"]);
+        Route::post("voidSalesTebus", [SalesController::class, "voidSalesTebus"]);
+        
+        //tambahan 30-10-2024 code:30102024
+        Route::post("getSalesbyPeriodeResepRajal", [SalesController::class, "getSalesbyPeriodeResepRajal"]);
+        //tambahan 05-11-2024 code:05112024
+        Route::post("getSalesbyPeriodeResepRanap", [SalesController::class, "getSalesbyPeriodeResepRanap"]);
     });
 
     Route::group(['prefix' => 'transaction/returbeli'], function () {
@@ -327,6 +334,9 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("getReturJualDetailbyID", [ReturJualController::class, "getReturJualDetailbyID"]);
         Route::post("getReturJualbyDateUser", [ReturJualController::class, "getReturJualbyDateUser"]);
         Route::post("getReturJualbyPeriode", [ReturJualController::class, "getReturJualbyPeriode"]);
+        Route::post("addReturJualHeaderbyNoReg", [ReturJualController::class, "addReturJualHeaderbyNoReg"]);
+        Route::post("addReturJualFinishbyReg", [ReturJualController::class, "addReturJualFinishbyReg"]);
+        Route::post("voidReturJualPerRegister", [ReturJualController::class, "voidReturJualPerRegister"]);
     });  
 
     Route::group(['prefix' => 'transaction/adjusment'], function () {
@@ -336,8 +346,6 @@ Route::group(["middleware"=>["auth:api"]], function(){
         Route::post("getAdjusmentDetailbyID", [AdjusmentController::class, "getAdjusmentDetailbyID"]);
         Route::post("getAdjusmentbyDateUser", [AdjusmentController::class, "getAdjusmentbyDateUser"]);
         Route::post("getAdjusmentbyPeriode", [AdjusmentController::class, "getAdjusmentbyPeriode"]);
-        Route::post("addReturJualHeaderbyNoReg", [ReturJualController::class, "addReturJualHeaderbyNoReg"]);
-        Route::post("addReturJualFinishbyReg", [ReturJualController::class, "addReturJualFinishbyReg"]);
     });
 
     Route::group(['prefix' => 'information/inventory'], function () {
@@ -513,6 +521,12 @@ Route::group(["middleware"=>["auth:api"]], function(){
             Route::post("viewprintLabelbyID", [ResepV2Controller::class, "viewprintLabelbyID"]);
             Route::post("getPrinterLabel", [ResepV2Controller::class, "getPrinterLabel"]);
             Route::post("editReviewbyIDResep", [ResepV2Controller::class, "editReviewbyIDResep"]);
+            Route::post("addTebusResep", [ResepV2Controller::class, "addTebusResep"]);
+            Route::post("viewOrderResepbyDatePeriodeTebus", [ResepV2Controller::class, "viewOrderResepbyDatePeriodeTebus"]);
+            
+            //tambahan 05-11-2024 code:05112024
+            Route::post("viewOrderResepbyDatePeriodeRajal", [ResepV2Controller::class, "viewOrderResepbyDatePeriodeRajal"]); 
+            Route::post("viewOrderResepbyDatePeriodeRanap", [ResepV2Controller::class, "viewOrderResepbyDatePeriodeRanap"]); 
             
         });
     });
@@ -548,6 +562,10 @@ Route::group(["middleware"=>["auth:api"]], function(){
             Route::post("ViewResepMedrecbyDate", [AntrianFarmasiController::class, "ViewResepMedrecbyDate"]);
             // untuk resep history pergerakannya -> tampil di mobile rsyarsi
             Route::post("ViewHistoryResepMedrecbyNoResep", [AntrianFarmasiController::class, "ViewHistoryResepMedrecbyNoResep"]);
+            
+            //tambahan 30-10-2024 code:30102024
+            //Version 2
+            Route::post("UpdateDataVerifikasiV2", [AntrianFarmasiController::class, "UpdateDataVerifikasiV2"]);
         });
 
         Route::group(['prefix' => 'Admission/'], function () {

@@ -257,4 +257,22 @@ class AntrianFarmasiController extends Controller
        $user =  $userService->ListAntrianTV($request);
        return $user;
    }
+   
+   public function UpdateDataVerifikasiV2(Request $request){
+    $userRepository = new bKamarOperasiRepositoryImpl();
+   $medrecRepository = new bMedicalRecordRepositoryImpl();
+   $doctorRepository = new aDoctorRepositoryImpl();
+   $unitRepository = new aMasterUnitRepositoryImpl();
+   $appointmenRepository = new bAppointmentRepositoryImpl();
+   $scheduleRepository = new aScheduleDoctorRepositoryImpl();
+   $antrianRepository = new bAntrianRepositoryImpl();
+   $visitRepository = new bVisitRepositoryImpl();
+   $antrianFarmasi = new bAntrianFarmasiRepositoryImpl();
+   $userLoginRepository = new UserRepositoryImpl();
+   $userService = new AntrianFarmasiService($userRepository,$medrecRepository,
+                   $doctorRepository,$unitRepository, $appointmenRepository,$scheduleRepository,
+                   $antrianRepository,$visitRepository,$antrianFarmasi,$userLoginRepository);
+   $user =  $userService->UpdateDataVerifikasiV2($request);
+   return $user;
+}
 }

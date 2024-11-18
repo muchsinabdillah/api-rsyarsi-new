@@ -302,6 +302,24 @@ class bAssesmentRajalService extends Controller {
             } else {
                 return $this->sendError("Order Operasi Sudah mencapai Limit Batas Tanggal dan Jam yang disepakati yaitu 3 Pasien. Silahkan Ganti tanggal dan Jam. Atau hapus Order Operasi jika tidak jadi. ", []);
             }
+
+            $count = $this->assesmentRajal->dataoperasiharian($request)->count();
+            if ($request->groupspesialis == 'OPERASI MATA'){
+                return $this->sendResponse($count, "Order Operasi Bisa Di Tambahkan.");
+            }else{
+                if ($request->lokasipasien == 'E'){
+                    $kuotamax = 1;
+                }else{
+                    $kuotamax = 3;
+                }
+
+            $count = $this->assesmentRajal->dataoperasiharian($request)->count();
+                if ($count < $kuotamax ) {  
+                    return $this->sendResponse($count, "Order Operasi Bisa Di Tambahkan.");
+                } else {
+                    return $this->sendError("Order Operasi Sudah mencapai Limit Batas Tanggal dan Jam yang disepakati yaitu ".$kuotamax." Pasien. Silahkan Ganti tanggal dan Jam. Atau hapus Order Operasi jika tidak jadi. ", []);
+                }
+            }
         }catch (Exception $e) { 
             Log::info($e->getMessage());
             return $this->sendError('Data Gagal Di Tampilkan !', $e->getMessage());

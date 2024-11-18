@@ -50,7 +50,7 @@ class aHnaService extends Controller
                 }else{
                     $datahna = $hna->first()->first();
                     
-                    $harga = $this->HargaJual($request->GroupJaminanx,$request->NoRegistrasi,$datahna->NominalHna,$datagolongan,$request->Kelasid);
+                    $harga = $this->HargaJual($request->GroupJaminanx,$request->NoRegistrasi,$datahna->NominalHna,$datagolongan,$request->Kelasid,$datagolongan->Konversi_satuan);
 
                     
                 }

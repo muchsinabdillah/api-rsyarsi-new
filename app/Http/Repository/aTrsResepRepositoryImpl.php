@@ -126,5 +126,55 @@ class aTrsResepRepositoryImpl implements aTrsResepRepositoryInterface
             ]);
         return $updatesatuan;
     }
+
+    public function viewOrderResepbyDatePeriodeTebus($request)
+    {
+        $query = DB::connection('sqlsrv')->table("v_transaksi_orderresep_hdr")
+        ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), TglResep, 111), '/','-')"),
+        [$request->tglPeriodeAwal,$request->tglPeriodeAkhir])  
+        ->get();
+        return $query;
+    }
+
+    public function updateIterReal($idorder,$iterreal)
+    {
+        $updatesatuan =  DB::connection('sqlsrv')->table('OrderResep')
+        ->where('ID', $idorder)
+            ->update([
+                'IterRealisasi' => $iterreal,
+            ]);
+        return $updatesatuan;
+    }
+
+    public function viewOrderResepbyDatePeriodeRajal($request)
+    {
+        // $query = DB::connection('sqlsrv')->table("v_transaksi_orderresep_hdr")
+        // ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), TglResep, 111), '/','-')"),
+        // [$request->tglPeriodeAwal,$request->tglPeriodeAkhir])  
+        // ->where(DB::raw("LEFT(NoRegistrasi,2)"),'RJ')
+        // ->get();
+        $query =  DB::connection('sqlsrv')->table("ResepV2_ViewbyPeriodeDate")
+        ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), TglResep, 111), '/','-')"),
+        [$request->tglPeriodeAwal,$request->tglPeriodeAkhir])  
+        ->whereNull('TransactionCode')
+        ->where(DB::raw("LEFT(NoRegistrasi,2)"),'RJ')
+        ->get();
+        return $query;
+    }
+    public function viewOrderResepbyDatePeriodeRanap($request)
+    {
+        // $query = DB::connection('sqlsrv')->table("v_transaksi_orderresep_hdr")
+        // ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), TglResep, 111), '/','-')"),
+        // [$request->tglPeriodeAwal,$request->tglPeriodeAkhir])  
+        // ->where(DB::raw("LEFT(NoRegistrasi,2)"),'RI')
+        // ->get();
+        $query =  DB::connection('sqlsrv')->table("ResepV2_ViewbyPeriodeDate")
+        ->whereBetween(DB::raw("replace(CONVERT(VARCHAR(11), TglResep, 111), '/','-')"),
+        [$request->tglPeriodeAwal,$request->tglPeriodeAkhir])  
+        ->whereNull('TransactionCode')
+        ->where(DB::raw("LEFT(NoRegistrasi,2)"),'RI')
+        ->get();
+        return $query;
+    }
     
 }

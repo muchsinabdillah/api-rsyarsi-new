@@ -11,20 +11,24 @@ use Exception;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use App\Http\Repository\aStokRepositoryImpl;
 
 class aBarangService extends Controller
 {
 
     private $aBarangRepository;
     private $aSupplierRepository;
+    private $sStokRepository;
 
     public function __construct(
         aBarangRepositoryImpl $aBarangRepository,
-        aSupplierRepositoryImpl $aSupplierRepository
+        aSupplierRepositoryImpl $aSupplierRepository,
+        aStokRepositoryImpl $sStokRepository,    
         )
     {
         $this->aBarangRepository = $aBarangRepository;
         $this->aSupplierRepository = $aSupplierRepository;
+        $this->sStokRepository = $sStokRepository;
     }
 
     public function addBarang(Request $request)
@@ -87,6 +91,9 @@ class aBarangService extends Controller
             "flag_telemedicine" => "required",
             "KD_PDP" => "required"
         ]);
+        
+        //tambahan 05-11-2024 code:05112024
+        $request['Kemasan'] = html_entity_decode($request->Kemasan);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
@@ -99,7 +106,17 @@ class aBarangService extends Controller
                 "status" => 0,
                 "message" => "Product Not Found"
             ], 500);
-        } else {
+        } 
+        //else {
+        
+        //cek jika barang sudah ada DO / stok dan satuannya diubah
+        $dataBarang = $this->aBarangRepository->getBarangbyId($request->ID);
+        if ($request->Satuan_Beli != $dataBarang->first()->Satuan_Beli || $request->Unit_Satuan != $dataBarang->first()->{'Unit Satuan'}){
+            if ($this->sStokRepository->cekStokbyID($request->ID)->count() > 0){
+                 return $this->sendError('Barang sudah pernah ada history pemakaian stok, edit tidak diizinkan! Silahkan buat data barang baru ! ', []);
+            }
+        }
+            
             $createBarang = $this->aBarangRepository->editBarang($request);
             if ($createBarang) {
                 //response
@@ -114,7 +131,7 @@ class aBarangService extends Controller
                     "message" => "Product Edit Failed"
                 ], 500);
             }
-        }
+        //}
     }
     public function getBarangbyId($id)
     {
