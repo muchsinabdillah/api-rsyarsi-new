@@ -368,6 +368,7 @@ class aSalesRepositoryImpl implements aSalesRepositoryInterface
     }
 
     //tambahan 30-10-2024 code:05112024
+    //13112024
     public function getSalesbyPeriodeResepRajal($request)
     {
         return  DB::connection('sqlsrv')->table("v_transaksi_sales_hdr")

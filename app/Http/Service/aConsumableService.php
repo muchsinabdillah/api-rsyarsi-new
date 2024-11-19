@@ -810,7 +810,6 @@ class aConsumableService extends Controller
                 if ($this->aConsumableRepository->getConsumablebyID($request->TransactionCode)->count() < 1) {
                     return $this->sendError('No. Transaksi Pemakaian Barang tidak ditemukan !', []);
                 }
-                
 
                 
                 // // cek sudah di approved belum 
@@ -820,7 +819,6 @@ class aConsumableService extends Controller
                 $message = [];
                 //get data paket detail by id header
                 $datapaket = $this->aBarangRepository->getDataPaketDetailbyIDHdr($request->IdPaket);
-
                 foreach ($datapaket as $key) {
                     //cek kode barangnya ada ga
                     if ($this->aBarangRepository->getBarangbyId($key->product_id)->count() < 1) {
@@ -836,7 +834,6 @@ class aConsumableService extends Controller
                         //array_push($message,'Kode barang '.$key->product_id.' sudah ada sebelumnya, tidak boleh lebih dari 1 !');
                         continue;
                     }
-                    
 
                     if ($request->NoRegistrasi != ''){
                         $tipereg = substr($request->NoRegistrasi, 0, 2);
@@ -854,13 +851,12 @@ class aConsumableService extends Controller
                         $datagenform->IDBarang = $key->product_id;
                         $datagenform->IDFormularium = $datajaminan->IDFormularium;
                         $dataformularium = $this->aBarangRepository->getBarangbyIdAndIDFormularium($datagenform);
-                        
+                        //13112024
                         if ($dataformularium->count() < 1){
                             return $this->sendError('Kode Barang '.$key->product_id.' ID Formularium tidak ditemukan !', []);
                             //continue;
                         }
                     }
-                    
 
 
                     $databarang = $this->aBarangRepository->getBarangbyId($key->product_id);
@@ -871,7 +867,6 @@ class aConsumableService extends Controller
                     $datagen['Satuan_Konversi'] = $databarang->first()->{'Unit Satuan'};
                     $datagen['KonversiQty'] = $key->quantity;
                     $datagen['Satuan'] = $databarang->first()->Satuan_Beli;
-                    
                     array_push($message,$datagen);
 
                 //     $databarang = $this->aBarangRepository->getBarangbyId($key->product_id);
