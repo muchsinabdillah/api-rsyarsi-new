@@ -21,7 +21,8 @@ class aPurchaseOrderRepositoryImpl implements aPurchaseOrderRepositoryInterface
             'PurchaseCode' => $autoNumber,
             'DateCreateReal' => Carbon::now(),
             'UseCreateReal' => $request->UserCreate,
-            'ReffDateTrs' => date("dmY", strtotime($request->PurchaseDate))
+            'ReffDateTrs' => date("dmY", strtotime($request->PurchaseDate)),
+            'is_jkn' => $request->is_jkn
         ]);
     }
     public function addPurchaseOrderDetil($key, $kodePo)
@@ -75,7 +76,8 @@ class aPurchaseOrderRepositoryImpl implements aPurchaseOrderRepositoryInterface
                 'PurchaseReqCode' => $request->PurchaseReqCode,
                 'Close_PO' => $request->Close_PO,
                 'TotalRowPO' => $request->TotalRowPO,
-                'TipePO' => $request->TipePO 
+                'TipePO' => $request->TipePO ,
+                'is_jkn' => $request->is_jkn
             ]);
         return $updatesatuan;
     }

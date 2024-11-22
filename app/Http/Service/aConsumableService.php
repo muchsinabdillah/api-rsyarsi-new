@@ -333,7 +333,7 @@ class aConsumableService extends Controller
                         $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
                         $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
                         'Farmasi',$request->KodeKelas,$key['Qty'],0,0,
-                        0,0,0,0,'','','','FARMASI');
+                        0,0,0,0,'','','','CONSUMABLE');
                 }
                     }
                 }else{
@@ -363,7 +363,7 @@ class aConsumableService extends Controller
                         $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
                         $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
                         'Farmasi',$request->KodeKelas,$key['Qty'],0,0,
-                        0,0,0,0,'','','','FARMASI');
+                        0,0,0,0,'','','','CONSUMABLE');
                         }
                    }  
                 } 

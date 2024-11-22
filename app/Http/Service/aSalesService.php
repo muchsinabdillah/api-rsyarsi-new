@@ -365,7 +365,7 @@ class aSalesService extends Controller
                             $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
                             $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
                             'Farmasi',$request->KodeKelas,$key['Qty'],$key['Harga'],$key['SubtotalHarga'],
-                            $key['DiscountProsen'],$key['Discount'],$key['Subtotal'],$key['Grandtotal'],'','','','FARMASI');
+                            $key['DiscountProsen'],$key['Discount'],$key['Subtotal'],$key['Grandtotal'],'','','','CONSUMABLE');
                          }
 
                         // //insert billing pdp
@@ -412,7 +412,7 @@ class aSalesService extends Controller
                             $request->NoMr,$request->NoEpisode,$request->NoRegistrasi,$key['ProductCode'],
                             $request->UnitTujuan,$request->GroupJaminan,$request->KodeJaminan,$key['ProductName'],
                             'Farmasi',$request->KodeKelas,$key['Qty'],$key['Harga'],$key['SubtotalHarga'],
-                            $key['DiscountProsen'],$key['Discount'],$key['Subtotal'],$key['Grandtotal'],'','','','FARMASI');
+                            $key['DiscountProsen'],$key['Discount'],$key['Subtotal'],$key['Grandtotal'],'','','','CONSUMABLE');
                         }
                         
                         $this->trsResepRepository->editQtyRealbyIDResepandProductCode($request->IdOrderResep,$key['ProductCode'],$key['Qty']);

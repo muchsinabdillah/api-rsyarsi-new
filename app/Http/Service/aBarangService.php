@@ -340,11 +340,18 @@ class aBarangService extends Controller
             return $this->sendResponse($data, "Data Product ditemukan.");
         }else{
             return $this->sendError("Data Product Found.", [], 400);
-        }
-
-       
+        } 
     }
-
+    public function getBarangbyNameLikeAdjusment(Request $request){
+        $count = $this->aBarangRepository->getBarangbyNameLikeAdjusment($request)->count();
+        
+        if($count > 0){
+            $data = $this->aBarangRepository->getBarangbyNameLikeAdjusment($request);
+            return $this->sendResponse($data, "Data Product ditemukan.");
+        }else{
+            return $this->sendError("Data Product Found.", [], 400);
+        } 
+    }
     public function getPrinterLabelAll()
     {
         // validator 

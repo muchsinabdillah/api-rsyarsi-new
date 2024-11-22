@@ -199,21 +199,6 @@ trait FifoTrait
                         // // INSERT BUKU IN DI LAYANAN GUDANG
                         $this->aStokRepository->addBukuStokOut($request, $key, $TipeTrs, $DeliveryCodex, $xhpp, $ExpiredDate, $BatchNumber, $qtynew, $persediaan, $request->UnitCode);
                         $this->aStokRepository->addDataStokOut($request, $key, $TipeTrs, $DeliveryCodex, $xhpp, $ExpiredDate, $BatchNumber, $qtynew, $persediaan, $request->UnitCode);
-
-                        // update stok Tujuan / Gudang 
-                       // if ($this->aStokRepository->cekStokbyIDBarang($key, $request->UnitCode)->count() < 1) {
-                            //kalo g ada insert
-                            //$this->aStokRepository->addStokTrs($request, $key, $qtynew, $request->UnitCode);
-                        //} else {
-                            //kallo ada ya update
-                            //$sumstok = $this->aStokRepository->cekStokbyIDBarang($key, $request->UnitCode);
-                            // foreach ($sumstok as $value) {
-                            //     $QtyCurrent = $value->Qty;
-                            // }
-                           // $QtyTotal = $QtyCurrent - $qtynew;
-                           // $this->aStokRepository->updateStokTrs($request, $key, $QtyTotal, $request->UnitCode);
-                        // }
-
                         if ($qtynew < $qty) {
                             $qty = $qty - $qtynew;
                             goto first;
@@ -306,5 +291,60 @@ trait FifoTrait
           $this->aStok->addBukuStokIn($request, $key, $tipeTrs, $DeliveryCodex, $xhpp, $ExpiredDate, $BatchNumber, $qtynew, $persediaan, $request->UnitCode);
           $this->aStok->addDataBukuStokIn($request, $key, $tipeTrs, $DeliveryCodex, $xhpp, $ExpiredDate, $BatchNumber, $qtynew, $persediaan, $request->UnitCode);
 
+    }
+
+
+    public function fifoAdjusmentMinusAdjusmentStokOnlyMigration($request,$key,$qty){
+        // delete tabel buku  
+        $xhpp = $key['Hpp'];
+                        // CARI DO TERATAS YANG MASIH ADA QTY
+                        first: 
+                        $getStokFirst = $this->aStokRepository->getStokExpiredFirstGlobal($request, $key,$request->UnitCode);
+                        //return $getStokFirst;
+                        $DeliveryCodex = $getStokFirst->DeliveryCode;
+                        
+                        $qtyBuku = $getStokFirst->x;
+                        $ExpiredDate = $getStokFirst->ExpiredDate;
+                        $BatchNumber = $getStokFirst->BatchNumber;
+
+                        if ($qtyBuku < $qty) {
+                            $qtynew = $qtyBuku;
+                            $persediaan = $qtynew * $xhpp;
+                        } else {
+                            $qtynew = $qty;
+                            $persediaan = $qtynew * $xhpp;
+                        }
+                        $TipeTrs = "AD";
+                        // // INSERT BUKU IN DI LAYANAN GUDANG
+                        $this->aStokRepository->addBukuStokOut($request, $key, $TipeTrs, $DeliveryCodex, $xhpp, $ExpiredDate, $BatchNumber, $qtynew, $persediaan, $request->UnitCode);
+                        $this->aStokRepository->addDataStokOut($request, $key, $TipeTrs, $DeliveryCodex, $xhpp, $ExpiredDate, $BatchNumber, $qtynew, $persediaan, $request->UnitCode);
+                        if ($qtynew < $qty) {
+                            $qty = $qty - $qtynew;
+                            goto first;
+                        }
+    }
+    public function fifoAdjusmentPlusAdjusmentStokOnlyMigration($request,$key,$qty){
+        // delete tabel buku  
+        $xhpp = $key['Hpp'];
+                        // CARI DO TERATAS YANG MASIH ADA QTY
+                        $persediaan = $xhpp*$qty;              
+                        $TipeTrs = "AD";
+                        // // INSERT BUKU IN DI LAYANAN GUDANG
+                        $this->aStokRepository->addBukuStokIn($request, $key, $TipeTrs, $request->TransactionCode, $xhpp, $key['ExpiredDate'], $key['Batchnumber'], $qty, $persediaan, $request->UnitCode);
+                        $this->aStokRepository->addDataBukuStokIn($request, $key, $TipeTrs, $request->TransactionCode, $xhpp, $key['ExpiredDate'], $key['Batchnumber'], $qty, $persediaan, $request->UnitCode);
+
+                        // update stok Tujuan / Gudang 
+                       // if ($this->aStokRepository->cekStokbyIDBarang($key, $request->UnitCode)->count() < 1) {
+                            //kalo g ada insert
+                           // $this->aStokRepository->addStokTrs($request, $key, $qty, $request->UnitCode);
+                       // } else {
+                            //kallo ada ya update
+                            //$sumstok = $this->aStokRepository->cekStokbyIDBarang($key, $request->UnitCode);
+                            // foreach ($sumstok as $value) {
+                            //     $QtyCurrent = $value->Qty;
+                            // }
+                           // $QtyTotal = $QtyCurrent + $qty;
+                            ///$this->aStokRepository->updateStokTrs($request, $key, $QtyTotal, $request->UnitCode);
+                       // }
     }
 }

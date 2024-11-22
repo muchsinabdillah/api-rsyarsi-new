@@ -109,5 +109,43 @@ class aHnaRepositoryImpl implements aHnaRepositoryInterface
             'UserCreate' =>  $request->UserCreate, 
         ]);
     }
-    
+    public function addHppAdjusment($request,$key,$nilaiHppFix){
+        return  DB::connection('sqlsrv')->table("hpps")->insert([
+            'DeliveryCode' =>  $request->TransactionCode,  
+            'NominalHargabeli' => $nilaiHppFix,
+            'ProductCode' =>  $key['ProductCode'],
+            'NominalDiskon' => 0,
+            'DeliveryDate' => $request->TransactionDate,
+            'NominalHpp' => $nilaiHppFix,
+            'UserCreate' =>  $request->UserCreate, 
+        ]);
+    }
+    public function getHppTrsbyKodeAdjusment($ProductCode){
+        return  DB::connection('sqlsrv')->table("hpps") 
+        ->select('NominalHpp')
+        ->where('Batal','0')
+        ->where('ProductCode', $ProductCode)
+        ->orderBy('id','desc')
+        ->get();
+    }
+    public function addHnaAdjusment($request, $key,$nilaiHnaFix,$hnaTaxDiskon)
+    {
+        $dateStart = date('Y-m-d', strtotime($request->TransactionDate));
+        return  DB::connection('sqlsrv')->table("Hnas")->insert([
+            'DeliveryCode' => $request->TransactionCode,
+            'DeliveryDate' => $request->TransactionDate,
+            'ProductCode' => $key['ProductCode'],
+            'NominalHna' => $nilaiHnaFix,
+            'NominalHnaMinDiskon' => $nilaiHnaFix,
+            'UserCreate' => $request->UserCreate,
+            'StartDate' => $dateStart,
+            'ExpiredDate' => "4000-01-01"
+        ]);
+    }
+    public function getHnaTrsbyKodeAdjusment($ProductCode){
+        return  DB::connection('sqlsrv')->table("Hnas") 
+        ->select('NominalHna') 
+        ->where('ProductCode', $ProductCode) 
+        ->get();
+    }
 }

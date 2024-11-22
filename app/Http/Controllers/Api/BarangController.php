@@ -114,7 +114,15 @@ class BarangController extends Controller
     $addBarang =  $aBarangService->getBarangbyNameLike($request);
     return $addBarang;
   }
-  
+  public function getBarangbyNameLikeAdjusment(Request $request)
+  {
+    $aBarangRepository = new aBarangRepositoryImpl();
+    $aSupplierRepository = new aSupplierRepositoryImpl();
+    $aStokRepository = new aStokRepositoryImpl();
+    $aBarangService = new aBarangService($aBarangRepository, $aSupplierRepository,$aStokRepository);
+    $addBarang =  $aBarangService->getBarangbyNameLikeAdjusment($request);
+    return $addBarang;
+  }
   public function addPrinterLabel(Request $request)
     {
         $aBarangRepository = new aBarangRepositoryImpl();

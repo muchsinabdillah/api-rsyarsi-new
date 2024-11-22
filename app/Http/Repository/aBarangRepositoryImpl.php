@@ -230,7 +230,24 @@ class aBarangRepositoryImpl implements aBarangRepositoryInterface
             ) 
             ->where('Group_DK',$request->groupBarang)
              ->where('Product Name', 'like', '%' . $request->name . '%')->get();
-            // ->skip(10a0)->take(50)
+            
+             // ->skip(10a0)->take(50)
+    }
+    public function getBarangbyNameLikeAdjusment($request)
+    {
+        return  DB::connection('sqlsrv')
+            ->table("v_stok_adjusment")
+            ->select(
+                'ID',
+                'Product Name',
+                'Standard Cost',
+                'HargaBeli',
+                'Satuan_Beli',
+                'Qty',
+                'Unit Satuan',
+                'Konversi_satuan'
+            )  
+             ->where('Product Name', 'like', '%' . $request->name . '%')->get(); 
     }
     public function editHPPBarang($key,$nilaiHppFix)
     {

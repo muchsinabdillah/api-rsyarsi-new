@@ -121,12 +121,23 @@ class aAdjusmentService extends Controller
             foreach ($request->Items as $key) {
                 if ($key['JenisAdjusment'] == "MINUS" ) {
                     $qty = $key['QtyStok']-$key['QtyAkhir']; 
-                    $this->fifoAdjusmentMinus($request,$key,$qty);
+                    $this->fifoAdjusmentMinusAdjusmentStokOnlyMigration($request,$key,$qty);
                 }else{ 
                     $qty = $key['QtyAdjusment']; 
-                    $this->fifoAdjusmentPlus($request,$key,$qty);
+                    $this->fifoAdjusmentPlusAdjusmentStokOnlyMigration($request,$key,$qty);
                 } 
-                $this->adjusmentRepository->addAdjusmentFinish($request,$key);  
+                $this->adjusmentRepository->addAdjusmentFinish($request,$key);
+                
+                // nanti di apus kalo sudah SO
+                    if ($this->ahnaRepository->getHppTrsbyKodeAdjusment($key['ProductCode'])->count() < 1) {
+                        $this->ahnaRepository->addHppAdjusment($request,$key,$key['Hpp']); 
+                    }
+                    if ($this->ahnaRepository->getHnaTrsbyKodeAdjusment($key['ProductCode'])->count() < 1) {
+                        $this->ahnaRepository->addHnaAdjusment($request, $key,$key['Hna'],$key['Hna']);  
+                    }
+                    $this->aBarangRepository->editHPPBarang($key,$key['Hpp']);
+                    
+                // nanti di apus kalo sudah SO
             }
                 $this->adjusmentRepository->editAdjusmentHeader($request);
             DB::commit();

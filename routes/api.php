@@ -144,6 +144,7 @@ Route::group(["middleware"=>["auth:api"]], function(){
         // Barang
         Route::post("addBarang", [BarangController::class, "addBarang"]);
         Route::post("getBarangbyNameLike", [BarangController::class, "getBarangbyNameLike"]);
+        Route::post("getBarangbyNameLikeAdjusment", [BarangController::class, "getBarangbyNameLikeAdjusment"]);
         Route::post("editBarang", [BarangController::class, "editBarang"]);
         Route::get("getBarangAll", [BarangController::class, "getBarangAll"]);
         Route::get("getBarangbyId/{id}", [BarangController::class, "getBarangbyId"]);
